@@ -28,10 +28,10 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       videoId: widget.video.videoId as String,
       autoPlay: true,
       params: const YoutubePlayerParams(
-        showControls: false,
+        showControls: true,
         mute: false,
         showFullscreenButton: false,
-        loop: false,
+        loop: true,
       ),
     );
 
@@ -84,17 +84,27 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
               }
               return Column(
                 children: [
-                  player,
-                  Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        image: DecorationImage(
-                            image: Image.network(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                            ).image,
-                            fit: BoxFit.cover)),
+                  Stack(
+                    children: [
+                      Container(
+                          width: 200,
+                          height: 200,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: player,
+                          )),
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            image: DecorationImage(
+                                image: Image.network(
+                                  'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                                ).image,
+                                fit: BoxFit.cover)),
+                      ),
+                    ],
                   ),
                   const VideoPositionIndicator(),
                   const Controls(),
