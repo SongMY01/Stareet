@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
-import '../../utilities/categories.dart';
 import '../../utilities/custom_app_bar.dart';
 import '/pages/home/body.dart';
 

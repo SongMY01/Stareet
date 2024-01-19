@@ -9,6 +9,7 @@ import '/widgets/channel_widget.dart';
 import '/widgets/playList_widget.dart';
 import '/widgets/video_widget.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   String query;
 

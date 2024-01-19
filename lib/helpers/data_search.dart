@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
-import 'dart:async';
 
 import '/helpers/suggestion_history.dart';
 import '/pages/search_page.dart';
 
 class DataSearch extends SearchDelegate<String> {
-  Timer? _timer;
+  // Timer? _timer;
 
   final YoutubeDataApi youtubeDataApi = YoutubeDataApi();
   final list = SuggestionHistory.suggestions;
