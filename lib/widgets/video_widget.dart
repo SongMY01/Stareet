@@ -33,8 +33,9 @@ class VideoWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           image: DecorationImage(
-                              image: Image.network(video.thumbnails![0].url!)
-                                  .image,
+                              image: Image.network(
+                                'https://i1.ytimg.com/vi/${video.videoId}/maxresdefault.jpg',
+                              ).image,
                               fit: BoxFit.cover)),
                     ),
                     // Positioned(
@@ -106,9 +107,11 @@ class VideoWidget extends StatelessWidget {
   }
 
   navigateToPlayer(BuildContext context) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => VideoDetailPage(videoId: video.videoId!)));
+    // List<String> videoIds = [];
+    // videoIds.add(video.videoId!);
+    // Navigator.push(context,
+    //     MaterialPageRoute(builder: (_) => VideoDetailPage(videoIds: videoIds)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
   }
 }

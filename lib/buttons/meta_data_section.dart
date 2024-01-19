@@ -30,38 +30,6 @@ class MetaDataSection extends StatelessWidget {
             Row(
               children: [
                 _Text('Video Id', value.metaData.videoId),
-                const Spacer(),
-                const _Text(
-                  'Speed',
-                  '',
-                ),
-                YoutubeValueBuilder(
-                  builder: (context, value) {
-                    return DropdownButton(
-                      value: value.playbackRate,
-                      isDense: true,
-                      underline: const SizedBox(),
-                      items: PlaybackRate.all
-                          .map(
-                            (rate) => DropdownMenuItem(
-                              child: Text(
-                                '${rate}x',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                              value: rate,
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (double? newValue) {
-                        if (newValue != null) {
-                          context.ytController.setPlaybackRate(newValue);
-                        }
-                      },
-                    );
-                  },
-                ),
               ],
             ),
           ],

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../buttons/meta_data_section.dart';
@@ -9,12 +10,10 @@ import '../buttons/play_pause_button_bar.dart';
 import '../buttons/player_state_section.dart';
 import '../buttons/source_input_section.dart';
 
-List<String> _videoIds = [];
-
 class VideoDetailPage extends StatefulWidget {
-  String videoId;
+  Video video;
 
-  VideoDetailPage({required this.videoId});
+  VideoDetailPage({required this.video});
 
   @override
   _VideoDetailPageState createState() => _VideoDetailPageState();
@@ -22,27 +21,25 @@ class VideoDetailPage extends StatefulWidget {
 
 class _VideoDetailPageState extends State<VideoDetailPage> {
   late YoutubePlayerController _controller;
+
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController(
+    _controller = YoutubePlayerController.fromVideoId(
+      videoId: widget.video.videoId as String,
+      autoPlay: true,
       params: const YoutubePlayerParams(
-        showControls: true,
+        showControls: false,
         mute: false,
-        showFullscreenButton: true,
+        showFullscreenButton: false,
         loop: false,
       ),
     );
+
     _controller.setFullScreenListener(
       (isFullScreen) {
         log('${isFullScreen ? 'Entered' : 'Exited'} Fullscreen.');
       },
-    );
-
-    _controller.loadPlaylist(
-      list: _videoIds,
-      listType: ListType.playlist,
-      startSeconds: 136,
     );
   }
 
@@ -53,6 +50,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       builder: (context, player) {
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             title: const Text('Youtube Player IFrame Demo'),
             // actions: const [VideoPlaylistIconButton()],
           ),
@@ -80,9 +83,20 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                   ],
                 );
               }
-              return ListView(
+              return Column(
                 children: [
                   player,
+                  Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: DecorationImage(
+                            image: Image.network(
+                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                            ).image,
+                            fit: BoxFit.cover)),
+                  ),
                   const VideoPositionIndicator(),
                   const Controls(),
                 ],
@@ -113,50 +127,17 @@ class Controls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MetaDataSection(),
-          _space,
-          SourceInputSection(),
-          _space,
+          const SizedBox(height: 10),
           PlayPauseButtonBar(),
-          _space,
+          const SizedBox(height: 10),
           const VideoPositionSeeker(),
-          _space,
-          PlayerStateSection(),
         ],
       ),
     );
   }
-
-  Widget get _space => const SizedBox(height: 10);
 }
 
-// ///
-// class VideoPlaylistIconButton extends StatelessWidget {
-//   ///
-//   const VideoPlaylistIconButton({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final controller = context.ytController;
-
-//     return IconButton(
-//       onPressed: () async {
-//         controller.pauseVideo();
-//         await Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => const VideoListPage(),
-//           ),
-//         );
-//         controller.playVideo();
-//       },
-//       icon: const Icon(Icons.playlist_play_sharp),
-//     );
-//   }
-// }
-
-///
 class VideoPositionIndicator extends StatelessWidget {
-  ///
   const VideoPositionIndicator({super.key});
 
   @override
