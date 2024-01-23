@@ -5,32 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../buttons/Listplay_pause_button_bar.dart';
 import '../buttons/meta_data_section.dart';
 import '../buttons/play_pause_button_bar.dart';
+import '../buttons/player_state_section.dart';
+import '../buttons/source_input_section.dart';
 
 // ignore: must_be_immutable
-class VideoDetailPage extends StatefulWidget {
-  Video video;
+class VideoListDetailPage extends StatefulWidget {
+  List<String> videoIds;
 
-  VideoDetailPage({required this.video});
+  VideoListDetailPage({required this.videoIds});
 
   @override
-  _VideoDetailPageState createState() => _VideoDetailPageState();
+  _VideoListDetailPageState createState() => _VideoListDetailPageState();
 }
 
-class _VideoDetailPageState extends State<VideoDetailPage> {
+class _VideoListDetailPageState extends State<VideoListDetailPage> {
   late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: widget.video.videoId as String,
-      autoPlay: true,
+
+    _controller = YoutubePlayerController(
       params: const YoutubePlayerParams(
         showControls: true,
         mute: false,
-        showFullscreenButton: false,
+        showFullscreenButton: true,
+        loop: false,
       ),
     );
 
@@ -39,6 +42,17 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
         log('${isFullScreen ? 'Entered' : 'Exited'} Fullscreen.');
       },
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _controller.loadPlaylist(
+            list: widget.videoIds,
+            listType: ListType.playlist,
+            startSeconds: 136,
+          );
+        });
+      }
+    });
   }
 
   @override
@@ -48,14 +62,8 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       builder: (context, player) {
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
             title: const Text('Youtube Player IFrame Demo'),
-            // actions: const [VideoPlaylistIconButton()],
+            actions: const [VideoPlaylistIconButton()],
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
@@ -81,32 +89,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                   ],
                 );
               }
-              return Column(
+              return ListView(
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                          width: 200,
-                          height: 200,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: player,
-                          )),
-                      Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  player,
                   const VideoPositionIndicator(),
                   const Controls(),
                 ],
@@ -125,6 +110,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   }
 }
 
+///
 class Controls extends StatelessWidget {
   ///
   const Controls();
@@ -137,17 +123,46 @@ class Controls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MetaDataSection(),
-          const SizedBox(height: 10),
-          PlayPauseButtonBar(),
-          const SizedBox(height: 10),
+          _space,
+          ListPlayPauseButtonBar(),
+          _space,
           const VideoPositionSeeker(),
         ],
       ),
     );
   }
+
+  Widget get _space => const SizedBox(height: 10);
 }
 
+///
+class VideoPlaylistIconButton extends StatelessWidget {
+  ///
+  const VideoPlaylistIconButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.ytController;
+
+    return IconButton(
+      onPressed: () async {
+        // controller.pauseVideo();
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => const VideoListPage(),
+        //   ),
+        // );
+        // controller.playVideo();
+      },
+      icon: const Icon(Icons.playlist_play_sharp),
+    );
+  }
+}
+
+///
 class VideoPositionIndicator extends StatelessWidget {
+  ///
   const VideoPositionIndicator({super.key});
 
   @override

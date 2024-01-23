@@ -9,14 +9,13 @@ class DataSearch extends SearchDelegate<String> {
 
   final YoutubeDataApi youtubeDataApi = YoutubeDataApi();
   final list = SuggestionHistory.suggestions;
-  // @override
-  // ThemeData appBarTheme(BuildContext context) {
-  //   return ThemeData(
-  //     appBarTheme: const AppBarTheme(
-  //       color: PrimaryColor, // affects AppBar's background color
-  //     ),
-  //   );
-  // }
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: const AppBarTheme(),
+    );
+  }
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -48,24 +47,30 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    // if (query.isEmpty) {
+    //   List<String> suggestions = list.reversed.toList();
+    //   return ListView.builder(
+    //     itemBuilder: (BuildContext context, int index) {
+    //       return GestureDetector(
+    //         onTap: () {
+    //           query = suggestions[index];
+    //           showResults(context);
+    //         },
+    //         child: ListTile(
+    //           leading: Icon(Icons.north_west),
+    //           title: Text(suggestions[index]),
+    //           trailing: Icon(Icons.history_outlined),
+    //         ),
+    //       );
+    //     },
+    //     itemCount: suggestions.length,
+    //   );
+    // }
+
     if (query.isEmpty) {
-      List<String> suggestions = list.reversed.toList();
-      return ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              query = suggestions[index];
-              showResults(context);
-            },
-            child: ListTile(
-              leading: Icon(Icons.north_west),
-              title: Text(suggestions[index]),
-              trailing: Icon(Icons.history_outlined),
-            ),
-          );
-        },
-        itemCount: suggestions.length,
-      );
+      return Container(
+        color: Colors.amber,
+      ); // 입력이 비어있을 때는 빈 컨테이너 반환
     }
     return FutureBuilder(
       future: youtubeDataApi.fetchSuggestions(query),

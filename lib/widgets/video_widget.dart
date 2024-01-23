@@ -31,13 +31,16 @@ class VideoWidget extends StatelessWidget {
                       height: 51,
                       width: 51,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          image: DecorationImage(
-                              image: Image.network(
-                                'https://i1.ytimg.com/vi/${video.videoId}/maxresdefault.jpg',
-                              ).image,
-                              fit: BoxFit.cover)),
+                        borderRadius: BorderRadius.circular(5),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                            'https://i1.ytimg.com/vi/${video.videoId}/maxresdefault.jpg',
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
+
                     // Positioned(
                     //   bottom: 4.0,
                     //   right: 4.0,
@@ -107,11 +110,12 @@ class VideoWidget extends StatelessWidget {
   }
 
   navigateToPlayer(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
+
     // List<String> videoIds = [];
     // videoIds.add(video.videoId!);
     // Navigator.push(context,
     //     MaterialPageRoute(builder: (_) => VideoDetailPage(videoIds: videoIds)));
-    Navigator.push(context,
-        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
   }
 }
