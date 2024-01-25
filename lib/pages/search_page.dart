@@ -9,7 +9,6 @@ import '/widgets/channel_widget.dart';
 import '/widgets/playList_widget.dart';
 import '/widgets/video_widget.dart';
 
-// ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   String query;
 
@@ -53,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Visibility(
             visible: firstLoad,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           ),
@@ -64,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
               itemCount: contentList!.length,
               itemBuilder: (context, index) {
                 if (isLoading && index == contentList!.length - 1) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else {
                   if (contentList![index] is Video) {
                     return video(contentList![index]);
@@ -113,9 +112,7 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = true;
     });
     List newList = await youtubeDataApi.fetchSearchVideo(query, API_KEY);
-    List limitedList = newList.take(10).toList();
-
-    contentList!.addAll(limitedList);
+    contentList!.addAll(newList);
     setState(() {
       isLoading = false;
       firstLoad = false;
