@@ -81,7 +81,8 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<Video>? contentList;
+    // List<Video>? contentList;
+    List<String> suggestions = list.reversed.toList();
     return Stack(
       children: [
         Positioned(
@@ -98,39 +99,21 @@ class DataSearch extends SearchDelegate<String> {
           ),
         ),
         query.isEmpty
-            ? SingleChildScrollView(
-                child: FutureBuilder(
-                  future: youtubeDataApi.fetchTrendingMusic(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 300),
-                          child: CircularProgressIndicator(),
-                        );
-                      case ConnectionState.active:
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 300),
-                          child: CircularProgressIndicator(),
-                        );
-                      case ConnectionState.none:
-                        return const Text("Connection None");
-                      case ConnectionState.done:
-                        if (snapshot.error != null) {
-                          return Container(
-                              child: Text(snapshot.stackTrace.toString()));
-                        } else {
-                          if (snapshot.hasData) {
-                            contentList = snapshot.data;
-                            return Body(contentList: contentList!);
-                          } else {
-                            return Center(
-                                child: Container(child: const Text("No data")));
-                          }
-                        }
-                    }
-                  },
-                ),
+            ? ListView.builder(
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      query = suggestions[index];
+                      showResults(context);
+                    },
+                    child: ListTile(
+                      leading: Icon(Icons.north_west),
+                      title: Text(suggestions[index]),
+                      trailing: Icon(Icons.history_outlined),
+                    ),
+                  );
+                },
+                itemCount: suggestions.length,
               )
             : FutureBuilder(
                 future: youtubeDataApi.fetchSuggestions(query),

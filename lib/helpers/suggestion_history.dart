@@ -15,6 +15,12 @@ class SuggestionHistory {
     await prefs.setStringList('suggestions', suggestions);
   }
 
+  static void remove(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    suggestions.removeWhere((suggestion) => suggestion == query);
+    await prefs.setStringList('suggestions', suggestions);
+  }
+
   static void init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     suggestions = prefs.getStringList('suggestions')!;
