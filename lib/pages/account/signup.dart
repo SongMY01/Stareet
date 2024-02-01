@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:music_api/utils/text_style.dart';
+
+import '../../utilities/text_style.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../../buttons/Listplay_pause_button_bar.dart';
-import '../../buttons/meta_data_section.dart';
-import '../../buttons/play_pause_button_bar.dart';
-import '../../buttons/player_state_section.dart';
-import '../../buttons/source_input_section.dart';
+import '../buttons/Listplay_pause_button_bar.dart';
+import '../buttons/meta_data_section.dart';
+import '../buttons/play_pause_button_bar.dart';
+import '../buttons/player_state_section.dart';
+import '../buttons/source_input_section.dart';
 
 // ignore: must_be_immutable
 class VideoListDetailPage extends StatefulWidget {

@@ -5,20 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../../buttons/meta_data_section.dart';
-import '../../buttons/play_pause_button_bar.dart';
+import '../buttons/meta_data_section.dart';
+import '../buttons/play_pause_button_bar.dart';
 
 // ignore: must_be_immutable
-class VideoDetailPage extends StatefulWidget {
+class VideoSearchPage extends StatefulWidget {
   Video video;
 
-  VideoDetailPage({required this.video});
+  VideoSearchPage({super.key, required this.video});
 
   @override
-  _VideoDetailPageState createState() => _VideoDetailPageState();
+  _VideoSearchPageState createState() => _VideoSearchPageState();
 }
 
-class _VideoDetailPageState extends State<VideoDetailPage> {
+class _VideoSearchPageState extends State<VideoSearchPage> {
   late YoutubePlayerController _controller;
 
   @override
@@ -97,12 +97,23 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                         height: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                            ),
-                            fit: BoxFit.cover,
-                          ),
+                        ),
+                        child: Image.network(
+                          'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                          fit: BoxFit.fitHeight,
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            return Image.network(
+                              'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                              fit: BoxFit.fitHeight,
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return Container(
+                                  color: Colors.yellow,
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -127,7 +138,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
 class Controls extends StatelessWidget {
   ///
-  const Controls();
+  const Controls({super.key});
 
   @override
   Widget build(BuildContext context) {

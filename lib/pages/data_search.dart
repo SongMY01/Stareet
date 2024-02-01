@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:music_api/utils/text_style.dart';
-import 'package:youtube_data_api/models/channel.dart';
-import 'package:youtube_data_api/models/playlist.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
-import '../pages/home/body.dart';
-import '/helpers/suggestion_history.dart';
-import '/pages/music/search_page.dart';
-import 'utils/color.dart';
-import 'widgets/channel_widget.dart';
-import 'widgets/playList_widget.dart';
-import 'widgets/video_widget.dart';
+import '../../pages/home/body.dart';
+import '../utilities/color.dart';
+import '../utilities/text_style.dart';
+import '../youtube/helpers/suggestion_history.dart';
+import '../youtube/widgets/video_widget.dart';
 
-class CustomSearchPage extends StatefulWidget {
+class DataSearchPage extends StatefulWidget {
   @override
-  _CustomSearchPageState createState() => _CustomSearchPageState();
+  _DataSearchPageState createState() => _DataSearchPageState();
 }
 
-class _CustomSearchPageState extends State<CustomSearchPage> {
+class _DataSearchPageState extends State<DataSearchPage> {
   final YoutubeDataApi youtubeDataApi = YoutubeDataApi();
   final list = SuggestionHistory.suggestions;
   final searchController = TextEditingController();
@@ -41,6 +36,7 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
             title: const Text(
               '음악 검색',
               style: bold16,
@@ -166,10 +162,6 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
           } else {
             if (contentList![index] is Video) {
               return video(contentList![index]);
-            } else if (contentList![index] is Channel) {
-              return channel(contentList![index]);
-            } else if (contentList![index] is PlayList) {
-              return playList(contentList![index]);
             }
             return Container();
           }
@@ -181,25 +173,6 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
   Widget video(Video video) {
     return VideoWidget(
       video: video,
-    );
-  }
-
-  Widget playList(PlayList playList) {
-    return PlayListWidget(
-      id: playList.playListId!,
-      thumbnails: playList.thumbnails!,
-      videoCount: playList.videoCount!,
-      title: playList.title!,
-      channelName: playList.channelName!,
-    );
-  }
-
-  Widget channel(Channel channel) {
-    return ChannelWidget(
-      id: channel.channelId!,
-      thumbnail: channel.thumbnail!,
-      title: channel.title!,
-      videoCount: channel.videoCount!,
     );
   }
 

@@ -5,20 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../../buttons/meta_data_section.dart';
-import '../../buttons/play_pause_button_bar.dart';
+import '../buttons/meta_data_section.dart';
+import '../buttons/play_pause_button_bar.dart';
 
 // ignore: must_be_immutable
-class VideoSearchPage extends StatefulWidget {
+class VideoDetailPage extends StatefulWidget {
   Video video;
 
-  VideoSearchPage({super.key, required this.video});
+  VideoDetailPage({required this.video});
 
   @override
-  _VideoSearchPageState createState() => _VideoSearchPageState();
+  _VideoDetailPageState createState() => _VideoDetailPageState();
 }
 
-class _VideoSearchPageState extends State<VideoSearchPage> {
+class _VideoDetailPageState extends State<VideoDetailPage> {
   late YoutubePlayerController _controller;
 
   @override
@@ -127,7 +127,7 @@ class _VideoSearchPageState extends State<VideoSearchPage> {
 
 class Controls extends StatelessWidget {
   ///
-  const Controls({super.key});
+  const Controls();
 
   @override
   Widget build(BuildContext context) {
