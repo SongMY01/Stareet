@@ -125,6 +125,8 @@ class _MyPageState extends State<MyPage> {
               ),
               const SizedBox(height: 10),
               const TabBar(
+                labelColor: AppColor.text,
+                indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
                 tabs: [
                   Tab(text: "내 플리"),
                   Tab(text: "저장한 플리"),

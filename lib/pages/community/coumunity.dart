@@ -14,11 +14,6 @@ class _CommunityPage extends State<CommunityPage> {
   final searchController = TextEditingController();
   String query = '';
 
-  List? contentList;
-  bool isLoading = false;
-  bool firstLoad = true;
-  String API_KEY = "";
-
   FocusNode textfieldFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
@@ -104,27 +99,19 @@ class _CommunityPage extends State<CommunityPage> {
                         onPressed: () {
                           searchController.clear();
                           query = '';
-                          setState(() {
-                            contentList = null;
-                          });
-                          textfieldFocusNode.requestFocus(); // 이 부분을 추가하세요.
                         },
                         icon: const Icon(Icons.close, color: Colors.white)),
                   ),
                   onChanged: (value) {
                     setState(() {
+                      query = '';
+                    });
+                  },
+                  onSubmitted: (value) {
+                    setState(() {
                       query = value;
                     });
                   },
-                  onTap: () {
-                    setState(() {
-                      // 사용자가 텍스트 필드를 탭하면 contentList를 null로 설정
-                      contentList = null;
-                    });
-                  },
-                  // onSubmitted: (value) {
-                  //   _search(value);
-                  // },
                 ),
               ),
             ),
@@ -161,7 +148,7 @@ Widget _buildSearchedTabBar() {
           labelStyle: bold14.copyWith(color: AppColor.text),
           labelColor: AppColor.text,
           indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
-          tabs: const [
+          tabs: [
             Tab(text: "플리"),
             Tab(text: "스타메이트"),
           ],
@@ -330,8 +317,7 @@ class SongPicture extends StatelessWidget {
             Positioned(
               left: 20,
               bottom: 10,
-              child:
-                  Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
+              child: Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
             ),
           ],
         ),

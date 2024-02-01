@@ -120,7 +120,7 @@ class _TabTwoState extends State<TabTwo> {
                 leading: Image.asset('assets/fonts/images/profile.png'),
                 title: Text("좌", style: medium16.copyWith(color: Colors.white)),
                 trailing: SizedBox(
-                  height: 28,
+                  height: 30,
                   child: TextButton(
                     onPressed: () {
                       setState(() {
@@ -144,7 +144,7 @@ class _TabTwoState extends State<TabTwo> {
                     ),
                     child: Text(
                       mateRequested[index] ? "메이트" : "메이트 신청",
-                      style: bold13.copyWith(color: Colors.white),
+                      style: bold12,
                     ),
                   ),
                 ),
