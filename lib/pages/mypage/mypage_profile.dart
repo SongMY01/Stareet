@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/text_theme.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -32,12 +31,12 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('프로필편집', style: bold16.copyWith(color: AppColor.text)),
+          title: const Text('프로필편집', style: bold16),
           backgroundColor: Colors.transparent,
         ),
-        body: Column(
+        body: const Column(
           children: [
-            const Divider(),
+            Divider(),
           ],
         ),
       ),

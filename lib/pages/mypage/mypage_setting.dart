@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/text_theme.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -32,32 +31,32 @@ class _SettingPageState extends State<SettingPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('설정', style: bold16.copyWith(color: AppColor.text)),
+          title: const Text('설정', style: bold16),
           backgroundColor: Colors.transparent,
         ),
         body: Column(
           children: [
             const Divider(),
-            ListTile(
-              leading: const Icon(
+            const ListTile(
+              leading: Icon(
                 Icons.announcement,
                 color: Colors.white,
               ),
               title:
-                  Text("공지사항", style: regular17.copyWith(color: AppColor.text)),
+                  const Text("공지사항", style: regular17),
             ),
-            ListTile(
-              leading: const Icon(
+            const ListTile(
+              leading: Icon(
                 Icons.question_mark_outlined,
                 color: Colors.white,
               ),
               title: Text("고객센터/운영정책",
-                  style: regular17.copyWith(color: AppColor.text)),
+                  style: regular17),
             ),
             ListTile(
               leading: const Icon(Icons.notifications, color: Colors.white),
-              title: Text("푸쉬 알림",
-                  style: regular17.copyWith(color: AppColor.text)),
+              title: const Text("푸쉬 알림",
+                  style: regular17),
               trailing: GestureDetector(
                 onTap: () => toggleSwitch(!switchValue), // 탭 시 스위치 값을 토글합니다.
                 child: Container(
