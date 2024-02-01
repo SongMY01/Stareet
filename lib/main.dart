@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
       theme: ThemeData(
           brightness: Brightness.dark,
           primaryColor: const Color.fromRGBO(54, 209, 0, 1),
