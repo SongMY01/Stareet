@@ -7,6 +7,7 @@ import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
 import '../youtube/helpers/suggestion_history.dart';
 import '../youtube/widgets/video_widget.dart';
+import 'community/coumunity.dart';
 
 class DataSearchPage extends StatefulWidget {
   @override
@@ -186,16 +187,26 @@ class _DataSearchPageState extends State<DataSearchPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 22),
-              const Text(
-                "최근 검색한 음악",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CommunityPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "최근 검색한 음악",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 10),
               SizedBox(
