@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/community/mate_detail.dart';
 import 'package:music_api/pages/community/star_detail.dart';
-import 'package:music_api/utilities/color.dart';
-import 'package:music_api/utilities/text_style.dart';
+
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 //------ 페이지 3, 5
 
 //TabBar PalyList
@@ -30,7 +31,7 @@ class TabOne extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => StarDetail(),
+                  builder: (context) => const StarDetail(),
                 ),
               );
             },
@@ -57,16 +58,16 @@ class TabOne extends StatelessWidget {
                   bottom: 44,
                   child: Text(
                     "좌",
-                    style: medium11.copyWith(color: AppColor.subtext1),
+                    style: medium11.copyWith(color: AppColor.sub1),
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   left: 15,
                   bottom: 23,
                   child: Text(
                     "용가리자리",
                     style:
-                        bold15.copyWith(color: AppColor.text), //bold 17이 큰거 같다.
+                        bold15, //bold 17이 큰거 같다.
                   ),
                 ),
                 Positioned(
@@ -74,7 +75,7 @@ class TabOne extends StatelessWidget {
                   bottom: 8,
                   child: Text(
                     "8개의 곡",
-                    style: medium11.copyWith(color: AppColor.subtext1),
+                    style: medium11.copyWith(color: AppColor.sub1),
                   ),
                 ),
               ],
@@ -111,7 +112,7 @@ class _TabTwoState extends State<TabTwo> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MateDetail(),
+                    builder: (context) => const MateDetail(),
                   ),
                 );
               },

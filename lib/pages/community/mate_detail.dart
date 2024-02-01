@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
+
 
 //------6페이지
 class MateDetail extends StatefulWidget {
@@ -69,7 +70,7 @@ class _MateDetailState extends State<MateDetail> {
                     width: 20,
                   ),
                   Text('좌좌좌좌',
-                      style: bold18.copyWith(color: AppColor.subtext1)),
+                      style: bold18.copyWith(color: AppColor.sub1)),
                   const Spacer(),
                   SizedBox(
                     height: 28,

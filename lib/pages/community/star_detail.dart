@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 //-----페이지 3
 
 class StarDetail extends StatelessWidget {
@@ -19,7 +19,7 @@ class StarDetail extends StatelessWidget {
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
-              title: Text("별플리", style: bold16.copyWith(color: AppColor.text)),
+              title: const Text("별플리", style: bold16),
             ),
             body: Column(
               children: [
@@ -49,13 +49,13 @@ class StarDetail extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 170),
-                        Text("용가리 자리",
-                            style: bold20.copyWith(color: AppColor.text)),
-                        Text("좌",
-                            style: medium16.copyWith(color: AppColor.text)),
+                        const Text("용가리 자리",
+                            style: bold20),
+                        const Text("좌",
+                            style: medium16),
                         Text("음악 7개",
                             style:
-                                regular12.copyWith(color: AppColor.subtext2)),
+                                regular12.copyWith(color: AppColor.sub2)),
                         IconButton(
                             onPressed: () {}, icon: const Icon(Icons.share))
                       ],
@@ -152,15 +152,15 @@ class UserPlay extends StatelessWidget {
       children: [
         Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
-            Icon(
+            const Icon(
               Icons.location_on,
               color: Color.fromRGBO(19, 228, 206, 1),
             ),
             Text('포항시 북구 흥해읍 한동로 558',
-                style: regular13.copyWith(color: AppColor.subtext1)),
+                style: regular13.copyWith(color: AppColor.sub1)),
           ],
         ),
         const SizedBox(height: 5),
@@ -170,12 +170,12 @@ class UserPlay extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("잘 지내자, 우리",
-                  style: bold16.copyWith(color: AppColor.subtext1)),
-              Text('최유리', style: regular12.copyWith(color: AppColor.subtext2))
+                  style: bold16.copyWith(color: AppColor.sub1)),
+              Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
             ],
           ),
           trailing:
-              Text('3:54', style: regular13.copyWith(color: AppColor.subtext2)),
+              Text('3:54', style: regular13.copyWith(color: AppColor.sub2)),
         ),
         const SizedBox(height: 20),
       ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import 'my_starmate.dart';
 import 'mypage_profile.dart';
 import 'mypage_setting.dart';
@@ -57,7 +58,7 @@ class _MyPageState extends State<MyPage> {
                           },
                           child: Text('프로필 편집',
                               style: medium14.copyWith(
-                                  color: AppColor.subtext1)))),
+                                  color: AppColor.sub1)))),
                   PopupMenuItem(
                       value: 2,
                       child: TextButton(
@@ -71,7 +72,7 @@ class _MyPageState extends State<MyPage> {
                           },
                           child: Text('설정',
                               style: medium14.copyWith(
-                                  color: AppColor.subtext1)))),
+                                  color: AppColor.sub1)))),
                 ],
               )
             ],
@@ -117,7 +118,7 @@ class _MyPageState extends State<MyPage> {
                         width: 20,
                       ),
                       Text('soda@handong.ac.kr',
-                          style: regular15.copyWith(color: AppColor.subtext2)),
+                          style: regular15.copyWith(color: AppColor.sub2)),
                     ],
                   ),
                 ],

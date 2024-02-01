@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../mypage/my_page.dart';
 import 'search.dart';
 
@@ -97,7 +97,7 @@ class _CommunityPage extends State<CommunityPage> {
                         width: 1.0,
                       ),
                     ),
-                    hintStyle: medium14.copyWith(color: AppColor.subtext2),
+                    hintStyle: medium14.copyWith(color: AppColor.sub2),
                     hintText: '별자리 이름이나, 메이트 이름을 검색하세요',
                     prefixIcon: const Icon(Icons.search, color: Colors.white),
                     suffixIcon: IconButton(
@@ -161,7 +161,7 @@ Widget _buildSearchedTabBar() {
           labelStyle: bold14.copyWith(color: AppColor.text),
           labelColor: AppColor.text,
           indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
-          tabs: [
+          tabs: const [
             Tab(text: "플리"),
             Tab(text: "스타메이트"),
           ],
@@ -189,14 +189,14 @@ Widget _buildCommunitySearch() {
       children: [
         Text(
           "지금 핫 별플리",
-          style: bold20.copyWith(color: AppColor.subtext1),
+          style: bold20.copyWith(color: AppColor.sub1),
         ),
         const SizedBox(height: 29),
         const StarPictureList(),
         const SizedBox(height: 29),
         Text(
           "주변 지역에서 추천하는 음악",
-          style: bold20.copyWith(color: AppColor.subtext1),
+          style: bold20.copyWith(color: AppColor.sub1),
         ),
         const SizedBox(height: 29),
         const SongPictureList(),
@@ -234,10 +234,10 @@ class StarPicture extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
-        Container(
+        SizedBox(
           height: 280.803,
           width: 191,
           child: Stack(
@@ -258,7 +258,7 @@ class StarPicture extends StatelessWidget {
                 bottom: 53,
                 child: Text(
                   "좌",
-                  style: medium11.copyWith(color: AppColor.subtext1),
+                  style: medium11.copyWith(color: AppColor.sub1),
                 ),
               ),
               Positioned(
@@ -266,7 +266,7 @@ class StarPicture extends StatelessWidget {
                 bottom: 27,
                 child: Text(
                   "용가리자리",
-                  style: bold17.copyWith(color: AppColor.subtext1),
+                  style: bold17.copyWith(color: AppColor.sub1),
                 ),
               ),
               Positioned(
@@ -274,7 +274,7 @@ class StarPicture extends StatelessWidget {
                 bottom: 10,
                 child: Text(
                   "8개의 곡",
-                  style: medium11.copyWith(color: AppColor.subtext1),
+                  style: medium11.copyWith(color: AppColor.sub1),
                 ),
               ),
             ],
@@ -331,7 +331,7 @@ class SongPicture extends StatelessWidget {
               left: 20,
               bottom: 10,
               child:
-                  Text("최유리", style: bold12.copyWith(color: AppColor.subtext1)),
+                  Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
             ),
           ],
         ),
