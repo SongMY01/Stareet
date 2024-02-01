@@ -4,8 +4,8 @@ import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
 import '../pages/home/body.dart';
+import '../pages/music/search_page.dart';
 import '/helpers/suggestion_history.dart';
-import '/pages/search_page.dart';
 
 class DataSearch extends SearchDelegate<String> {
   final YoutubeDataApi youtubeDataApi = YoutubeDataApi();

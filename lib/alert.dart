@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:music_api/utils/text_style.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 import 'buttons/meta_data_section.dart';
 import 'buttons/play_pause_button.dart';
@@ -58,7 +59,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                 filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                 child: Container(
                   width: 317, // width: 317px;
-                  height: 333, // height: 333px;
+                  height: 345, // height: 333px;
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(23, 23, 23, 0.85),
                     borderRadius: BorderRadius.circular(21),
@@ -118,16 +119,16 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                       Text(
                         widget.video.title ?? '',
                         style: bold18,
-                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
                       ),
                       Text(
                         widget.video.channelName ?? '',
                         style: regular15,
+                        textAlign: TextAlign.center,
                         maxLines: 1,
                       ),
-                      // const VideoPositionIndicator(),
-                      const SizedBox(height: 29.9),
-                      const Controls(),
+                      const VideoPositionSeeker(),
                     ],
                   ),
                 ),
@@ -141,21 +142,6 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
   void dispose() {
     _controller.close();
     super.dispose();
-  }
-}
-
-class Controls extends StatelessWidget {
-  ///
-  const Controls({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        VideoPositionSeeker(),
-      ],
-    );
   }
 }
 

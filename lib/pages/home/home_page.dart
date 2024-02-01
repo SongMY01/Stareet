@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 import '../../utilities/custom_app_bar.dart';
-import '../videoList_detail_page.dart';
+import '../music/videoList_detail_page.dart';
 import '/pages/home/body.dart';
 
 class HomePage extends StatefulWidget {

@@ -7,7 +7,7 @@ import 'package:youtube_data_api/youtube_data_api.dart';
 
 import '../pages/home/body.dart';
 import '/helpers/suggestion_history.dart';
-import '/pages/search_page.dart';
+import '/pages/music/search_page.dart';
 import 'utils/color.dart';
 import 'widgets/channel_widget.dart';
 import 'widgets/playList_widget.dart';
