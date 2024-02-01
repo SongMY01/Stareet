@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-//————SemiBold 시작
+//---------SemiBold 시작
 
 const TextStyle semibold11 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
@@ -22,7 +22,7 @@ const TextStyle semibold14 = TextStyle(
 const TextStyle semibold16 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 16,
-    // height: 22,
+    height: 22,
     letterSpacing: -0.32,
     fontWeight: FontWeight.w600);
 
@@ -51,10 +51,10 @@ const TextStyle semibold24 = TextStyle(
     letterSpacing: -0.48,
     fontWeight: FontWeight.w600);
 
-//————SemiBold 끝
-//————Bold 시작
+//---------SemiBold 끝
+//---------Bold 시작
 
-const TextStyle mediumld11 = TextStyle(
+const TextStyle medium11 = TextStyle(
     fontFamily: 'Pretendard-Mediumld',
     fontSize: 11,
     fontWeight: FontWeight.w500);
@@ -86,8 +86,11 @@ const TextStyle medium18 = TextStyle(
     letterSpacing: -0.36,
     fontWeight: FontWeight.w500);
 
-//————Medium 끝
-//————Bold 시작
+//---------Medium 끝
+//---------Bold 시작
+
+const TextStyle bold12 = TextStyle(
+    fontFamily: 'Pretendard-Bold', fontSize: 12, fontWeight: FontWeight.w700);
 
 const TextStyle bold13 = TextStyle(
     fontFamily: 'Pretendard-Bold',
@@ -130,8 +133,8 @@ const TextStyle bold22 = TextStyle(
     letterSpacing: -0.44,
     fontWeight: FontWeight.w700);
 
-//————Bold 끝
-//————Regular 시작
+//---------Bold 끝
+//---------Regular 시작
 
 const TextStyle regular11 = TextStyle(
     fontFamily: 'Pretendard-Regular',
@@ -166,16 +169,16 @@ const TextStyle regular17 = TextStyle(
     letterSpacing: -0.34,
     fontWeight: FontWeight.w400);
 
-//————Regular 끝
-//————Extralight 시작
+//---------Regular 끝
+//---------Extralight 시작
 
 const TextStyle extralight16 = TextStyle(
     fontFamily: 'Pretendard-ExtraLight',
     fontSize: 16,
     fontWeight: FontWeight.w200);
 
-//————Extralight 끝
-//————KimjungchulMyungjo 시작
+//---------Extralight 끝
+//---------KimjungchulMyungjo 시작
 
 const TextStyle kimregular15 = TextStyle(
     fontFamily: 'KimjungchulMyungjo-Regular',
