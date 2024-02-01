@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/firebase_options.dart';
 
-import 'custom.dart';
+import 'pages/data_search.dart';
 import 'pages/account/signup.dart';
 import 'pages/home/home_page.dart';
 import 'pages/account/login.dart';
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/signup': (BuildContext context) => const SignupPage(),
         '/login': (BuildContext context) => const LoginPage(),
-        '/search': (BuildContext context) => CustomSearchPage(),
+        '/search': (BuildContext context) => DataSearchPage(),
       },
     );
   }

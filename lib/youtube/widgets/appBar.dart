@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../custom.dart';
-import '../utils/text_style.dart';
-import '/helpers/data_search.dart';
+import '../../pages/data_search.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   CustomAppBar({Key? key})
@@ -30,7 +28,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         title: InkWell(
           onTap: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (_) => CustomSearchPage()));
+                context, MaterialPageRoute(builder: (_) => DataSearchPage()));
             // showSearch(context: context, delegate: DataSearch());
           },
           child: Container(

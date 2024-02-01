@@ -2,26 +2,23 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:music_api/utils/text_style.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
-import 'buttons/meta_data_section.dart';
-import 'buttons/play_pause_button.dart';
-import 'buttons/play_pause_button_bar.dart';
-import 'utils/color.dart';
+import '../../utilities/color.dart';
+import '../../utilities/text_style.dart';
+import '../buttons/play_pause_button.dart';
 
-class CustomAlertDialog extends StatefulWidget {
+class CustomDialog extends StatefulWidget {
   Video video;
 
-  CustomAlertDialog({super.key, required this.video});
+  CustomDialog({super.key, required this.video});
 
   @override
-  _CustomAlertDialogState createState() => _CustomAlertDialogState();
+  _CustomDialogState createState() => _CustomDialogState();
 }
 
-class _CustomAlertDialogState extends State<CustomAlertDialog> {
+class _CustomDialogState extends State<CustomDialog> {
   late YoutubePlayerController _controller;
 
   @override
@@ -105,12 +102,24 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                             height: 139,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(69.5),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
+                            ),
+                            child: Image.network(
+                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                              fit: BoxFit.fitHeight,
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return Image.network(
+                                  'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                                  fit: BoxFit.fitHeight,
+                                  errorBuilder: (BuildContext context,
+                                      Object exception,
+                                      StackTrace? stackTrace) {
+                                    return Container(
+                                      color: Colors.yellow,
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ],

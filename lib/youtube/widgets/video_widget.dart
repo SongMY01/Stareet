@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
-import '../alert.dart';
-import '../pages/music/video_search_page.dart';
-import '/pages/music/video_detail_page.dart';
+import 'alert.dart';
+import '../music/video_search_page.dart';
+import '../music/video_detail_page.dart';
 
 class VideoWidget extends StatelessWidget {
   final Video video;
@@ -18,7 +18,7 @@ class VideoWidget extends StatelessWidget {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return CustomAlertDialog(
+            return CustomDialog(
               video: video,
             );
           },

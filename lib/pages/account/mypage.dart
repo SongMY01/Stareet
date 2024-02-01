@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:music_api/utils/text_style.dart';
 
-import '../../utils/color.dart';
+import '../../utilities/color.dart';
+import '../../utilities/text_style.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
