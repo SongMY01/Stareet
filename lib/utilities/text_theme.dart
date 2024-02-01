@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'color.dart';
+import 'color_scheme.dart';
 
 //————SemiBold 시작
 

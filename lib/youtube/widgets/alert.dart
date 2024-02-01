@@ -6,8 +6,8 @@ import 'package:music_api/pages/comment.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../buttons/play_pause_button.dart';
 
 class CustomDialog extends StatefulWidget {

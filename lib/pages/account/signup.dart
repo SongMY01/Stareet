@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../../utilities/text_style.dart';
+import '../../utilities/text_theme.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -72,16 +72,12 @@ class _SignupPageState extends State<SignupPage> {
         // Firebase Firestore에 사용자 정보 저장
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);
 
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: ((context) => const DaisyPage())));
       } catch (e) {
         setState(() {});
         print(e);
         // 에러 처리
       }
-      Navigator.pushNamed(context, '/mypage');
+      Navigator.pushNamed(context, '/home');
     }
   }
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../community/search.dart';
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
-import '../../youtube/widgets/appBar.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 
 class MyStarMate extends StatelessWidget {
   const MyStarMate({super.key});
@@ -33,19 +31,19 @@ class MyStarMate extends StatelessWidget {
               child: TextField(
                 onSubmitted: (String searchText) {
                   // Navigate to the SearchedTabBar page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SearchedTabBar(searchText: searchText),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) =>
+                  //         SearchedTabBar(searchText: searchText),
+                  //   ),
+                  // );
                 },
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
                   labelText: "메이트 이름을 검색해요",
-                  labelStyle: medium14.copyWith(color: AppColor.subtext1),
+                  labelStyle: medium14.copyWith(color: AppColor.sub1),
                   border: myinputborder(),
                   enabledBorder: myinputborder(),
                   prefixIcon: const Icon(
@@ -151,7 +149,7 @@ class _MateNameState extends State<MateName> {
                       TextButton(
                         child: Text('취소',
                             style:
-                                regular17.copyWith(color: AppColor.subtext1)),
+                                regular17.copyWith(color: AppColor.sub1)),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
