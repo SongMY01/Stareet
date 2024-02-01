@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'color_scheme.dart';
 
-//---------SemiBold 시작
+//————SemiBold 시작
 
 const TextStyle semibold11 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
@@ -26,7 +26,6 @@ const TextStyle semibold14 = TextStyle(
 const TextStyle semibold16 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 16,
-    height: 22,
     letterSpacing: -0.32,
     fontWeight: FontWeight.w600,
     color: AppColor.text);
@@ -60,8 +59,8 @@ const TextStyle semibold24 = TextStyle(
     fontWeight: FontWeight.w600,
     color: AppColor.text);
 
-//---------SemiBold 끝
-//---------Bold 시작
+//————SemiBold 끝
+//————Bold 시작
 
 const TextStyle medium11 = TextStyle(
     fontFamily: 'Pretendard-Mediumld',
@@ -101,8 +100,8 @@ const TextStyle medium18 = TextStyle(
     fontWeight: FontWeight.w500,
     color: AppColor.text);
 
-//---------Medium 끝
-//---------Bold 시작
+//————Medium 끝
+//————Bold 시작
 
 const TextStyle bold12 = TextStyle(
     fontFamily: 'Pretendard-Bold',
@@ -160,13 +159,12 @@ const TextStyle bold20 = TextStyle(
 const TextStyle bold22 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 22,
-    height: 22,
     letterSpacing: -0.44,
     fontWeight: FontWeight.w700,
     color: AppColor.text);
 
-//---------Bold 끝
-//---------Regular 시작
+//————Bold 끝
+//————Regular 시작
 
 const TextStyle regular11 = TextStyle(
     fontFamily: 'Pretendard-Regular',
@@ -207,8 +205,8 @@ const TextStyle regular17 = TextStyle(
     fontWeight: FontWeight.w400,
     color: AppColor.text);
 
-//---------Regular 끝
-//---------Extralight 시작
+//————Regular 끝
+//————Extralight 시작
 
 const TextStyle extralight16 = TextStyle(
     fontFamily: 'Pretendard-ExtraLight',
@@ -216,8 +214,8 @@ const TextStyle extralight16 = TextStyle(
     fontWeight: FontWeight.w200,
     color: AppColor.text);
 
-//---------Extralight 끝
-//---------KimjungchulMyungjo 시작
+//————Extralight 끝
+//————KimjungchulMyungjo 시작
 
 const TextStyle kimregular15 = TextStyle(
     fontFamily: 'KimjungchulMyungjo-Regular',

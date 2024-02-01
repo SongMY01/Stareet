@@ -45,9 +45,7 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const LoginPage(),
         '/home': (BuildContext context) => const HomePage(),
         '/search': (BuildContext context) => DataSearchPage(),
-        
       },
     );
   }
 }
-
