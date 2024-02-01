@@ -3,8 +3,8 @@ import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
 import '../../pages/home/body.dart';
-import '../utilities/color.dart';
-import '../utilities/text_style.dart';
+import '../utilities/color_scheme.dart';
+import '../utilities/text_theme.dart';
 import '../youtube/helpers/suggestion_history.dart';
 import '../youtube/widgets/video_widget.dart';
 
@@ -82,7 +82,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                         width: 1.0,
                       ),
                     ),
-                    hintStyle: medium14.copyWith(color: AppColor.subtext2),
+                    hintStyle: medium14.copyWith(color: AppColor.sub2),
                     hintText: '곡의 제목, 가수를 검색해주세요',
                     prefixIcon: const Icon(Icons.search, color: Colors.white),
                     suffixIcon: IconButton(
@@ -227,7 +227,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                     : Chip(
                         label: Text(
                           "최근 검색 결과가 없습니다",
-                          style: medium13.copyWith(color: AppColor.subtext2),
+                          style: medium13.copyWith(color: AppColor.sub2),
                         ),
                       ),
               ),
