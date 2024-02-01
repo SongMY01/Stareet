@@ -16,6 +16,14 @@ dependencies:
   shared_preferences: ^2.2.2
   youtube_player_iframe: ^4.0.4
   pod_player: ^0.2.0
+  flutter_svg: ^2.0.9
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.14.0
+  firebase_auth: ^4.16.0
+  google_sign_in: ^6.2.1
+  image_picker: ^1.0.7
+  firebase_storage: ^11.6.0
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +36,18 @@ flutter:
 
   assets:
     - assets/
+    - assets/images/
+    
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Black.otf
+        - asset: assets/fonts/Pretendard-Bold.otf
+        - asset: assets/fonts/Pretendard-ExtraBold.otf
+        - asset: assets/fonts/Pretendard-ExtraLight.otf
+        - asset: assets/fonts/Pretendard-Light.otf
+        - asset: assets/fonts/Pretendard-Medium.otf
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+        - asset: assets/fonts/Pretendard-Thin.otf
+        - asset: assets/fonts/KimjungchulMyungjo-Regular.otf

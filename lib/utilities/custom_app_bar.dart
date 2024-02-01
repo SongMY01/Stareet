@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../custom.dart';
 import '../utils/text_style.dart';
 import '/helpers/data_search.dart';
 
@@ -22,36 +23,38 @@ class _CustomAppBarState extends State<CustomAppBar> {
         backgroundColor: Colors.transparent,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Color(0xff2d2d2d),
-          statusBarIconBrightness: Brightness.light, // For Android (dark icons)
-          statusBarBrightness: Brightness.light, // For iOS (dark icons)
+          statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+          statusBarBrightness: Brightness.dark, // For iOS (dark icons)
         ),
         elevation: 0.5,
         title: InkWell(
           onTap: () {
-            showSearch(context: context, delegate: DataSearch());
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => CustomSearchPage()));
+            // showSearch(context: context, delegate: DataSearch());
           },
           child: Container(
             width: 340,
             height: 36,
             color: Color.fromRGBO(255, 255, 255, 0.1),
-            child: SizedBox(
-              width: 340,
-              height: 36,
-              child: TextField(
-                  decoration: InputDecoration(
-                filled: true,
-                fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
-                labelText: "별자리 이름이나, 메이트 이름을 검색해요",
-                labelStyle: sub_text2,
-                border: myinputborder(), //normal border
-                enabledBorder: myinputborder(), //enabled border
-                // set more border style like disabledBorder
-                prefixIcon: Icon(
-                  Icons.search, // 여기에 원하는 아이콘을 지정
-                  color: Colors.white, // 아이콘 색상 설정
-                ),
-              )),
-            ),
+            // child: SizedBox(
+            //   width: 340,
+            //   height: 36,
+            //   child: TextField(
+            //       decoration: InputDecoration(
+            //     filled: true,
+            //     fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
+            //     labelText: "별자리 이름이나, 메이트 이름을 검색해요",
+            //     labelStyle: sub_text2,
+            //     border: myinputborder(), //normal border
+            //     enabledBorder: myinputborder(), //enabled border
+            //     // set more border style like disabledBorder
+            //     prefixIcon: Icon(
+            //       Icons.search, // 여기에 원하는 아이콘을 지정
+            //       color: Colors.white, // 아이콘 색상 설정
+            //     ),
+            //   )),
+            // ),
           ),
         ));
   }

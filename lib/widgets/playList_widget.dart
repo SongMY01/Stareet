@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/thumbnail.dart';
-import '../pages/playlist_page.dart';
+import '../pages/music/playlist_page.dart';
 
 class PlayListWidget extends StatelessWidget {
   final List<Thumbnail> thumbnails;
