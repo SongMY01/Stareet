@@ -9,6 +9,7 @@ import '../../utilities/color.dart';
 import '../../utilities/text_style.dart';
 import '../buttons/play_pause_button.dart';
 
+// ignore: must_be_immutable
 class CustomDialog extends StatefulWidget {
   Video video;
 

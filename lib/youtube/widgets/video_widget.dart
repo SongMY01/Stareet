@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'alert.dart';
 import '../music/video_search_page.dart';
-import '../music/video_detail_page.dart';
 
 class VideoWidget extends StatelessWidget {
   final Video video;
