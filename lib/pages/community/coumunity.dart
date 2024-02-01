@@ -5,9 +5,21 @@ import '../../utilities/text_style.dart';
 import '../mypage/my_page.dart';
 import 'search.dart';
 
-class CommunityPage extends StatelessWidget {
-  const CommunityPage({super.key});
+class CommunityPage extends StatefulWidget {
+  @override
+  _CommunityPage createState() => _CommunityPage();
+}
 
+class _CommunityPage extends State<CommunityPage> {
+  final searchController = TextEditingController();
+  String query = '';
+
+  List? contentList;
+  bool isLoading = false;
+  bool firstLoad = true;
+  String API_KEY = "";
+
+  FocusNode textfieldFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,54 +63,75 @@ class CommunityPage extends StatelessWidget {
                 width: 340,
                 height: 36,
                 child: TextField(
-                  onSubmitted: (String searchText) {
-                    // Navigate to the SearchedTabBar page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SearchedTabBar(searchText: searchText),
-                      ),
-                    );
-                  },
+                  focusNode: textfieldFocusNode,
+                  controller: searchController,
+                  style: medium16,
                   decoration: InputDecoration(
-                    filled: true,
                     fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
-                    labelText: "별자리 이름이나, 메이트 이름을 검색해요",
-                    labelStyle: medium14.copyWith(color: AppColor.subtext2),
-                    border: myinputborder(),
-                    enabledBorder: myinputborder(),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Colors.white,
+                    filled: true,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 10.0),
+                    border: OutlineInputBorder(
+                      // 테두리 스타일 정의
+                      borderRadius:
+                          BorderRadius.circular(5.0), // border-radius: 5px
+                      borderSide: const BorderSide(
+                        color: Color.fromRGBO(
+                            255, 255, 255, 0.3), // border 색상과 투명도
+                        width: 1.0, // border: 1px
+                      ),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      // 기본 테두리 스타일
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Color.fromRGBO(255, 255, 255, 0.3),
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      // 포커스 시 테두리 스타일
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Color.fromRGBO(255, 255, 255, 0.3),
+                        width: 1.0,
+                      ),
+                    ),
+                    hintStyle: medium14.copyWith(color: AppColor.subtext2),
+                    hintText: '별자리 이름이나, 메이트 이름을 검색하세요',
+                    prefixIcon: const Icon(Icons.search, color: Colors.white),
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          searchController.clear();
+                          query = '';
+                          setState(() {
+                            contentList = null;
+                          });
+                          textfieldFocusNode.requestFocus(); // 이 부분을 추가하세요.
+                        },
+                        icon: const Icon(Icons.close, color: Colors.white)),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      query = value;
+                    });
+                  },
+                  onTap: () {
+                    setState(() {
+                      // 사용자가 텍스트 필드를 탭하면 contentList를 null로 설정
+                      contentList = null;
+                    });
+                  },
+                  // onSubmitted: (value) {
+                  //   _search(value);
+                  // },
                 ),
               ),
             ),
             const SizedBox(height: 29),
-            Expanded(
-              child: ListView(
-                children: [
-                  Text(
-                    "지금 핫한 별플리",
-                    style: bold20.copyWith(color: AppColor.subtext1),
-                  ),
-                  const SizedBox(height: 29),
-                  const StarPictureList(),
-                  const SizedBox(height: 29),
-                  Text(
-                    "주변 지역에서 추천하는 음악",
-                    style: bold20.copyWith(color: AppColor.subtext1),
-                  ),
-                  const SizedBox(height: 29),
-                  const SongPictureList(),
-                  const SizedBox(
-                    height: 29,
-                  ),
-                ],
-              ),
-            ),
+            query.isNotEmpty
+                ? _buildSearchedTabBar()
+                : _buildCommunitySearch() //textfield에 무언가는 입력했을 때 SearchedTabBar가 나오고 아무것도 입력하지 않으면 CommunitySearch가 나옴
           ],
         ),
       ),
@@ -116,6 +149,63 @@ OutlineInputBorder myinputborder() {
         color: Color.fromRGBO(254, 254, 254, 1),
         width: 1,
       ));
+}
+
+Widget _buildSearchedTabBar() {
+  return DefaultTabController(
+    length: 2, // Number of tabs
+    initialIndex: 0, // Initial selected tab index
+    child: Column(
+      children: [
+        TabBar(
+          labelStyle: bold14.copyWith(color: AppColor.text),
+          labelColor: AppColor.text,
+          indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
+          tabs: [
+            Tab(text: "플리"),
+            Tab(text: "스타메이트"),
+          ],
+        ),
+        const SizedBox(height: 20),
+        // The TabBarView with the associated content for each tab
+        const Expanded(
+          child: TabBarView(
+            children: [
+              // Content for Tab 1
+              TabOne(),
+              // Content for Tab 2
+              TabTwo(),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildCommunitySearch() {
+  return Expanded(
+    child: ListView(
+      children: [
+        Text(
+          "지금 핫 별플리",
+          style: bold20.copyWith(color: AppColor.subtext1),
+        ),
+        const SizedBox(height: 29),
+        const StarPictureList(),
+        const SizedBox(height: 29),
+        Text(
+          "주변 지역에서 추천하는 음악",
+          style: bold20.copyWith(color: AppColor.subtext1),
+        ),
+        const SizedBox(height: 29),
+        const SongPictureList(),
+        const SizedBox(
+          height: 29,
+        ),
+      ],
+    ),
+  );
 }
 
 //지금 핫한 별플리

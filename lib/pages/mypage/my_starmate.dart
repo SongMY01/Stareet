@@ -33,13 +33,13 @@ class MyStarMate extends StatelessWidget {
               child: TextField(
                 onSubmitted: (String searchText) {
                   // Navigate to the SearchedTabBar page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SearchedTabBar(searchText: searchText),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) =>
+                  //         SearchedTabBar(searchText: searchText),
+                  //   ),
+                  // );
                 },
                 decoration: InputDecoration(
                   filled: true,
