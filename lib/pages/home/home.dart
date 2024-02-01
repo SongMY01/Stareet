@@ -17,7 +17,6 @@ import '../../providers/switch_state.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

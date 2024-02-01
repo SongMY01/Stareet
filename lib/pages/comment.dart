@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
-import '../../utilities/text_style.dart';
-import '../utilities/color.dart';
+import '../utilities/color_scheme.dart';
+import '../utilities/text_theme.dart';
 
 class CommentPage extends StatefulWidget {
   Video video;
@@ -94,7 +94,7 @@ class _CommentPageState extends State<CommentPage> {
                           Text(widget.video.channelName ?? '',
                               textAlign: TextAlign.left,
                               style: regular13.copyWith(
-                                  color: AppColor.subtext2)), //video channel
+                                  color: AppColor.sub2)), //video channel
                           const SizedBox(
                             height: 5,
                           ),
@@ -107,7 +107,7 @@ class _CommentPageState extends State<CommentPage> {
               const SizedBox(height: 31),
               Text(
                 '코멘트를 남겨 보세요',
-                style: regular13.copyWith(color: AppColor.subtext2),
+                style: regular13.copyWith(color: AppColor.sub2),
               ),
               const SizedBox(height: 8),
               Center(
@@ -147,7 +147,7 @@ class _CommentPageState extends State<CommentPage> {
                             width: 1.0,
                           ),
                         ),
-                        hintStyle: regular15.copyWith(color: AppColor.subtext2),
+                        hintStyle: regular15.copyWith(color: AppColor.sub2),
                         hintText: '노래와 관련된 추억을 남겨보세요',
                       ),
                       onChanged: (text) {
@@ -167,7 +167,7 @@ class _CommentPageState extends State<CommentPage> {
                       decoration: _textFieldController.text.isEmpty
                           ? BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: AppColor.subtext2,
+                              color: AppColor.sub2,
                             )
                           : BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
