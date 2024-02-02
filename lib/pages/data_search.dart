@@ -42,7 +42,6 @@ class _DataSearchPageState extends State<DataSearchPage> {
               '음악 검색',
               style: bold16,
             ),
-            leading: const BackButton(),
           ),
           body: Padding(
             padding: const EdgeInsets.only(left: 25, top: 22, right: 25),

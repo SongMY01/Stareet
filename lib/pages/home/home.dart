@@ -45,11 +45,11 @@ class _HomePageState extends State<HomePage> {
 
   late Position position;
 
-  Set<NMarker> markers = {};
+  // Set<NMarker> markers = {};
   // Set<NPolylineOverlay> lineOverlays = {};
 
   // 선 그리기 전 선택되는 마커
-  List<NLatLng> selectedMarkerCoords = [];
+  // List<NLatLng> selectedMarkerCoords = [];
 
   // 권한 요청
   Future<bool> _determinePermission() async {
@@ -148,61 +148,62 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // 마커 그리기 함수
-  void drawMarker(NLatLng latLng) async {
-    final mapController =
-        Provider.of<MapProvider>(context, listen: false).mapController;
-    // 마커 생성
-    final marker = NMarker(
-      id: '$markerCount',
-      position: NLatLng(latLng.latitude, latLng.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/image/my_marker.png'),
-      size: const Size(35, 35),
-      anchor: const NPoint(0.5, 0.5),
-    );
-    // 마커 클릭 시 이벤트 설정
-    marker.setOnTapListener((overlay) {
-      setState(() {
-        if (context.read<SwitchProvider>().switchMode) {
-          selectedMarkerCoords.add(overlay.position);
-          debugPrint("$selectedMarkerCoords");
-          if (selectedMarkerCoords.length == 2) {
-            drawPolyline();
-          }
-        }
-      });
-    });
-    marker.setGlobalZIndex(200000);
-    mapController.addOverlay(marker);
-    setState(() {
-      markers.add(marker);
-      markerCount++;
-    });
-    debugPrint("${marker.info}");
-  }
+  // // 마커 그리기 함수
+  // void drawMarker(NLatLng latLng) async {
+  //   final mapController =
+  //       Provider.of<MapProvider>(context, listen: false).mapController;
+  //   // 마커 생성
+  //   final marker = NMarker(
+  //     id: '$markerCount',
+  //     position: NLatLng(latLng.latitude, latLng.longitude),
+  //     icon: const NOverlayImage.fromAssetImage('assets/image/my_marker.png'),
+  //     size: const Size(35, 35),
+  //     anchor: const NPoint(0.5, 0.5),
+  //   );
+  //   // 마커 클릭 시 이벤트 설정
+  //   marker.setOnTapListener((overlay) {
+  //     setState(() {
+  //       if (context.read<SwitchProvider>().switchMode) {
+  //         context.read<MapProvider>().markerSelected(marker);
+  //         // selectedMarkerCoords.add(overlay.position);
+  //         // debugPrint("$selectedMarkerCoords");
+  //         if (context.read<MapProvider>().selectedMarkerCoords.length == 2) {
+  //           context.read<MapProvider>().drawPolyline();
+  //         }
+  //       }
+  //     });
+  //   });
+  //   marker.setGlobalZIndex(200000);
+  //   mapController.addOverlay(marker);
+  //   setState(() {
+  //     markers.add(marker);
+  //     markerCount++;
+  //   });
+  //   debugPrint("${marker.info}");
+  // }
 
   // 선 그리기 함수
-  void drawPolyline() {
-    // 선 생성
+  // void drawPolyline() {
+  //   // 선 생성
 
-    final polylineOverlay = NPolylineOverlay(
-        id: '${context.read<MapProvider>().lineOverlays.length}',
-        coords: List.from(selectedMarkerCoords),
-        color: Colors.white,
-        width: 3);
-    // 선 클릭 시 이벤트 설정
-    polylineOverlay.setOnTapListener((overlay) {
-      if (context.read<SwitchProvider>().switchMode) {
-        // mapController.deleteOverlay(overlay.info);
-        context.read<MapProvider>().removeLine(overlay);
-      }
-    });
-    polylineOverlay.setGlobalZIndex(190000);
-    // mapController.addOverlay(polylineOverlay);
-    context.read<MapProvider>().addLine(polylineOverlay);
-    // 선 그린 후 선택된 마커들 삭제
-    selectedMarkerCoords.clear();
-  }
+  //   final polylineOverlay = NPolylineOverlay(
+  //       id: '${context.read<MapProvider>().lineOverlays.length}',
+  //       coords: List.from(selectedMarkerCoords),
+  //       color: Colors.white,
+  //       width: 3);
+  //   // 선 클릭 시 이벤트 설정
+  //   polylineOverlay.setOnTapListener((overlay) {
+  //     if (context.read<SwitchProvider>().switchMode) {
+  //       // mapController.deleteOverlay(overlay.info);
+  //       context.read<MapProvider>().removeLine(overlay);
+  //     }
+  //   });
+  //   polylineOverlay.setGlobalZIndex(190000);
+  //   // mapController.addOverlay(polylineOverlay);
+  //   context.read<MapProvider>().addLine(polylineOverlay);
+  //   // 선 그린 후 선택된 마커들 삭제
+  //   selectedMarkerCoords.clear();
+  // }
 
   // 이미지 저장
   void saveMapImage() async {
@@ -222,7 +223,6 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
               builder: (context) => PreviewPage(
-                    markers: markers,
                     position: camera,
                     name: name,
                   )));
@@ -245,7 +245,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool switchMode = Provider.of<SwitchProvider>(context).switchMode;
+    final switchProvider = Provider.of<SwitchProvider>(context);
+    final mapProvider = Provider.of<MapProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -266,12 +267,13 @@ class _HomePageState extends State<HomePage> {
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
+              mapProvider.setController(controller);
               _controller.complete(controller);
               _userLocation();
             },
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
-              drawMarker(latLng);
+              mapProvider.drawMarker(latLng);
               debugPrint(await _getAddress(latLng.latitude, latLng.longitude));
             },
           ),
@@ -292,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 25),
                       GestureDetector(
                           onTap: () {
-                            if (!switchMode) {
+                            if (!switchProvider.switchMode) {
                               context.read<SwitchProvider>().toggleMode();
                               showCustomSnackbar(context, "별자리 공작소로 전환합니다.");
                             } else {
@@ -310,20 +312,21 @@ class _HomePageState extends State<HomePage> {
                                                   style: regular17.copyWith(
                                                       color: AppColor.sub2)),
                                               onPressed: () {
-                                                context
-                                                    .read<MapProvider>()
-                                                    .mapController
+                                                Navigator.pop(context);
+                                              }),
+                                          CupertinoDialogAction(
+                                              child: Text("나가기",
+                                                  style: regular17.copyWith(
+                                                      color: AppColor.error)),
+                                              onPressed: () {
+                                                mapProvider.mapController
                                                     .clearOverlays(
                                                         type: NOverlayType
                                                             .polylineOverlay);
-                                                selectedMarkerCoords.clear();
-                                                context
-                                                    .read<MapProvider>()
-                                                    .clearLines();
+
+                                                mapProvider.clearLines();
                                                 Navigator.pop(context);
-                                                context
-                                                    .read<SwitchProvider>()
-                                                    .toggleMode();
+                                                switchProvider.toggleMode();
                                               })
                                         ],
                                       ),
@@ -339,24 +342,24 @@ class _HomePageState extends State<HomePage> {
                           Image.asset("assets/images/logo.png",
                               width: 85, height: 35),
                           const SizedBox(width: 8),
-                          switchMode
+                          switchProvider.switchMode
                               ? CustomTooltip(controller: _tooltipController)
                               : const SizedBox(width: 22)
                         ],
                       ),
-                      const SizedBox(width: 70),
+                      const SizedBox(width: 65),
                       GestureDetector(
-                          onTap: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
-                          child: const Icon(Icons.menu,
-                              color: AppColor.text, size: 22)),
+                        onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
+                        child: Image.asset("assets/images/menu.png",
+                            width: 24, height: 18),
+                      ),
                       const SizedBox(width: 25)
                     ],
                   ),
                   const SizedBox(height: 30),
                   // Chip들
                   Visibility(
-                    visible: !switchMode,
+                    visible: !switchProvider.switchMode,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 25),
                       child: SingleChildScrollView(
@@ -411,7 +414,7 @@ class _HomePageState extends State<HomePage> {
 
         // 현재 위치 버튼
         Visibility(
-          visible: !switchMode,
+          visible: !switchProvider.switchMode,
           child: Positioned(
             top: 180,
             right: 30,
@@ -424,8 +427,8 @@ class _HomePageState extends State<HomePage> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: const EdgeInsets.only(bottom: 60),
-            child: switchMode
-                ? (context.read<MapProvider>().lineOverlays.isEmpty
+            child: switchProvider.switchMode
+                ? (mapProvider.lineOverlays.isNotEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
                 : PutStar(putMarker: _userLocation),
