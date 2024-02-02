@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:provider/provider.dart';
 
 import 'switch_state.dart';
 
 class MapProvider extends ChangeNotifier {
-  late final SwitchProvider switchProvider;
 
-  MapProvider(this.switchProvider) {
-    _observeSwitchMode();
-  }
   // 선 그리기 전 선택되는 마커
   final List<NLatLng> _selectedMarkerCoords = [];
   final Set<NMarker> _markers = {};
@@ -20,19 +17,15 @@ class MapProvider extends ChangeNotifier {
   Set<NPolylineOverlay> get lineOverlays => _lineOverlays;
   NaverMapController get mapController => _mapController;
 
-  void _observeSwitchMode() {
-    switchProvider.addListener(() {notifyListeners();});
-  }
-
   void setController(NaverMapController controller) {
     _mapController = controller;
     notifyListeners();
   }
 
   // 마커 그리기 함수
-  void drawMarker(NLatLng latLng) async {
+  void drawMarker(BuildContext context, NLatLng latLng) async {
     // 마커 생성
-    final marker = NMarker(
+    final marker = NMarker( 
       id: '${_markers.length}',
       position: NLatLng(latLng.latitude, latLng.longitude),
       icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
@@ -41,12 +34,13 @@ class MapProvider extends ChangeNotifier {
     );
     // 마커 클릭 시 이벤트 설정
     marker.setOnTapListener((overlay) {
-      if (switchProvider.switchMode) {
+      debugPrint('In drawMarker, switchMode is: ${context.read<SwitchProvider>().switchMode}');
+      if (context.read<SwitchProvider>().switchMode) {
         _selectedMarkerCoords.add(marker.position);
         debugPrint("$_selectedMarkerCoords");
         if (_selectedMarkerCoords.length == 2) {
           debugPrint("선 두개!! $_selectedMarkerCoords");
-          drawPolyline();
+          drawPolyline(context);
         }
       }
     });
@@ -58,17 +52,17 @@ class MapProvider extends ChangeNotifier {
   }
 
   // 선 그리기 함수
-  void drawPolyline() {
+  void drawPolyline(BuildContext context) {
     // 선 생성
     final polylineOverlay = NPolylineOverlay(
         id: '${_lineOverlays.length}',
         coords: List.from(_selectedMarkerCoords),
         color: Colors.white,
         width: 3);
-    
+
     // 선 클릭 시 이벤트 설정
     polylineOverlay.setOnTapListener((overlay) {
-      if (switchProvider.switchMode) {
+      if (context.read<SwitchProvider>().switchMode) {
         removeLine(overlay);
         notifyListeners();
       }
@@ -79,11 +73,6 @@ class MapProvider extends ChangeNotifier {
     _selectedMarkerCoords.clear();
     notifyListeners();
   }
-
-  // void markerSelected(NMarker marker) {
-  //   _selectedMarkerCoords.add(marker.position);
-  //   notifyListeners();
-  // }
 
   void addLine(NPolylineOverlay overlay) {
     _lineOverlays.add(overlay);

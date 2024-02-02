@@ -32,7 +32,7 @@ class MyStarMate extends StatelessWidget {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushNamed(context, '/mypage');
+              Navigator.pop(context);
             },
           ),
           title: Text('스타메이트', style: bold16.copyWith(color: AppColor.text)),

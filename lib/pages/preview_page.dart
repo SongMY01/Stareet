@@ -79,6 +79,7 @@ class _PreviewPageState extends State<PreviewPage> {
           ],
         ),
         body: SingleChildScrollView(
+          
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,

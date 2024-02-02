@@ -66,6 +66,12 @@ class _MyPageState extends State<MyPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.popUntil(context, ModalRoute.withName('/home'));
+            },
+          ),
             title: Text(
               "마이페이지",
               style: bold16.copyWith(color: AppColor.text),

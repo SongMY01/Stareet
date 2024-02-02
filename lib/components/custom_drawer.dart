@@ -23,9 +23,10 @@ class CustomDrawer extends StatelessWidget {
                     width: 2, color: AppColor.text.withOpacity(0.85)))),
         child: Column(children: [
           const SizedBox(height: 75),
-          const ListTile(
+          ListTile(
               leading:
-                  Icon(Icons.close_rounded, color: AppColor.text, size: 22)),
+                  Image.asset("assets/images/exit_button.png", width: 20, height: 20),
+                  onTap: () => Navigator.pop(context),),
           ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(32),
