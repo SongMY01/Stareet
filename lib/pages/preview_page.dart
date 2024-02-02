@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:provider/provider.dart';
 
 import '../components/card_frame.dart';
+import '../providers/map_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
 
@@ -13,11 +15,9 @@ class PreviewPage extends StatefulWidget {
   const PreviewPage(
       {super.key,
       required this.markers,
-      required this.polylines,
       required this.position,
       required this.name});
   final Set<NMarker> markers;
-  final Set<NPolylineOverlay> polylines;
   final NCameraPosition position;
   final String name;
 
@@ -102,7 +102,7 @@ class _PreviewPageState extends State<PreviewPage> {
                             decoration: InputDecoration(
                               counterText: "",
                               isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 2),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                     width: 2,
@@ -160,7 +160,7 @@ class _PreviewPageState extends State<PreviewPage> {
                   onMapReady: (controller) async {
                     newController = controller;
                     newController.addOverlayAll(widget.markers);
-                    newController.addOverlayAll(widget.polylines);
+                    newController.addOverlayAll(context.read<MapProvider>().lineOverlays);
                     debugPrint(
                         "child: ${await newController.getContentBounds()}");
                     // 배경 이미지

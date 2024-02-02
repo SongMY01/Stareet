@@ -11,8 +11,10 @@ import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 import '../../components/custom_drawer.dart';
+import '../../components/custom_snackbar.dart';
 import '../../components/custom_switch.dart';
 import '../../components/home_components.dart';
+import '../../providers/map_state.dart';
 import '../../providers/switch_state.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -31,9 +33,9 @@ class _HomePageState extends State<HomePage> {
   final _tooltipController = SuperTooltipController();
   final _textController = TextEditingController();
   NMarker? _userLocationMarker;
-  late NaverMapController mapController;
+  // late NaverMapController mapController;
   int markerCount = 0;
-  int lineCount = 0;
+  // int lineCount = 0;
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
@@ -44,7 +46,7 @@ class _HomePageState extends State<HomePage> {
   late Position position;
 
   Set<NMarker> markers = {};
-  Set<NPolylineOverlay> lineOverlays = {};
+  // Set<NPolylineOverlay> lineOverlays = {};
 
   // 선 그리기 전 선택되는 마커
   List<NLatLng> selectedMarkerCoords = [];
@@ -104,6 +106,8 @@ class _HomePageState extends State<HomePage> {
 
   // 현재 위치로 이동
   void _updatePosition() async {
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
     camera = await mapController.getCameraPosition();
     position = await _getPosition();
     mapController.updateCamera(NCameraUpdate.withParams(
@@ -114,6 +118,8 @@ class _HomePageState extends State<HomePage> {
 
   // 현재 위치에 마커 찍기
   void _userLocation() {
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
     Geolocator.getPositionStream().listen((Position position) {
       if (_userLocationMarker == null) {
         // 초기 사용자 위치 마커를 생성합니다.
@@ -144,11 +150,13 @@ class _HomePageState extends State<HomePage> {
 
   // 마커 그리기 함수
   void drawMarker(NLatLng latLng) async {
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
     // 마커 생성
     final marker = NMarker(
       id: '$markerCount',
       position: NLatLng(latLng.latitude, latLng.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
+      icon: const NOverlayImage.fromAssetImage('assets/image/my_marker.png'),
       size: const Size(35, 35),
       anchor: const NPoint(0.5, 0.5),
     );
@@ -176,33 +184,30 @@ class _HomePageState extends State<HomePage> {
   // 선 그리기 함수
   void drawPolyline() {
     // 선 생성
+
     final polylineOverlay = NPolylineOverlay(
-        id: '$lineCount',
+        id: '${context.read<MapProvider>().lineOverlays.length}',
         coords: List.from(selectedMarkerCoords),
         color: Colors.white,
         width: 3);
     // 선 클릭 시 이벤트 설정
     polylineOverlay.setOnTapListener((overlay) {
       if (context.read<SwitchProvider>().switchMode) {
-        mapController.deleteOverlay(overlay.info);
-        setState(() {
-          lineOverlays.remove(polylineOverlay);
-          lineCount--;
-        });
+        // mapController.deleteOverlay(overlay.info);
+        context.read<MapProvider>().removeLine(overlay);
       }
     });
     polylineOverlay.setGlobalZIndex(190000);
-    mapController.addOverlay(polylineOverlay);
-    setState(() {
-      lineOverlays.add(polylineOverlay);
-      lineCount++;
-    });
+    // mapController.addOverlay(polylineOverlay);
+    context.read<MapProvider>().addLine(polylineOverlay);
     // 선 그린 후 선택된 마커들 삭제
     selectedMarkerCoords.clear();
   }
 
   // 이미지 저장
   void saveMapImage() async {
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
     try {
       // 현재 카메라 위치 저장
       camera = await mapController.getCameraPosition();
@@ -218,7 +223,6 @@ class _HomePageState extends State<HomePage> {
           MaterialPageRoute(
               builder: (context) => PreviewPage(
                     markers: markers,
-                    polylines: lineOverlays,
                     position: camera,
                     name: name,
                   )));
@@ -262,7 +266,6 @@ class _HomePageState extends State<HomePage> {
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
-              mapController = controller;
               _controller.complete(controller);
               _userLocation();
             },
@@ -291,6 +294,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: () {
                             if (!switchMode) {
                               context.read<SwitchProvider>().toggleMode();
+                              showCustomSnackbar(context, "별자리 공작소로 전환합니다.");
                             } else {
                               showCupertinoDialog(
                                   context: context,
@@ -306,19 +310,16 @@ class _HomePageState extends State<HomePage> {
                                                   style: regular17.copyWith(
                                                       color: AppColor.sub2)),
                                               onPressed: () {
-                                                Navigator.pop(context);
-                                              }),
-                                          CupertinoDialogAction(
-                                              child: Text("나가기",
-                                                  style: regular17.copyWith(
-                                                      color: AppColor.error)),
-                                              onPressed: () {
-                                                mapController.clearOverlays(
-                                                    type: NOverlayType
-                                                        .polylineOverlay);
+                                                context
+                                                    .read<MapProvider>()
+                                                    .mapController
+                                                    .clearOverlays(
+                                                        type: NOverlayType
+                                                            .polylineOverlay);
                                                 selectedMarkerCoords.clear();
-                                                lineOverlays.clear();
-                                                lineCount == 0;
+                                                context
+                                                    .read<MapProvider>()
+                                                    .clearLines();
                                                 Navigator.pop(context);
                                                 context
                                                     .read<SwitchProvider>()
@@ -424,7 +425,7 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 60),
             child: switchMode
-                ? (lineOverlays.isEmpty
+                ? (context.read<MapProvider>().lineOverlays.isEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
                 : PutStar(putMarker: _userLocation),
