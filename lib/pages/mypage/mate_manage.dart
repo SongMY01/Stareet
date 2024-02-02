@@ -6,9 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/mypage/mypage_profile.dart';
 
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../community/search.dart';
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
 
 var mate_ING = [];
 
