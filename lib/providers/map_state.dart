@@ -6,7 +6,9 @@ import 'switch_state.dart';
 class MapProvider extends ChangeNotifier {
   late final SwitchProvider switchProvider;
 
-  MapProvider(this.switchProvider);
+  MapProvider(this.switchProvider) {
+    _observeSwitchMode();
+  }
   // 선 그리기 전 선택되는 마커
   final List<NLatLng> _selectedMarkerCoords = [];
   final Set<NMarker> _markers = {};
@@ -17,6 +19,10 @@ class MapProvider extends ChangeNotifier {
   Set<NMarker> get markers => _markers;
   Set<NPolylineOverlay> get lineOverlays => _lineOverlays;
   NaverMapController get mapController => _mapController;
+
+  void _observeSwitchMode() {
+    switchProvider.addListener(() {notifyListeners();});
+  }
 
   void setController(NaverMapController controller) {
     _mapController = controller;
@@ -37,6 +43,7 @@ class MapProvider extends ChangeNotifier {
     marker.setOnTapListener((overlay) {
       if (switchProvider.switchMode) {
         _selectedMarkerCoords.add(marker.position);
+        debugPrint("$_selectedMarkerCoords");
         if (_selectedMarkerCoords.length == 2) {
           debugPrint("선 두개!! $_selectedMarkerCoords");
           drawPolyline();
@@ -63,6 +70,7 @@ class MapProvider extends ChangeNotifier {
     polylineOverlay.setOnTapListener((overlay) {
       if (switchProvider.switchMode) {
         removeLine(overlay);
+        notifyListeners();
       }
     });
     polylineOverlay.setGlobalZIndex(190000);
