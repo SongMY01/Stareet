@@ -38,6 +38,7 @@ class MapProvider extends ChangeNotifier {
       if (switchProvider.switchMode) {
         _selectedMarkerCoords.add(marker.position);
         if (_selectedMarkerCoords.length == 2) {
+          debugPrint("선 두개!! $_selectedMarkerCoords");
           drawPolyline();
         }
       }
@@ -57,6 +58,7 @@ class MapProvider extends ChangeNotifier {
         coords: List.from(_selectedMarkerCoords),
         color: Colors.white,
         width: 3);
+    
     // 선 클릭 시 이벤트 설정
     polylineOverlay.setOnTapListener((overlay) {
       if (switchProvider.switchMode) {

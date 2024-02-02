@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primaryColor: const Color.fromRGBO(54, 209, 0, 1),
           scaffoldBackgroundColor: Colors.white),
-      initialRoute: '/search',
+      initialRoute: '/home',
       routes: {
         '/signup': (BuildContext context) => const SignupPage(),
         '/login': (BuildContext context) => const LoginPage(),

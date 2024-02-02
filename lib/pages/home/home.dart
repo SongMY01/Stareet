@@ -211,17 +211,61 @@ class _HomePageState extends State<HomePage> {
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
-              mapProvider.setController(controller);
+              context.read<MapProvider>().setController(controller);
               _controller.complete(controller);
               _userLocation();
             },
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
-              mapProvider.drawMarker(latLng);
+              context.read<MapProvider>().drawMarker(latLng);
               debugPrint(await _getAddress(latLng.latitude, latLng.longitude));
             },
           ),
         ),
+
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 95,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                          Colors.black.withOpacity(0.2),
+                          const Color(0xff191821).withOpacity(0)
+                        ])),
+                  ),
+                ),
+              ),
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 105,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                          Colors.black.withOpacity(0.2),
+                          const Color(0xff191821).withOpacity(0)
+                        ])),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
         // AppBar
         Align(
             alignment: Alignment.topCenter,
@@ -375,7 +419,7 @@ class _HomePageState extends State<HomePage> {
                 ? (mapProvider.lineOverlays.isNotEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
-                : PutStar(putMarker: _userLocation),
+                : PutStar(putMarker: (){Navigator.pushNamed(context, "/search");}),
           ),
         ),
       ]),

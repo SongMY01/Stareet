@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
+import '../components/custom_drawer.dart';
 import '../youtube/widgets/body.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
@@ -15,6 +16,7 @@ class DataSearchPage extends StatefulWidget {
 }
 
 class _DataSearchPageState extends State<DataSearchPage> {
+  final GlobalKey<ScaffoldState> _searchKey = GlobalKey<ScaffoldState>();
   final YoutubeDataApi youtubeDataApi = YoutubeDataApi();
   final list = SuggestionHistory.suggestions;
   final searchController = TextEditingController();
@@ -35,6 +37,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
           child: Image.asset('assets/background.gif', fit: BoxFit.cover),
         ),
         Scaffold(
+          key: _searchKey,
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
@@ -42,6 +45,18 @@ class _DataSearchPageState extends State<DataSearchPage> {
               '음악 검색',
               style: bold16,
             ),
+            actions: [
+              GestureDetector(
+                onTap: () => _searchKey.currentState?.openEndDrawer(),
+                child: Image.asset("assets/images/menu.png",
+                    width: 24, height: 18),
+              ),
+              const SizedBox(width: 20)
+            ],
+          ),
+          endDrawer: const SizedBox(
+            width: 240,
+            child: CustomDrawer(),
           ),
           body: Padding(
             padding: const EdgeInsets.only(left: 25, top: 22, right: 25),

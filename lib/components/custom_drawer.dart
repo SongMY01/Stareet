@@ -45,35 +45,51 @@ class CustomDrawer extends StatelessWidget {
               leading: Image.asset("assets/images/home.png",
                   width: 23,
                   height: 26,
-                  color: !switchMode ? AppColor.text : AppColor.sub2),
+                  color: (!switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
+                      ? AppColor.text
+                      : AppColor.sub2),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
                 context.read<SwitchProvider>().setMode(false);
               },
               title: Text("홈",
-                  style: switchMode
-                      ? semibold24.copyWith(color: AppColor.sub2)
-                      : semibold24.copyWith(
+                  style: (!switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
+                      ? semibold24.copyWith(
                           decoration: TextDecoration.underline,
-                          decorationColor: AppColor.text))),
+                          decorationColor: AppColor.text)
+                      : semibold24.copyWith(color: AppColor.sub2))),
           ListTile(
             leading: Image.asset("assets/images/leave_star.png",
-                width: 23, height: 26, color: AppColor.sub2),
-            onTap: () {},
+                width: 23,
+                height: 26,
+                color: ModalRoute.of(context)?.settings.name == '/search'
+                    ? AppColor.text
+                    : AppColor.sub2),
+            onTap: () {
+              Navigator.pushNamed(context, '/search');
+            },
             title: Text("별자국 남기기",
-                style: semibold24.copyWith(color: AppColor.sub2)),
+            style: (ModalRoute.of(context)?.settings.name == '/search')
+                      ? semibold24.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColor.text)
+                      : semibold24.copyWith(color: AppColor.sub2))
           ),
           ListTile(
               leading: Image.asset("assets/images/connect_star.png",
                   width: 23,
                   height: 23,
-                  color: switchMode ? AppColor.text : AppColor.sub2),
+                  color: (switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search')) ? AppColor.text : AppColor.sub2),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
                 context.read<SwitchProvider>().setMode(true);
               },
               title: Text("별자리 공작소",
-                  style: switchMode
+                  style: (switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
                       ? semibold24.copyWith(
                           decoration: TextDecoration.underline,
                           decorationColor: AppColor.text)
