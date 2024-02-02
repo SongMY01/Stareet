@@ -62,13 +62,13 @@ Future<void> fetchAuthInfo() async {
 
 class StarInfo {
   final String? uid;
-  final double? location;
+  final List<double>? location;
   final String? song;
   final String? comment;
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
-  final List? like;
+  final List<int>? like;
 
   StarInfo(
       {required this.uid,

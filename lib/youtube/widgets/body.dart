@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
-import '../../youtube/widgets/video_widget.dart';
+import 'video_widget.dart';
 
 // ignore: must_be_immutable
 class Body extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
+import '../music/video_detail_page.dart';
 import 'alert.dart';
-import '../music/video_search_page.dart';
 
 class VideoWidget extends StatelessWidget {
   final Video video;
@@ -22,6 +22,7 @@ class VideoWidget extends StatelessWidget {
             );
           },
         );
+        print(video);
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12, top: 10),
@@ -93,7 +94,7 @@ class VideoWidget extends StatelessWidget {
 
   navigateToPlayer(BuildContext context) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (_) => VideoSearchPage(video: video)));
+        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
 
     // List<String> videoIds = [];
     // videoIds.add(video.videoId!);

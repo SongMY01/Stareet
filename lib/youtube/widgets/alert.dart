@@ -9,6 +9,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import '../buttons/play_pause_button.dart';
+import '../music/video_detail_page.dart';
 
 class CustomDialog extends StatefulWidget {
   Video video;
@@ -80,10 +81,18 @@ class _CustomDialogState extends State<CustomDialog> {
                             ),
                             TextButton(
                               onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => CommentPage(
+                                //       video: widget.video,
+                                //     ),
+                                //   ),
+                                // );
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CommentPage(
+                                    builder: (context) => VideoDetailPage(
                                       video: widget.video,
                                     ),
                                   ),
@@ -98,7 +107,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           ]),
                       Stack(
                         children: [
-                          Container(
+                          SizedBox(
                               width: 139,
                               height: 139,
                               child: ClipRRect(
