@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import 'my_starmate.dart';
@@ -57,8 +56,7 @@ class _MyPageState extends State<MyPage> {
                             );
                           },
                           child: Text('프로필 편집',
-                              style: medium14.copyWith(
-                                  color: AppColor.sub1)))),
+                              style: medium14.copyWith(color: AppColor.sub1)))),
                   PopupMenuItem(
                       value: 2,
                       child: TextButton(
@@ -71,8 +69,7 @@ class _MyPageState extends State<MyPage> {
                             );
                           },
                           child: Text('설정',
-                              style: medium14.copyWith(
-                                  color: AppColor.sub1)))),
+                              style: medium14.copyWith(color: AppColor.sub1)))),
                 ],
               )
             ],
@@ -80,11 +77,18 @@ class _MyPageState extends State<MyPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/fonts/images/profile.png',
-                height: 72,
-                width: 72,
+              Row(
+                children: [
+                  SizedBox(width: 20),
+                  Image.asset(
+                    'assets/fonts/images/profile.png',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.fill,
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

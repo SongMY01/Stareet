@@ -104,12 +104,12 @@ class _CommunityPage extends State<CommunityPage> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      query = '';
+                      query = value; //textfield 입력하자마자 바뀜
                     });
                   },
                   onSubmitted: (value) {
                     setState(() {
-                      query = value;
+                      query = value; //textfield 입력 후 enter 누르면 바뀜
                     });
                   },
                 ),
@@ -139,33 +139,35 @@ OutlineInputBorder myinputborder() {
 }
 
 Widget _buildSearchedTabBar() {
-  return DefaultTabController(
-    length: 2, // Number of tabs
-    initialIndex: 0, // Initial selected tab index
-    child: Column(
-      children: [
-        TabBar(
-          labelStyle: bold14.copyWith(color: AppColor.text),
-          labelColor: AppColor.text,
-          indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
-          tabs: [
-            Tab(text: "플리"),
-            Tab(text: "스타메이트"),
-          ],
-        ),
-        const SizedBox(height: 20),
-        // The TabBarView with the associated content for each tab
-        const Expanded(
-          child: TabBarView(
-            children: [
-              // Content for Tab 1
-              TabOne(),
-              // Content for Tab 2
-              TabTwo(),
+  return Expanded(
+    child: DefaultTabController(
+      length: 2, // Number of tabs
+      initialIndex: 0, // Initial selected tab index
+      child: Column(
+        children: [
+          TabBar(
+            labelStyle: bold14.copyWith(color: AppColor.text),
+            labelColor: AppColor.text,
+            indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
+            tabs: [
+              Tab(text: "플리"),
+              Tab(text: "스타메이트"),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          // The TabBarView with the associated content for each tab
+          const Expanded(
+            child: TabBarView(
+              children: [
+                // Content for Tab 1
+                TabOne(),
+                // Content for Tab 2
+                TabTwo(),
+              ],
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

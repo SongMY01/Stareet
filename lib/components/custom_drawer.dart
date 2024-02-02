@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/pages/community/coumunity.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/switch_state.dart';
@@ -56,9 +57,7 @@ class CustomDrawer extends StatelessWidget {
                           decorationColor: AppColor.text))),
           ListTile(
             leading: Image.asset("assets/images/drawer2.png",
-                width: 23,
-                height: 26,
-                color: AppColor.sub2),
+                width: 23, height: 26, color: AppColor.sub2),
             onTap: () {},
             title: Text("별자국 남기기",
                 style: semibold24.copyWith(color: AppColor.sub2)),
@@ -82,7 +81,12 @@ class CustomDrawer extends StatelessWidget {
               leading: Image.asset("assets/images/drawer4.png",
                   width: 23, height: 25, color: AppColor.sub2),
               onTap: () {
-                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CommunityPage(),
+                  ),
+                );
               },
               title: Text("별별 게시판",
                   style: semibold24.copyWith(color: AppColor.sub2))),

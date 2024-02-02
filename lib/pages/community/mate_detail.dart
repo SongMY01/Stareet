@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
-
 //------6페이지
 class MateDetail extends StatefulWidget {
   const MateDetail({Key? key}) : super(key: key);
@@ -59,18 +58,26 @@ class _MateDetailState extends State<MateDetail> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/fonts/images/profile.png',
-                height: 72,
-                width: 72,
-              ),
               Row(
                 children: [
                   SizedBox(
                     width: 20,
                   ),
-                  Text('좌좌좌좌',
-                      style: bold18.copyWith(color: AppColor.sub1)),
+                  Image.asset(
+                    'assets/fonts/images/profile.png',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.fill,
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text('좌좌좌좌', style: bold18.copyWith(color: AppColor.sub1)),
                   const Spacer(),
                   SizedBox(
                     height: 28,

@@ -66,8 +66,7 @@ class TabOne extends StatelessWidget {
                   bottom: 23,
                   child: Text(
                     "용가리자리",
-                    style:
-                        bold15, //bold 17이 큰거 같다.
+                    style: bold15, //bold 17이 큰거 같다.
                   ),
                 ),
                 Positioned(
@@ -102,51 +101,63 @@ class _TabTwoState extends State<TabTwo> {
     return ListView.builder(
       itemCount: 5,
       itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
-          child: Card(
-            color: Colors.transparent,
-            child: GestureDetector(
-              onTap: () {
-                // Navigate to the MateDetail page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MateDetail(),
-                  ),
-                );
-              },
-              child: ListTile(
-                leading: Image.asset('assets/fonts/images/profile.png'),
-                title: Text("좌", style: medium16.copyWith(color: Colors.white)),
-                trailing: SizedBox(
+        return GestureDetector(
+          onTap: () {
+            // Navigate to the MateDetail page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MateDetail(),
+              ),
+            );
+          },
+          child: ListTile(
+            leading: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Image.asset(
+                  'assets/fonts/images/profile.png',
+                  width: 30,
                   height: 30,
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        mateRequested[index] = !mateRequested[index];
-                      });
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: mateRequested[index]
-                          ? const Color.fromRGBO(19, 228, 206, 1)
-                          : Colors.black,
-                      backgroundColor: mateRequested[index]
-                          ? Colors.black
-                          : const Color.fromRGBO(19, 228, 206, 1),
-                      side: const BorderSide(
-                        color: Color.fromRGBO(19, 228, 206, 1),
-                        width: 1,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                    ),
-                    child: Text(
-                      mateRequested[index] ? "메이트" : "메이트 신청",
-                      style: bold12,
-                    ),
+                  fit: BoxFit.fill, // 이미지가 공간에 꽉 차도록 조절
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text("좌", style: medium16.copyWith(color: Colors.white)),
+              ],
+            ),
+            trailing: SizedBox(
+              height: 30,
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    mateRequested[index] = !mateRequested[index];
+                  });
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: mateRequested[index]
+                      ? const Color.fromRGBO(19, 228, 206, 1)
+                      : Colors.black,
+                  backgroundColor: mateRequested[index]
+                      ? Colors.black
+                      : const Color.fromRGBO(19, 228, 206, 1),
+                  side: const BorderSide(
+                    color: Color.fromRGBO(19, 228, 206, 1),
+                    width: 1,
                   ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+                child: Text(
+                  mateRequested[index] ? "메트" : "메이트 신청",
+                  style: mateRequested[index]
+                      ? bold12.copyWith(color: AppColor.primary)
+                      : bold12.copyWith(color: AppColor.text2),
                 ),
               ),
             ),

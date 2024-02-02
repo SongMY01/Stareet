@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../utilities/color_scheme.dart';
@@ -128,44 +129,41 @@ class _MateNameState extends State<MateName> {
                   });
                 },
               ),
-              Image.asset('assets/fonts/images/profile.png'),
+              Image.asset(
+                'assets/fonts/images/profile.png',
+                width: 30,
+                height: 30,
+                fit: BoxFit.fill,
+              ) // 이미지가 공간에 꽉 차도록 조절),
             ],
           ),
           title: Text("소다", style: medium16.copyWith(color: AppColor.text)),
           trailing: IconButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    backgroundColor: const Color.fromRGBO(37, 37, 37, 1),
-                    title: Center(
-                      child: Text(
-                        '메이트를 삭제하시겠어요?',
-                        style: regular17.copyWith(color: AppColor.text),
+              showCupertinoDialog(
+                  context: context,
+                  builder: (BuildContext ctx) {
+                    return Theme(
+                      data: ThemeData.dark(),
+                      child: CupertinoAlertDialog(
+                        title: const Text("메이트를 삭제하시겠어요?", style: regular17),
+                        actions: [
+                          CupertinoDialogAction(
+                              child: Text("취소",
+                                  style:
+                                      regular17.copyWith(color: AppColor.sub2)),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                          CupertinoDialogAction(
+                              child: Text("삭제",
+                                  style: regular17.copyWith(
+                                      color: AppColor.error)),
+                              onPressed: () {})
+                        ],
                       ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text('취소',
-                            style:
-                                regular17.copyWith(color: AppColor.sub1)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        child: Text('삭제',
-                            style: semibold17.copyWith(color: AppColor.error)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
+                    );
+                  });
             },
             icon: const Icon(
               Icons.delete,

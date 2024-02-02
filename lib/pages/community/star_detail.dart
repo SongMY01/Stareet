@@ -49,15 +49,24 @@ class StarDetail extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 170),
-                        const Text("용가리 자리",
-                            style: bold20),
-                        const Text("좌",
-                            style: medium16),
+                        const Text("용가리 자리", style: bold20),
+                        const Text("좌", style: medium16),
                         Text("음악 7개",
-                            style:
-                                regular12.copyWith(color: AppColor.sub2)),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.share))
+                            style: regular12.copyWith(color: AppColor.sub2)),
+                        SizedBox(height: 15),
+                        Container(
+                          width: 43.0, // 원하는 너비 설정
+                          height: 43.0, // 원하는 높이 설정
+                          decoration: BoxDecoration(
+                            color: AppColor.text2,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.share_outlined,
+                                color: AppColor.sub1),
+                          ),
+                        )
                       ],
                     )
                   ],
@@ -169,8 +178,7 @@ class UserPlay extends StatelessWidget {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("잘 지내자, 우리",
-                  style: bold16.copyWith(color: AppColor.sub1)),
+              Text("잘 지내자, 우리", style: bold16.copyWith(color: AppColor.sub1)),
               Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
             ],
           ),
