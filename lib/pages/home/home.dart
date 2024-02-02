@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -147,63 +148,6 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
-
-  // // 마커 그리기 함수
-  // void drawMarker(NLatLng latLng) async {
-  //   final mapController =
-  //       Provider.of<MapProvider>(context, listen: false).mapController;
-  //   // 마커 생성
-  //   final marker = NMarker(
-  //     id: '$markerCount',
-  //     position: NLatLng(latLng.latitude, latLng.longitude),
-  //     icon: const NOverlayImage.fromAssetImage('assets/image/my_marker.png'),
-  //     size: const Size(35, 35),
-  //     anchor: const NPoint(0.5, 0.5),
-  //   );
-  //   // 마커 클릭 시 이벤트 설정
-  //   marker.setOnTapListener((overlay) {
-  //     setState(() {
-  //       if (context.read<SwitchProvider>().switchMode) {
-  //         context.read<MapProvider>().markerSelected(marker);
-  //         // selectedMarkerCoords.add(overlay.position);
-  //         // debugPrint("$selectedMarkerCoords");
-  //         if (context.read<MapProvider>().selectedMarkerCoords.length == 2) {
-  //           context.read<MapProvider>().drawPolyline();
-  //         }
-  //       }
-  //     });
-  //   });
-  //   marker.setGlobalZIndex(200000);
-  //   mapController.addOverlay(marker);
-  //   setState(() {
-  //     markers.add(marker);
-  //     markerCount++;
-  //   });
-  //   debugPrint("${marker.info}");
-  // }
-
-  // 선 그리기 함수
-  // void drawPolyline() {
-  //   // 선 생성
-
-  //   final polylineOverlay = NPolylineOverlay(
-  //       id: '${context.read<MapProvider>().lineOverlays.length}',
-  //       coords: List.from(selectedMarkerCoords),
-  //       color: Colors.white,
-  //       width: 3);
-  //   // 선 클릭 시 이벤트 설정
-  //   polylineOverlay.setOnTapListener((overlay) {
-  //     if (context.read<SwitchProvider>().switchMode) {
-  //       // mapController.deleteOverlay(overlay.info);
-  //       context.read<MapProvider>().removeLine(overlay);
-  //     }
-  //   });
-  //   polylineOverlay.setGlobalZIndex(190000);
-  //   // mapController.addOverlay(polylineOverlay);
-  //   context.read<MapProvider>().addLine(polylineOverlay);
-  //   // 선 그린 후 선택된 마커들 삭제
-  //   selectedMarkerCoords.clear();
-  // }
 
   // 이미지 저장
   void saveMapImage() async {
@@ -435,6 +379,167 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ]),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 13, sigmaY: 13),
+            child: Container(
+              height: 289,
+              margin: const EdgeInsets.only(left: 25, right: 25),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(23),
+                color: Colors.transparent,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 15),
+                      width: 124,
+                      height: 6,
+                      decoration: BoxDecoration(
+                          color: AppColor.text,
+                          borderRadius: BorderRadius.circular(24)),
+                    ),
+                  ),
+                  const SizedBox(height: 34),
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: '나는쿼카입니다님', style: semibold17),
+                                    TextSpan(text: '이 추천하는', style: regular16),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '이곳에 어울리는 음악',
+                                style: semibold17,
+                              )
+                            ],
+                          ),
+                          const Spacer(),
+                          Column(
+                            children: [
+                              const Icon(Icons.favorite, color: AppColor.error),
+                              Text('25',
+                                  textAlign: TextAlign.left,
+                                  style:
+                                      regular13.copyWith(color: AppColor.sub1)),
+                            ],
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                      ),
+                      const SizedBox(height: 19),
+                      Row(
+                        children: <Widget>[
+                          Stack(
+                            children: [
+                              SizedBox(
+                                height: 70,
+                                width: 70,
+                                child: Image.network(
+                                  'https://i1.ytimg.com/vi/_fd_hwSm9zI/maxresdefault.jpg',
+                                  fit: BoxFit.fitHeight,
+                                  errorBuilder: (BuildContext context,
+                                      Object exception,
+                                      StackTrace? stackTrace) {
+                                    return Image.network(
+                                      'https://i1.ytimg.com/vi/_fd_hwSm9zI/sddefault.jpg',
+                                      fit: BoxFit.fitHeight,
+                                      errorBuilder: (BuildContext context,
+                                          Object exception,
+                                          StackTrace? stackTrace) {
+                                        return Container(
+                                          color: Colors.yellow,
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, left: 15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    '잘지내자 우리',
+                                    textAlign: TextAlign.left,
+                                    style: bold17,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text('최유리',
+                                      textAlign: TextAlign.left,
+                                      style: regular13.copyWith(
+                                          color: AppColor.sub1)),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 19),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => VideoSearchPage(
+                      //               video: '_fd_hwSm9zI',
+                      //             )));
+                    },
+                    child: Container(
+                      width: 340,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(12), // 테두리 반경 값을 12로 설정
+                        border:
+                            Border.all(color: Colors.white), // 테두리 색상을 흰색으로 설정
+                        color: Colors.transparent, // 배경색을 투명하게 설정
+                      ),
+                      child: Center(
+                        child: Text(
+                          '우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가... 있을까말...',
+                          style: semibold12.copyWith(color: AppColor.sub1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

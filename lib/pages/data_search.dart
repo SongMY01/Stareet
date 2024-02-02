@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
-import '../../pages/home/body.dart';
+import '../youtube/widgets/body.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
 import '../youtube/helpers/suggestion_history.dart';
@@ -92,7 +92,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                           setState(() {
                             contentList = null;
                           });
-                          textfieldFocusNode.requestFocus(); // 이 부분을 추가하세요.
+                          textfieldFocusNode.requestFocus();
                         },
                         icon: const Icon(Icons.close, color: Colors.white)),
                   ),
@@ -103,7 +103,6 @@ class _DataSearchPageState extends State<DataSearchPage> {
                   },
                   onTap: () {
                     setState(() {
-                      // 사용자가 텍스트 필드를 탭하면 contentList를 null로 설정
                       contentList = null;
                     });
                   },
