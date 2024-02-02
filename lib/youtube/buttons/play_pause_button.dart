@@ -14,17 +14,18 @@ class PlayPauseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return YoutubeValueBuilder(
       builder: (context, value) {
-        return IconButton(
-          icon: Icon(
-            value.playerState == PlayerState.playing
-                ? Icons.pause
-                : Icons.play_arrow,
+        return SizedBox(
+          width: 30,
+          child: IconButton(
+            icon: value.playerState == PlayerState.playing
+                ? Image.asset('assets/alert_stop.png')
+                : Image.asset('assets/alert_play.png'),
+            onPressed: () {
+              value.playerState == PlayerState.playing
+                  ? context.ytController.pauseVideo()
+                  : context.ytController.playVideo();
+            },
           ),
-          onPressed: () {
-            value.playerState == PlayerState.playing
-                ? context.ytController.pauseVideo()
-                : context.ytController.playVideo();
-          },
         );
       },
     );

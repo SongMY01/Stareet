@@ -81,22 +81,22 @@ class _CustomDialogState extends State<CustomDialog> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => CommentPage(
-                                //       video: widget.video,
-                                //     ),
-                                //   ),
-                                // );
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => VideoDetailPage(
+                                    builder: (context) => CommentPage(
                                       video: widget.video,
                                     ),
                                   ),
                                 );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => VideoDetailPage(
+                                //       video: widget.video,
+                                //     ),
+                                //   ),
+                                // );
                               },
                               child: Text(
                                 '선택',
@@ -165,12 +165,7 @@ class Controls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        VideoPositionSeeker(),
-      ],
-    );
+    return VideoPositionSeeker();
   }
 }
 
@@ -207,8 +202,10 @@ class VideoPositionSeeker extends StatelessWidget {
     var value = 0.0;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        SizedBox(
+          width: 280,
           child: StreamBuilder<YoutubeVideoState>(
             stream: context.ytController.videoStateStream,
             initialData: const YoutubeVideoState(),
