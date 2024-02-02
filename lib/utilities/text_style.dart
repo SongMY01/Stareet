@@ -29,7 +29,6 @@ const TextStyle semibold16 = TextStyle(
 const TextStyle semibold17 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 17,
-    height: 24,
     letterSpacing: -0.34,
     fontWeight: FontWeight.w600);
 

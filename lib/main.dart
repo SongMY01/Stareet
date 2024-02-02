@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/firebase_options.dart';
+import 'package:music_api/pages/mypage/my_page.dart';
 
 import 'pages/data_search.dart';
 import 'pages/account/signup.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/signup': (BuildContext context) => const SignupPage(),
         '/login': (BuildContext context) => const LoginPage(),
         '/search': (BuildContext context) => DataSearchPage(),
+        '/mypage': (BuildContext context) => MyPage(),
       },
     );
   }

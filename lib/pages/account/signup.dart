@@ -57,9 +57,29 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
+  Future<bool> isNicknameAvailable(String nickname) async {
+    try {
+      var result = await FirebaseFirestore.instance
+          .collection('user')
+          .where('nickName', isEqualTo: nickname)
+          .get();
+
+      return result.docs.isEmpty;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  bool? _isNicknameAvailable;
+
   Future<void> _tryValidation() async {
+    _isNicknameAvailable = await isNicknameAvailable(nickname);
+    print(_isNicknameAvailable);
+
     final isValid = _formKey.currentState!.validate();
     print(isValid);
+
     if (isValid) {
       _formKey.currentState!.save();
 
@@ -68,21 +88,30 @@ class _SignupPageState extends State<SignupPage> {
 
         // 이미지 업로드
         final imageUrl = await uploadImageToFirebaseStorage(_image!, user.uid);
+        print(nickname);
 
         // Firebase Firestore에 사용자 정보 저장
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);
-
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: ((context) => const DaisyPage())));
       } catch (e) {
-        setState(() {});
         print(e);
         // 에러 처리
       }
       Navigator.pushNamed(context, '/mypage');
     }
+  }
+
+  String? validateNickname(String? value) {
+    if (value == null || value.isEmpty) {
+      return '닉네임을 입력해주세요.';
+    } else if (value.length > 7) {
+      return '닉네임은 7자 이하로 입력해주세요.';
+    } else if (!RegExp(r'^[a-zA-Z가-힣]+$').hasMatch(value)) {
+      return '올바른 형식의 닉네임이 아닙니다.';
+    } else if (_isNicknameAvailable == false) {
+      //상태 변수 활용
+      return '이미 사용 중인 닉네임입니다.';
+    }
+    return null;
   }
 
   final _authentication = FirebaseAuth.instance;
@@ -91,7 +120,7 @@ class _SignupPageState extends State<SignupPage> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/backgroundImage.png"),
+          image: AssetImage("assets/fonts/images/background.gif"),
           fit: BoxFit.cover,
         ),
       ),
@@ -175,12 +204,7 @@ class _SignupPageState extends State<SignupPage> {
                                     _nicknameFocus.requestFocus();
                                   },
                                   key: const ValueKey(1),
-                                  validator: (value) {
-                                    if (value!.isEmpty || value.length > 8) {
-                                      return '사용불가능한 닉네임이에요.';
-                                    }
-                                    return null;
-                                  },
+                                  validator: validateNickname,
                                   onSaved: (value) {
                                     nickname = value!;
                                   },
