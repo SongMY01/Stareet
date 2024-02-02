@@ -360,8 +360,8 @@ class _HomePageState extends State<HomePage> {
         Visibility(
           visible: !switchProvider.switchMode,
           child: Positioned(
-            top: 180,
-            right: 30,
+            bottom: 60,
+            right: 40,
             child: LocationButton(goToLocation: _updatePosition),
           ),
         ),
