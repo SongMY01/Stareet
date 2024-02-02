@@ -12,7 +12,6 @@ const TextStyle semibold11 = TextStyle(
 const TextStyle semibold12 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 12,
-    height: 24,
     letterSpacing: -0.24,
     fontWeight: FontWeight.w600,
     color: AppColor.text);
@@ -33,7 +32,6 @@ const TextStyle semibold16 = TextStyle(
 const TextStyle semibold17 = TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 17,
-    height: 24,
     letterSpacing: -0.34,
     fontWeight: FontWeight.w600,
     color: AppColor.text);
@@ -112,7 +110,6 @@ const TextStyle bold12 = TextStyle(
 const TextStyle bold13 = TextStyle(
     fontFamily: 'Pretendard-Bold',
     fontSize: 13,
-    height: 24,
     letterSpacing: -0.26,
     fontWeight: FontWeight.w700,
     color: AppColor.text);
@@ -220,7 +217,6 @@ const TextStyle extralight16 = TextStyle(
 const TextStyle kimregular15 = TextStyle(
     fontFamily: 'KimjungchulMyungjo-Regular',
     fontSize: 15,
-    height: 24,
     letterSpacing: -0.3,
     fontWeight: FontWeight.w200,
     color: AppColor.text);
