@@ -6,7 +6,9 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
 
 import '../components/card_frame.dart';
+import '../components/custom_snackbar.dart';
 import '../providers/map_state.dart';
+import '../providers/switch_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
 
@@ -14,10 +16,8 @@ import '../utilities/text_theme.dart';
 class PreviewPage extends StatefulWidget {
   const PreviewPage(
       {super.key,
-      required this.markers,
       required this.position,
       required this.name});
-  final Set<NMarker> markers;
   final NCameraPosition position;
   final String name;
 
@@ -40,6 +40,7 @@ class _PreviewPageState extends State<PreviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final mapProvider = Provider.of<MapProvider>(context);
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -63,15 +64,13 @@ class _PreviewPageState extends State<PreviewPage> {
                         await ImageGallerySaver.saveImage(capturedImage!);
                     if (!mounted) return;
                     if (result != null && result['isSuccess'] == true) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('이미지가 갤러리에 저장되었습니다.'),
-                        duration: Duration(seconds: 1),
-                      ));
+                      showCustomSnackbar(context, '별플리가 저장되었습니다.');
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('이미지 저장에 실패했습니다.')));
+                      showCustomSnackbar(context, '별플리 저장에 실패하였습니다.');
                     }
+                    context.read<MapProvider>().clearLines();
                     Navigator.pop(context);
+                    context.read<SwitchProvider>().setMode(false);
                   } else {
                     debugPrint("이미지 저장 실패");
                   }
@@ -131,7 +130,7 @@ class _PreviewPageState extends State<PreviewPage> {
                       child: SizedBox(
                           width: 24,
                           height: 24,
-                          child: Image.asset("assets/images/star.png")),
+                          child: Image.asset("assets/images/profile.png")),
                     ),
                     const SizedBox(width: 8),
                     const Text("태정태세비욘세",
@@ -159,8 +158,8 @@ class _PreviewPageState extends State<PreviewPage> {
                   // 지도 실행 시 이벤트
                   onMapReady: (controller) async {
                     newController = controller;
-                    newController.addOverlayAll(widget.markers);
-                    newController.addOverlayAll(context.read<MapProvider>().lineOverlays);
+                    newController.addOverlayAll(mapProvider.markers);
+                    newController.addOverlayAll(mapProvider.lineOverlays);
                     debugPrint(
                         "child: ${await newController.getContentBounds()}");
                     // 배경 이미지

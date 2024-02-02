@@ -42,61 +42,90 @@ class CustomDrawer extends StatelessWidget {
               )),
           const SizedBox(height: 10),
           ListTile(
-              leading: Icon(Icons.home_rounded,
-                  color: switchMode ? AppColor.sub2 : AppColor.text, size: 23),
+              leading: Image.asset("assets/images/home.png",
+                  width: 23,
+                  height: 26,
+                  color: (!switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
+                      ? AppColor.text
+                      : AppColor.sub2),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
                 context.read<SwitchProvider>().setMode(false);
               },
               title: Text("홈",
-                  style: switchMode
-                      ? semibold24.copyWith(color: AppColor.sub2)
-                      : semibold24.copyWith(
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColor.text))),
-          ListTile(
-            leading: Image.asset("assets/images/drawer2.png",
-                width: 23,
-                height: 26,
-                color: AppColor.sub2),
-            onTap: () {},
-            title: Text("별자국 남기기",
-                style: semibold24.copyWith(color: AppColor.sub2)),
-          ),
-          ListTile(
-              leading: Image.asset("assets/images/drawer3.png",
-                  width: 23,
-                  height: 23,
-                  color: switchMode ? AppColor.text : AppColor.sub2),
-              onTap: () {
-                Navigator.pop(context);
-                context.read<SwitchProvider>().setMode(true);
-              },
-              title: Text("별자리 공작소",
-                  style: switchMode
+                  style: (!switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
                       ? semibold24.copyWith(
                           decoration: TextDecoration.underline,
                           decorationColor: AppColor.text)
                       : semibold24.copyWith(color: AppColor.sub2))),
           ListTile(
-              leading: Image.asset("assets/images/drawer4.png",
-                  width: 23, height: 25, color: AppColor.sub2),
+            leading: Image.asset("assets/images/leave_star.png",
+                width: 23,
+                height: 26,
+                color: ModalRoute.of(context)?.settings.name == '/search'
+                    ? AppColor.text
+                    : AppColor.sub2),
+            onTap: () {
+              Navigator.pushNamed(context, '/search');
+            },
+            title: Text("별자국 남기기",
+            style: (ModalRoute.of(context)?.settings.name == '/search')
+                      ? semibold24.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColor.text)
+                      : semibold24.copyWith(color: AppColor.sub2))
+          ),
+          ListTile(
+              leading: Image.asset("assets/images/connect_star.png",
+                  width: 23,
+                  height: 23,
+                  color: (switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search')) ? AppColor.text : AppColor.sub2),
               onTap: () {
-                
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
+                context.read<SwitchProvider>().setMode(true);
               },
+              title: Text("별자리 공작소",
+                  style: (switchMode &&
+                          !(ModalRoute.of(context)?.settings.name == '/search'))
+                      ? semibold24.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColor.text)
+                      : semibold24.copyWith(color: AppColor.sub2))),
+          ListTile(
+              leading: Image.asset("assets/images/community.png",
+                  width: 23, height: 25, color: AppColor.sub2),
+              onTap: () {},
               title: Text("별별 게시판",
                   style: semibold24.copyWith(color: AppColor.sub2))),
           const Spacer(),
-          ListTile(
-              leading: Image.asset("assets/images/my_page.png",
-                  width: 23, height: 25, color: AppColor.text),
-              onTap: () {},
-              title: const Text("마이페이지", style: medium14)),
-          ListTile(
-              leading: const Icon(Icons.info_outline_rounded,
-                  color: AppColor.text, size: 23),
-              onTap: () {},
-              title: const Text("앱 정보", style: medium14)),
+          GestureDetector(
+            onTap: () {},
+            child: Row(
+              children: [
+                const SizedBox(width: 15),
+                Image.asset("assets/images/my_page.png",
+                    width: 23, height: 25, color: AppColor.text),
+                const SizedBox(width: 9),
+                const Text("마이페이지", style: medium14)
+              ],
+            ),
+          ),
+          const SizedBox(height: 19),
+          GestureDetector(
+            onTap: () {},
+            child: Row(
+              children: [
+                const SizedBox(width: 14),
+                Image.asset("assets/images/info.png",
+                    width: 21, height: 21, color: AppColor.text),
+                const SizedBox(width: 9),
+                const Text("앱 정보", style: medium14)
+              ],
+            ),
+          ),
           const SizedBox(height: 60)
         ]),
       ),
