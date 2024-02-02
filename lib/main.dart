@@ -8,6 +8,7 @@ import 'pages/data_search.dart';
 import 'pages/account/signup.dart';
 import 'pages/home/home.dart';
 import 'pages/account/login.dart';
+import 'providers/map_state.dart';
 import 'providers/switch_state.dart';
 
 void main() async {
@@ -16,9 +17,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => SwitchProvider())],
-      child: const MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => SwitchProvider()),
+    ChangeNotifierProvider(create: (_) => MapProvider())
+  ], child: const MyApp()));
 }
 
 // 네이버 맵 초기화
