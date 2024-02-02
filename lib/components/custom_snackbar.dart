@@ -23,24 +23,20 @@ class _CustomSnackbarState extends State<CustomSnackbar> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 260, height: 45,
-      child: Material(
-        color: Colors.transparent,
-        child: Align(
-          alignment: const Alignment(0, 0.55),
-          child: AnimatedOpacity(
-              opacity: opacityLevel,
-              duration: const Duration(seconds: 1),
-              child: Container(
-                  width: 256,
-                  height: 42,
-                  decoration: BoxDecoration(
-                      color: const Color(0xffF4F4F4).withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(32)),
-                  child: Center(
-                    child: Text(widget.message,
-                        style: medium14.copyWith(color: Colors.black)),
-                  ))),
-        ),
+      child: Align(
+        alignment: const Alignment(0, 0.55),
+        child: AnimatedOpacity(
+            opacity: opacityLevel,
+            duration: const Duration(seconds: 1),
+            child: Container(
+                width: 256,
+                height: 42,
+                decoration: BoxDecoration(
+                    color: const Color(0xffF4F4F4).withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(32)),
+                child: Center(
+                  child: DefaultTextStyle(style: medium14.copyWith(color: Colors.black), child: Text(widget.message))
+                ))),
       ),
     );
   }
