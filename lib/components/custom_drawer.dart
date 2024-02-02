@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/mypage/my_page.dart';
 import '../providers/switch_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
@@ -102,7 +103,9 @@ class CustomDrawer extends StatelessWidget {
                   style: semibold24.copyWith(color: AppColor.sub2))),
           const Spacer(),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MyPage()));
+            },
             child: Row(
               children: [
                 const SizedBox(width: 15),
