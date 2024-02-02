@@ -117,7 +117,7 @@ class _LoginPageScreenState extends State<LoginPage> {
                           .get();
 
                       if (docSnapshot.exists) {
-                        Navigator.pushNamed(context, '/mypage');
+                        Navigator.pushNamed(context, '/home');
                       } else {
                         Navigator.pushNamed(context, '/signup');
                       }

@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../../utilities/text_style.dart';
+import '../../utilities/text_theme.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:music_api/pages/mypage/mate_manage.dart';
 import 'package:music_api/pages/mypage/mypage_profile.dart';
 
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../community/search.dart';
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
 
 var mate_real = [];
 var mate_friend = [];
@@ -85,8 +85,7 @@ class MyStarMate extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                SearchedTabBar(searchText: searchText),
+                            builder: (context) => TabOne(),
                           ),
                         );
                       },
@@ -94,7 +93,7 @@ class MyStarMate extends StatelessWidget {
                         filled: true,
                         fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
                         labelText: "메이트 이름을 검색해요",
-                        labelStyle: medium14.copyWith(color: AppColor.subtext1),
+                        labelStyle: medium14.copyWith(color: AppColor.sub1),
                         border: myinputborder(),
                         enabledBorder: myinputborder(),
                         prefixIcon: const Icon(
@@ -299,7 +298,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                     child: Center(
                                       child: Text('취소',
                                           style: regular17.copyWith(
-                                              color: AppColor.subtext1)),
+                                              color: AppColor.sub1)),
                                     ),
                                   ),
                                   onPressed: () {
@@ -550,7 +549,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                     child: Center(
                                       child: Text('취소',
                                           style: regular17.copyWith(
-                                              color: AppColor.subtext1)),
+                                              color: AppColor.sub1)),
                                     ),
                                   ),
                                   onPressed: () {

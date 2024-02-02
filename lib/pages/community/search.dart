@@ -1,106 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/pages/community/mate_detail.dart';
+import 'package:music_api/pages/community/star_detail.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
-import 'mate_detail.dart';
-import 'star_detail.dart';
-
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 //------ 페이지 3, 5
-class SearchedTabBar extends StatelessWidget {
-  final String searchText;
-
-  const SearchedTabBar({required this.searchText, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2, // Number of tabs
-      initialIndex: 0, // Initial selected tab index
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage('assets/fonts/images/background.gif'),
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text("별별 게시판 $searchText",
-                style: bold16.copyWith(color: AppColor.subtext1)),
-            backgroundColor: Colors.transparent,
-          ),
-          body: Column(
-            children: [
-              Center(
-                child: SizedBox(
-                  width: 340,
-                  height: 36,
-                  child: TextField(
-                    onSubmitted: (String searchText) {
-                      // Navigate to the SearchedTabBar page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SearchedTabBar(searchText: searchText),
-                        ),
-                      );
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
-                      labelText: "별자리 이름이나, 메이트 이름을 검색해요",
-                      labelStyle: medium14.copyWith(color: AppColor.subtext2),
-                      border: myinputborder(),
-                      enabledBorder: myinputborder(),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              TabBar(
-                labelStyle: bold14.copyWith(color: AppColor.text),
-                labelColor: AppColor.text,
-                indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
-                tabs: [
-                  Tab(text: "플리"),
-                  Tab(text: "스타메이트"),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // The TabBarView with the associated content for each tab
-              const Expanded(
-                child: TabBarView(
-                  children: [
-                    // Content for Tab 1
-                    TabOne(),
-                    // Content for Tab 2
-                    TabTwo(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Textfield Deco
-OutlineInputBorder myinputborder() {
-  return const OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-    borderSide: BorderSide(
-      color: Color.fromRGBO(254, 254, 254, 1),
-      width: 1,
-    ),
-  );
-}
 
 //TabBar PalyList
 class TabOne extends StatelessWidget {
@@ -127,7 +31,7 @@ class TabOne extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => StarDetail(),
+                  builder: (context) => const StarDetail(),
                 ),
               );
             },
@@ -154,16 +58,16 @@ class TabOne extends StatelessWidget {
                   bottom: 44,
                   child: Text(
                     "좌",
-                    style: medium11.copyWith(color: AppColor.subtext1),
+                    style: medium11.copyWith(color: AppColor.sub1),
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   left: 15,
                   bottom: 23,
                   child: Text(
                     "용가리자리",
                     style:
-                        bold15.copyWith(color: AppColor.text), //bold 17이 큰거 같다.
+                        bold15, //bold 17이 큰거 같다.
                   ),
                 ),
                 Positioned(
@@ -171,7 +75,7 @@ class TabOne extends StatelessWidget {
                   bottom: 8,
                   child: Text(
                     "8개의 곡",
-                    style: medium11.copyWith(color: AppColor.subtext1),
+                    style: medium11.copyWith(color: AppColor.sub1),
                   ),
                 ),
               ],
@@ -208,7 +112,7 @@ class _TabTwoState extends State<TabTwo> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MateDetail(),
+                    builder: (context) => const MateDetail(),
                   ),
                 );
               },

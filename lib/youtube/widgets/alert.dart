@@ -2,14 +2,15 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:music_api/pages/comment.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../../utilities/color.dart';
-import '../../utilities/text_style.dart';
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../buttons/play_pause_button.dart';
+import '../music/video_detail_page.dart';
 
-// ignore: must_be_immutable
 class CustomDialog extends StatefulWidget {
   Video video;
 
@@ -57,7 +58,7 @@ class _CustomDialogState extends State<CustomDialog> {
                 filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                 child: Container(
                   width: 317, // width: 317px;
-                  height: 345, // height: 333px;
+                  height: 333, // height: 333px;
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(23, 23, 23, 0.85),
                     borderRadius: BorderRadius.circular(21),
@@ -80,7 +81,22 @@ class _CustomDialogState extends State<CustomDialog> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // 버튼이 눌렸을 때 수행할 동작을 여기에 작성합니다.
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CommentPage(
+                                      video: widget.video,
+                                    ),
+                                  ),
+                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => VideoDetailPage(
+                                //       video: widget.video,
+                                //     ),
+                                //   ),
+                                // );
                               },
                               child: Text(
                                 '선택',
@@ -91,7 +107,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           ]),
                       Stack(
                         children: [
-                          Container(
+                          SizedBox(
                               width: 139,
                               height: 139,
                               child: ClipRRect(
@@ -103,24 +119,12 @@ class _CustomDialogState extends State<CustomDialog> {
                             height: 139,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(69.5),
-                            ),
-                            child: Image.network(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                              fit: BoxFit.fitHeight,
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return Image.network(
-                                  'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
-                                  fit: BoxFit.fitHeight,
-                                  errorBuilder: (BuildContext context,
-                                      Object exception,
-                                      StackTrace? stackTrace) {
-                                    return Container(
-                                      color: Colors.yellow,
-                                    );
-                                  },
-                                );
-                              },
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ],
@@ -129,16 +133,16 @@ class _CustomDialogState extends State<CustomDialog> {
                       Text(
                         widget.video.title ?? '',
                         style: bold18,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
+                        maxLines: 1,
                       ),
                       Text(
                         widget.video.channelName ?? '',
                         style: regular15,
-                        textAlign: TextAlign.center,
                         maxLines: 1,
                       ),
-                      const VideoPositionSeeker(),
+                      // const VideoPositionIndicator(),
+                      const SizedBox(height: 29.9),
+                      const Controls(),
                     ],
                   ),
                 ),
@@ -152,6 +156,16 @@ class _CustomDialogState extends State<CustomDialog> {
   void dispose() {
     _controller.close();
     super.dispose();
+  }
+}
+
+class Controls extends StatelessWidget {
+  ///
+  const Controls({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return VideoPositionSeeker();
   }
 }
 
@@ -188,8 +202,10 @@ class VideoPositionSeeker extends StatelessWidget {
     var value = 0.0;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        SizedBox(
+          width: 280,
           child: StreamBuilder<YoutubeVideoState>(
             stream: context.ytController.videoStateStream,
             initialData: const YoutubeVideoState(),
@@ -205,9 +221,10 @@ class VideoPositionSeeker extends StatelessWidget {
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: CustomSliderThumbCircle(
                           thumbRadius: 14.62 / 2, padding: (18 - 14.62) / 2),
+                      trackHeight: 4.0,
                     ),
                     child: Slider(
-                      activeColor: Colors.white,
+                      activeColor: const Color(0xFF64FFED),
                       value: value,
                       onChanged: (positionFraction) {
                         value = positionFraction;

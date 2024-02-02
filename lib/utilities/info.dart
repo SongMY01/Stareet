@@ -5,6 +5,7 @@ class UserInfo {
   final String? uid;
   final String? nickName;
   final String? userEmail;
+
   // final String? userPassword;
   final String? profileImageURL;
   // final List<Map<String, dynamic>>? mate;
@@ -15,6 +16,7 @@ class UserInfo {
     required this.uid,
     required this.nickName,
     required this.userEmail,
+
     // required this.userPassword,
     required this.profileImageURL,
     // required this.mate,
@@ -68,7 +70,7 @@ Future<void> fetchAuthInfo() async {
 
 class StarInfo {
   final String? uid;
-  final double? location;
+  final List<double>? location;
   final String? song;
   final String? comment;
   final String? owner;

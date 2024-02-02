@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_data_api/youtube_data_api.dart';
 
-import '../../pages/home/body.dart';
-import '../utilities/color.dart';
-import '../utilities/text_style.dart';
+import '../youtube/widgets/body.dart';
+import '../utilities/color_scheme.dart';
+import '../utilities/text_theme.dart';
 import '../youtube/helpers/suggestion_history.dart';
 import '../youtube/widgets/video_widget.dart';
 import 'community/coumunity.dart';
@@ -48,70 +48,73 @@ class _DataSearchPageState extends State<DataSearchPage> {
             padding: const EdgeInsets.only(left: 25, top: 22, right: 25),
             child: Column(
               children: [
-                TextField(
-                  focusNode: textfieldFocusNode,
-                  controller: searchController,
-                  style: medium16,
-                  decoration: InputDecoration(
-                    fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
-                    filled: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 10.0),
-                    border: OutlineInputBorder(
-                      // 테두리 스타일 정의
-                      borderRadius:
-                          BorderRadius.circular(5.0), // border-radius: 5px
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(
-                            255, 255, 255, 0.3), // border 색상과 투명도
-                        width: 1.0, // border: 1px
+                SizedBox(
+                  height: 36,
+                  child: TextField(
+                    focusNode: textfieldFocusNode,
+                    controller: searchController,
+                    style: medium16,
+                    decoration: InputDecoration(
+                      fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
+                      filled: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 10.0),
+                      border: OutlineInputBorder(
+                        // 테두리 스타일 정의
+                        borderRadius:
+                            BorderRadius.circular(5.0), // border-radius: 5px
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(
+                              255, 255, 255, 0.3), // border 색상과 투명도
+                          width: 1.0, // border: 1px
+                        ),
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      // 기본 테두리 스타일
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(255, 255, 255, 0.3),
-                        width: 1.0,
+                      enabledBorder: OutlineInputBorder(
+                        // 기본 테두리 스타일
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.3),
+                          width: 1.0,
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      // 포커스 시 테두리 스타일
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(255, 255, 255, 0.3),
-                        width: 1.0,
+                      focusedBorder: OutlineInputBorder(
+                        // 포커스 시 테두리 스타일
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.3),
+                          width: 1.0,
+                        ),
                       ),
+                      hintStyle: medium14.copyWith(color: AppColor.sub2),
+                      hintText: '곡의 제목, 가수를 검색해주세요',
+                      prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            searchController.clear();
+                            query = '';
+                            setState(() {
+                              contentList = null;
+                            });
+                            textfieldFocusNode.requestFocus();
+                          },
+                          icon: const Icon(Icons.close, color: Colors.white)),
                     ),
-                    hintStyle: medium14.copyWith(color: AppColor.subtext2),
-                    hintText: '곡의 제목, 가수를 검색해주세요',
-                    prefixIcon: const Icon(Icons.search, color: Colors.white),
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          searchController.clear();
-                          query = '';
-                          setState(() {
-                            contentList = null;
-                          });
-                          textfieldFocusNode.requestFocus(); // 이 부분을 추가하세요.
-                        },
-                        icon: const Icon(Icons.close, color: Colors.white)),
+                    onChanged: (value) {
+                      setState(() {
+                        query = value;
+                      });
+                    },
+                    onTap: () {
+                      setState(() {
+                        contentList = null;
+                      });
+                    },
+                    onSubmitted: (value) {
+                      _search(value);
+                    },
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      query = value;
-                    });
-                  },
-                  onTap: () {
-                    setState(() {
-                      // 사용자가 텍스트 필드를 탭하면 contentList를 null로 설정
-                      contentList = null;
-                    });
-                  },
-                  onSubmitted: (value) {
-                    _search(value);
-                  },
                 ),
+                const SizedBox(height: 20),
                 query.isNotEmpty && contentList != null
                     ? _buildSearchResultDetailBody()
                     : (query.isEmpty
@@ -196,63 +199,87 @@ class _DataSearchPageState extends State<DataSearchPage> {
                     ),
                   );
                 },
-                child: const Text(
-                  "최근 검색한 음악",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: const Text("최근 검색한 음악",
+                    textAlign: TextAlign.left, style: bold15),
               ),
               const SizedBox(height: 10),
               SizedBox(
-                height: 50,
-                child: recently.isNotEmpty
-                    ? ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: recently.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                                left: index == 0
-                                    ? 0
-                                    : 15), // 첫 번째 칩을 제외하고 왼쪽 패딩 적용
-                            child: Chip(
-                              label: Text(recently[index]),
-                              deleteIcon: const Icon(Icons.close),
-                              onDeleted: () {
-                                setState(() {
-                                  SuggestionHistory.remove(recently[index]);
-                                });
+                  height: 50,
+                  child: recently.isNotEmpty
+                      ? ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recently.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                //           setState(() {
+
+                                //           query = recently[index];
+                                //           _search(query);
+                                //           });
+                                // FocusScope.of(context).unfocus();
                               },
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          );
-                        },
-                      )
-                    : Chip(
-                        label: Text(
-                          "최근 검색 결과가 없습니다",
-                          style: medium13.copyWith(color: AppColor.subtext2),
-                        ),
-                      ),
-              ),
+                              child: Padding(
+                                  padding: EdgeInsets.only(
+                                      left: index == 0
+                                          ? 0
+                                          : 15), // 첫 번째 칩을 제외하고 왼쪽 패딩 적용
+                                  child: Chip(
+                                    backgroundColor: AppColor.text2,
+                                    label: Text(
+                                      recently[index],
+                                      style: medium13.copyWith(
+                                          color: AppColor.sub1),
+                                    ),
+                                    deleteIcon: const Icon(Icons.close,
+                                        size: 15, color: AppColor.sub1),
+                                    onDeleted: () {
+                                      setState(() {
+                                        SuggestionHistory.remove(
+                                            recently[index]);
+                                      });
+                                    },
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    labelPadding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    padding: const EdgeInsets.all(3),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      side: const BorderSide(
+                                          color:
+                                              AppColor.text2), // 이 부분을 수정하였습니다.
+                                    ),
+                                  )),
+                            );
+                          },
+                        )
+                      : Chip(
+                          backgroundColor: AppColor.text2,
+                          label: Text(
+                            "최근 검색 결과가 없습니다",
+                            style: medium13.copyWith(color: AppColor.sub2),
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          labelPadding:
+                              const EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.all(3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                            side: const BorderSide(
+                                color: AppColor.text2), // 이 부분을 수정하였습니다.
+                          ),
+                        )),
               const SizedBox(height: 18),
-              const Text(
-                "실시간 공감 많이 받은 별자국 음악",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xFF64FFEE), Color(0xFFF0F2BD)],
+                ).createShader(bounds),
+                child: const Text("실시간 공감 많이 받은 별자국 음악",
+                    textAlign: TextAlign.left, style: bold20),
               ),
               FutureBuilder(
                 future: youtubeDataApi.fetchTrendingMusic(),

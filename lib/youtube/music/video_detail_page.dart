@@ -1,11 +1,15 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../../utilities/color_scheme.dart';
+import '../../utilities/text_theme.dart';
 import '../buttons/meta_data_section.dart';
+import '../buttons/play_pause_button.dart';
 import '../buttons/play_pause_button_bar.dart';
 
 // ignore: must_be_immutable
@@ -47,71 +51,157 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       controller: _controller,
       builder: (context, player) {
         return Scaffold(
+          backgroundColor: AppColor.background,
           appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            title: const Text('Youtube Player IFrame Demo'),
-            // actions: const [VideoPlaylistIconButton()],
+            backgroundColor: Colors.transparent,
+            title: const Text('포항시 북구 흥해읍 한동로 558', style: bold16),
+            actions: <Widget>[
+              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+            ],
           ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              if (kIsWeb && constraints.maxWidth > 750) {
-                return Row(
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 25, right: 25),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          player,
-                          const VideoPositionIndicator(),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SingleChildScrollView(
-                        child: Controls(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-              return Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                          width: 200,
-                          height: 200,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: player,
-                          )),
-                      Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                    const SizedBox(height: 13),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: '나는 쿼카입니다',
+                                      style: bold22.copyWith(
+                                          color: AppColor.primary)),
+                                  const TextSpan(
+                                      text: '님이 추천하는', style: bold22),
+                                ],
+                              ),
                             ),
-                            fit: BoxFit.cover,
+                            const Text(
+                              '이곳에 어울리는 음악',
+                              style: bold22,
+                            )
+                          ],
+                        ),
+                        const Spacer(),
+                        Column(
+                          children: [
+                            const Icon(Icons.favorite, color: AppColor.error),
+                            Text('25',
+                                textAlign: TextAlign.left,
+                                style:
+                                    regular13.copyWith(color: AppColor.sub1)),
+                          ],
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                    ),
+                    const SizedBox(height: 7),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 33,
+                          height: 33,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              'https://i1.ytimg.com/vi/_fd_hwSm9zI/sddefault.jpg',
+                            ),
+                            radius: 29, // 원의 반지름 설정
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const VideoPositionIndicator(),
-                  const Controls(),
-                ],
-              );
-            },
+                        const SizedBox(width: 6),
+                        const Text(
+                          '나는쿼카입니다',
+                          style: semibold14,
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 65,
+                          height: 28,
+                          decoration: ShapeDecoration(
+                            shape: RoundedRectangleBorder(
+                              side: const BorderSide(
+                                  width: 1, color: AppColor.primary),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '메이트️',
+                              style: bold13.copyWith(color: AppColor.primary),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Stack(
+                      children: [
+                        Container(
+                            width: 340,
+                            height: 340,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: player,
+                            )),
+                        Container(
+                          width: 340,
+                          height: 340,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        ClipRRect(
+                            child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                child: Container(
+                                  width: 340,
+                                  height: 340,
+                                ))),
+                        const Padding(
+                          padding:
+                              EdgeInsets.only(left: 23, right: 23, top: 28),
+                          child: Text(
+                            '우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 여기에는 사람이 쓴 코멘트',
+                            textAlign: TextAlign.justify,
+                            style: kimregular15,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      widget.video.title ?? '',
+                      style: bold22,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.video.channelName ?? '',
+                      style: bold18.copyWith(color: AppColor.sub1),
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Controls(),
+              ),
+            ],
           ),
         );
       },
@@ -131,18 +221,23 @@ class Controls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MetaDataSection(),
-          const SizedBox(height: 10),
-          PlayPauseButtonBar(),
-          const SizedBox(height: 10),
-          const VideoPositionSeeker(),
-        ],
-      ),
+    return Stack(
+      children: [
+        const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            VideoPositionSeeker(),
+            SizedBox(height: 100),
+          ],
+        ),
+        Center(
+            child: Column(
+          children: [
+            const SizedBox(height: 55),
+            PlayPauseButtonBar(),
+          ],
+        )),
+      ],
     );
   }
 }
@@ -181,11 +276,6 @@ class VideoPositionSeeker extends StatelessWidget {
 
     return Row(
       children: [
-        const Text(
-          'Seek',
-          style: TextStyle(fontWeight: FontWeight.w300),
-        ),
-        const SizedBox(width: 14),
         Expanded(
           child: StreamBuilder<YoutubeVideoState>(
             stream: context.ytController.videoStateStream,
@@ -193,31 +283,101 @@ class VideoPositionSeeker extends StatelessWidget {
             builder: (context, snapshot) {
               final position = snapshot.data?.position.inSeconds ?? 0;
               final duration = context.ytController.metadata.duration.inSeconds;
-
               value = position == 0 || duration == 0 ? 0 : position / duration;
+              int minutes = position ~/ 60;
+              int seconds = position % 60;
+              String currentTime =
+                  '$minutes:${seconds.toString().padLeft(2, '0')}';
 
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return Slider(
-                    value: value,
-                    onChanged: (positionFraction) {
-                      value = positionFraction;
-                      setState(() {});
-
-                      context.ytController.seekTo(
-                        seconds: (value * duration).toDouble(),
-                        allowSeekAhead: true,
+              int totalMinutes = duration ~/ 60;
+              int totalSeconds = duration % 60;
+              String totalTime =
+                  '$totalMinutes:${totalSeconds.toString().padLeft(2, '0')}';
+              return Column(
+                children: [
+                  StatefulBuilder(
+                    builder: (context, setState) {
+                      return SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          thumbShape: CustomSliderThumbCircle(
+                              thumbRadius: 14.62 / 2,
+                              padding: (18 - 14.62) / 2),
+                          trackHeight: 4.0,
+                        ),
+                        child: Slider(
+                          activeColor: const Color(0xFF64FFED),
+                          value: value,
+                          onChanged: (positionFraction) {
+                            value = positionFraction;
+                            setState(() {});
+                            context.ytController.seekTo(
+                              seconds: (value * duration).toDouble(),
+                              allowSeekAhead: true,
+                            );
+                          },
+                          min: 0,
+                          max: 1,
+                        ),
                       );
                     },
-                    min: 0,
-                    max: 1,
-                  );
-                },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 27),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(currentTime, style: bold13),
+                        const SizedBox(width: 286),
+                        Text(totalTime, style: bold13)
+                      ],
+                    ),
+                  )
+                ],
               );
             },
           ),
         ),
       ],
     );
+  }
+}
+
+class CustomSliderThumbCircle extends SliderComponentShape {
+  final double thumbRadius;
+  final double padding;
+
+  CustomSliderThumbCircle({required this.thumbRadius, required this.padding});
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(thumbRadius + padding);
+  }
+
+  @override
+  void paint(PaintingContext context, Offset center,
+      {required Animation<double> activationAnimation,
+      required Animation<double> enableAnimation,
+      required bool isDiscrete,
+      required TextPainter labelPainter,
+      required RenderBox parentBox,
+      required SliderThemeData sliderTheme,
+      required TextDirection textDirection,
+      required double value,
+      required double textScaleFactor,
+      required Size sizeWithOverflow}) {
+    final Canvas canvas = context.canvas;
+
+    // Outer white circle
+    final Paint outerCirclePaint = Paint()..color = Colors.white;
+    canvas.drawCircle(center, thumbRadius + padding, outerCirclePaint);
+
+    // Inner gradient circle
+    final Paint innerCirclePaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment(1.00, 0.00),
+        end: Alignment(-1, 0),
+        colors: [Color(0xFF64FFED), Color(0xFFF0F2BD)],
+      ).createShader(Rect.fromCircle(center: center, radius: thumbRadius));
+    canvas.drawCircle(center, thumbRadius, innerCirclePaint);
   }
 }

@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../../utilities/text_style.dart';
+import '../../utilities/text_theme.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -96,7 +96,7 @@ class _SignupPageState extends State<SignupPage> {
         print(e);
         // 에러 처리
       }
-      Navigator.pushNamed(context, '/mypage');
+      Navigator.pushNamed(context, '/home');
     }
   }
 
