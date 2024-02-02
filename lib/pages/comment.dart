@@ -37,13 +37,14 @@ class _CommentPageState extends State<CommentPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            title: const Text("발자국 남기기", style: bold16),
+            title: const Text("별자국 남기기", style: bold16),
           ),
           body: Padding(
             padding: const EdgeInsets.only(left: 25, right: 25),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 38),
                 Text.rich(
                   TextSpan(
                     children: [
@@ -95,7 +96,7 @@ class _CommentPageState extends State<CommentPage> {
                               widget.video.title ?? '',
                               textAlign: TextAlign.left,
                               style: bold17,
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ), //video title
                             Text(widget.video.channelName ?? '',
@@ -108,7 +109,10 @@ class _CommentPageState extends State<CommentPage> {
                           ],
                         ),
                       ),
-                    )
+                    ),
+                    Text(widget.video.duration ?? '',
+                        textAlign: TextAlign.left,
+                        style: regular13.copyWith(color: AppColor.sub2)),
                   ],
                 ),
                 const SizedBox(height: 31),
@@ -184,7 +188,7 @@ class _CommentPageState extends State<CommentPage> {
                         ownerFieldName:
                             'FirebaseAuth.instance.currentUser!.uid',
                         addressFieldName: '포항시 북구 양덕동',
-                        likeFieldName: 0
+                        likeFieldName: 'FirebaseAuth.instance.currentUser!.uid'
                       });
                     },
                     child: Container(
