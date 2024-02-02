@@ -76,10 +76,11 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                               TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: '나는쿼카입니다님',
+                                      text: '나는 쿼카입니다',
                                       style: bold22.copyWith(
                                           color: AppColor.primary)),
-                                  const TextSpan(text: '이 추천하는', style: bold22),
+                                  const TextSpan(
+                                      text: '님이 추천하는', style: bold22),
                                 ],
                               ),
                             ),
@@ -105,12 +106,17 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     const SizedBox(height: 7),
                     Row(
                       children: [
-                        const CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            'https://i1.ytimg.com/vi/_fd_hwSm9zI/sddefault.jpg',
+                        const SizedBox(
+                          width: 33,
+                          height: 33,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              'https://i1.ytimg.com/vi/_fd_hwSm9zI/sddefault.jpg',
+                            ),
+                            radius: 29, // 원의 반지름 설정
                           ),
-                          radius: 29, // 원의 반지름 설정
                         ),
+                        const SizedBox(width: 6),
                         const Text(
                           '나는쿼카입니다',
                           style: semibold14,
@@ -185,7 +191,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     const SizedBox(height: 4),
                     Text(
                       widget.video.channelName ?? '',
-                      style: bold18,
+                      style: bold18.copyWith(color: AppColor.sub1),
                       maxLines: 1,
                     ),
                   ],
