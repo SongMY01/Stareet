@@ -5,40 +5,48 @@ class UserInfo {
   final String? uid;
   final String? nickName;
   final String? userEmail;
-  final String? userPassword;
+
+  // final String? userPassword;
   final String? profileImageURL;
-  final List<Map<String, dynamic>>? mate;
-  final List<String>? playlist_my;
-  final List<String>? playlist_others;
+  // final List<Map<String, dynamic>>? mate;
+  // final List<String>? playlist_my;
+  // final List<String>? playlist_others;
 
   UserInfo({
     required this.uid,
     required this.nickName,
     required this.userEmail,
-    required this.userPassword,
+
+    // required this.userPassword,
     required this.profileImageURL,
-    required this.mate,
-    required this.playlist_my,
-    required this.playlist_others,
+    // required this.mate,
+    // required this.playlist_my,
+    // required this.playlist_others,
   });
 
+  String? get userNickName => nickName;
+
+  // userEmail에 대한 getter를 추가
+  String? get userEmail1 => userEmail;
+
   factory UserInfo.fromFirebase(
-      QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
+      DocumentSnapshot<Map<String, dynamic>> docSnap) {
     final snapshotData = docSnap.data();
     return UserInfo(
-        uid: snapshotData['uid'],
-        nickName: snapshotData[userNameFieldName],
-        userEmail: snapshotData[userEmailFieldName],
-        userPassword: snapshotData[userPasswordFieldName],
-        profileImageURL: snapshotData[profileImageURLFieldName],
-        mate: snapshotData[mateFieldName],
-        playlist_my: snapshotData[playlist_myFieldName],
-        playlist_others: snapshotData[playlist_othersFieldName]);
+      uid: snapshotData?['uid'],
+      nickName: snapshotData?[userNameFieldName],
+      userEmail: snapshotData?[userEmailFieldName],
+      // userPassword: snapshotData?[userPasswordFieldName],
+      profileImageURL: snapshotData?[profileImageURLFieldName],
+      // mate: snapshotData?[mateFieldName],
+      // playlist_my: snapshotData?[playlist_myFieldName],
+      // playlist_others: snapshotData?[playlist_othersFieldName],
+    );
   }
 }
 
 const String userNameFieldName = "userName";
-const String userEmailFieldName = "userEamil";
+const String userEmailFieldName = "userEmail"; // <-- 수정된 부분
 const String userPasswordFieldName = "userPassword";
 const String profileImageURLFieldName = "profileImageURL";
 const String mateFieldName = 'mate';
@@ -52,7 +60,7 @@ Future<void> fetchAuthInfo() async {
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid);
 
-  docref.get().then((doc) => {
+  await docref.get().then((doc) => {
         (DocumentSnapshot doc) {
           data = doc.data() as Map<String, dynamic>;
           print(data);
@@ -68,7 +76,7 @@ class StarInfo {
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
-  final List<int>? like;
+  final List? like;
 
   StarInfo(
       {required this.uid,

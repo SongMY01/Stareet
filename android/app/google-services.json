@@ -12,7 +12,20 @@
           "package_name": "com.example.music_api"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_api",
+            "certificate_hash": "948d55c23249b3ec81704e03f34978f104a931c9"
+          }
+        },
+        {
+          "client_id": "859784822505-5povspchqhjk4v6tq8sesleiio6885nl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDLd_38Hdi4n3SDrIDQHw1zkeXEbuY4elw"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859784822505-5povspchqhjk4v6tq8sesleiio6885nl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "859784822505-32uv9oidm78t6u3k0eq8feqcsifg1r1c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.musicApi"
+              }
+            }
+          ]
         }
       }
     }
