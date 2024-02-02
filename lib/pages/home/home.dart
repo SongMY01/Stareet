@@ -419,7 +419,7 @@ class _HomePageState extends State<HomePage> {
                 ? (mapProvider.lineOverlays.isNotEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
-                : PutStar(putMarker: (){Navigator.pushNamed(context, "/search");}),
+                : const PutStar(),
           ),
         ),
       ]),

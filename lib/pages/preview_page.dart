@@ -130,7 +130,7 @@ class _PreviewPageState extends State<PreviewPage> {
                       child: SizedBox(
                           width: 24,
                           height: 24,
-                          child: Image.asset("assets/images/star.png")),
+                          child: Image.asset("assets/images/profile.png")),
                     ),
                     const SizedBox(width: 8),
                     const Text("태정태세비욘세",
