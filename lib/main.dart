@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:music_api/firebase_options.dart';
+
+import 'package:music_api/pages/mypage/my_page.dart';
+
 import 'package:provider/provider.dart';
 
 import 'pages/data_search.dart';
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const LoginPage(),
         '/home': (BuildContext context) => const HomePage(),
         '/search': (BuildContext context) => DataSearchPage(),
+        '/mypage': (BuildContext context) => MyPage(),
       },
     );
   }
