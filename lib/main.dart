@@ -22,7 +22,7 @@ void main() async {
   );
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => SwitchProvider()),
-    ChangeNotifierProvider(create: (_) => MapProvider(SwitchProvider()))
+    ChangeNotifierProvider(create: (_) => MapProvider())
   ], child: const MyApp()));
 }
 
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const LoginPage(),
         '/home': (BuildContext context) => const HomePage(),
         '/search': (BuildContext context) => DataSearchPage(),
-        '/mypage': (BuildContext context) => MyPage(),
+        '/mypage': (BuildContext context) => const MyPage(),
       },
     );
   }

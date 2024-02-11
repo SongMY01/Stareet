@@ -17,11 +17,17 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for android - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
@@ -46,29 +52,14 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAsciwPXoWNu5eQpQHQCGTQhhuxIVYyDNc',
-    appId: '1:859784822505:web:7ab6954a4fc95224f8fa78',
-    messagingSenderId: '859784822505',
-    projectId: 'music-9b7aa',
-    authDomain: 'music-9b7aa.firebaseapp.com',
-    storageBucket: 'music-9b7aa.appspot.com',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDLd_38Hdi4n3SDrIDQHw1zkeXEbuY4elw',
-    appId: '1:859784822505:android:fdf5b20d1b093013f8fa78',
-    messagingSenderId: '859784822505',
-    projectId: 'music-9b7aa',
-    storageBucket: 'music-9b7aa.appspot.com',
-  );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB-Ad0zeWK8jZjs5hCYxzdWfw-uUkaP1dY',
-    appId: '1:859784822505:ios:c2a7193344c3b4a2f8fa78',
+    appId: '1:859784822505:ios:25fff8be69749920f8fa78',
     messagingSenderId: '859784822505',
     projectId: 'music-9b7aa',
     storageBucket: 'music-9b7aa.appspot.com',
-    iosBundleId: 'com.example.musicApi',
+    androidClientId: '859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com',
+    iosClientId: '859784822505-9m0cbvmtv5smih6od5b06snt15v4bit0.apps.googleusercontent.com',
+    iosBundleId: 'com.soda.naverMap',
   );
 }

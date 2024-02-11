@@ -183,13 +183,14 @@ class _CommentPageState extends State<CommentPage> {
                           36.084607301484596,
                           129.3957316179093
                         ],
-                        songFieldName: widget.video,
+                        // songFieldName: widget.video,
                         commentFieldName: "코멘트",
                         ownerFieldName:
                             'FirebaseAuth.instance.currentUser!.uid',
                         addressFieldName: '포항시 북구 양덕동',
                         likeFieldName: 'FirebaseAuth.instance.currentUser!.uid'
                       });
+                      Navigator.popUntil(context, ModalRoute.withName('/home'));
                     },
                     child: Container(
                         width: double.infinity,

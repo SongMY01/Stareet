@@ -217,7 +217,7 @@ class _HomePageState extends State<HomePage> {
             },
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
-              context.read<MapProvider>().drawMarker(latLng);
+              context.read<MapProvider>().drawMarker(context, latLng);
               debugPrint(await _getAddress(latLng.latitude, latLng.longitude));
             },
           ),
@@ -421,7 +421,7 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 60),
             child: switchProvider.switchMode
-                ? (mapProvider.lineOverlays.isNotEmpty
+                ? (mapProvider.lineOverlays.isEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
                 : const PutStar(),

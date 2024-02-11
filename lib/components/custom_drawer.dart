@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/mypage/my_page.dart';
 import '../providers/switch_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
@@ -22,9 +23,10 @@ class CustomDrawer extends StatelessWidget {
                     width: 2, color: AppColor.text.withOpacity(0.85)))),
         child: Column(children: [
           const SizedBox(height: 75),
-          const ListTile(
+          ListTile(
               leading:
-                  Icon(Icons.close_rounded, color: AppColor.text, size: 22)),
+                  Image.asset("assets/images/exit_button.png", width: 20, height: 20),
+                  onTap: () => Navigator.pop(context),),
           ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(32),
@@ -102,7 +104,9 @@ class CustomDrawer extends StatelessWidget {
                   style: semibold24.copyWith(color: AppColor.sub2))),
           const Spacer(),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MyPage()));
+            },
             child: Row(
               children: [
                 const SizedBox(width: 15),
