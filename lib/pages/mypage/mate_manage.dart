@@ -1,19 +1,16 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:music_api/pages/mypage/mypage_profile.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
-import '../community/search.dart';
 
-var mate_ING = [];
+var mateIng = [];
 
-class mateMagnage extends StatelessWidget {
-  mateMagnage({super.key});
+class MateManage extends StatelessWidget {
+  const MateManage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,7 @@ class mateMagnage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -51,21 +48,21 @@ class mateMagnage extends StatelessWidget {
           stream: getUserInfoStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-              print(userInfo);
-              mate_ING = userInfo['mate_ing'] as List<dynamic>? ?? [];
+              debugPrint(userInfo as String?);
+              mateIng = userInfo['mate_ing'] as List<dynamic>? ?? [];
 
-              print(mate_ING);
-              return Column(
+              debugPrint(mateIng as String?);
+              return const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Divider(),
-                  const MateNameListIng(),
+                  Divider(),
+                  MateNameListIng(),
                 ],
               );
             }
@@ -98,11 +95,11 @@ OutlineInputBorder myinputborder() {
 Stream<List<Map<String, dynamic>>> getMateListRealStream() {
   return FirebaseFirestore.instance
       .collection('user')
-      .where('user-id', whereIn: mate_ING)
+      .where('user-id', whereIn: mateIng)
       .snapshots()
       .map((querySnapshot) {
     return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
+        .map((doc) => doc.data())
         .toList();
   });
 }
@@ -121,23 +118,23 @@ class _MateNameListIngState extends State<MateNameListIng> {
         stream: getMateListRealStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            var mate_realInfoList = snapshot.data!;
+            var mateRealInfoList = snapshot.data!;
 
-            return Container(
-              height: 60.0 * (mate_realInfoList.length) as double,
+            return SizedBox(
+              height: 60.0 * (mateRealInfoList.length),
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: mate_realInfoList.length,
+                itemCount: mateRealInfoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var mate_realInfo = mate_realInfoList[index];
-                  var uid = mate_realInfo['user-id'] ?? '없음';
-                  var nickName = mate_realInfo['nickName'] ?? '없음';
-                  var imageUrl = mate_realInfo['profileImage'] ?? '없음';
-                  print('$imageUrl 입니다요');
+                  var mateRealInfo = mateRealInfoList[index];
+                  var uid = mateRealInfo['user-id'] ?? '없음';
+                  var nickName = mateRealInfo['nickName'] ?? '없음';
+                  var imageUrl = mateRealInfo['profileImage'] ?? '없음';
+                  debugPrint('$imageUrl 입니다요');
                   return MateNameIng(
                     uid: uid,
                     nickName: nickName,
@@ -164,11 +161,11 @@ class MateNameIng extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MateNameIngState createState() => _MateNameIngState();
+  State<MateNameIng> createState() => _MateNameIngState();
 }
 
 class _MateNameIngState extends State<MateNameIng> {
-  bool _isStarSelected = true;
+  final bool _isStarSelected = true;
 
   @override
   Widget build(BuildContext context) {
@@ -191,13 +188,13 @@ class _MateNameIngState extends State<MateNameIng> {
             children: [
               TextButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     'data,',
                     style: semibold14,
                   )),
               TextButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     'data,',
                     style: semibold14,
                   ))

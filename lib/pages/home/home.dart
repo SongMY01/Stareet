@@ -433,7 +433,7 @@ class _HomePageState extends State<HomePage> {
 
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: Color.fromRGBO(45, 45, 45, 1),
+      backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
       context: context,
       builder: (BuildContext context) {
         return ClipRRect(
@@ -442,7 +442,7 @@ class _HomePageState extends State<HomePage> {
             margin: const EdgeInsets.only(left: 25, right: 25),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(23),
-              color: Color.fromRGBO(45, 45, 45, 0),
+              color: const Color.fromRGBO(45, 45, 45, 0),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

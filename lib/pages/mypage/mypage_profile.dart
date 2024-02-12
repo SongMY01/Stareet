@@ -58,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
         'profileImage': imageUrl,
       });
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
     }
   }
 
@@ -73,17 +73,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
       return result.docs.isEmpty;
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
       return false;
     }
   }
 
   Future<void> _tryValidation() async {
     _isNicknameAvailable = await isNicknameAvailable(nickname);
-    print(_isNicknameAvailable);
+    debugPrint(_isNicknameAvailable as String?);
 
     final isValid = _formKey.currentState!.validate();
-    print(isValid);
+    debugPrint(isValid as String?);
 
     if (isValid) {
       _formKey.currentState!.save();
@@ -93,12 +93,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
         // 이미지 업로드
         final imageUrl = await uploadImageToFirebaseStorage(_image!, user.uid);
-        print(nickname);
+        debugPrint(nickname);
 
         // Firebase Firestore에 사용자 정보 저장
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);
       } catch (e) {
-        print(e);
+        debugPrint(e as String?);
         // 에러 처리
       }
     }
@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
               future: getUserInfo(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {

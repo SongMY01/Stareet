@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../pages/data_search.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  CustomAppBar({Key? key})
+  const CustomAppBar({Key? key})
       : preferredSize = const Size.fromHeight(kToolbarHeight),
         super(key: key);
 
@@ -11,7 +11,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Size preferredSize; // default is 56.0
 
   @override
-  _CustomAppBarState createState() => _CustomAppBarState();
+  State<CustomAppBar> createState() => _CustomAppBarState();
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
@@ -28,13 +28,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
         title: InkWell(
           onTap: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (_) => DataSearchPage()));
+                context, MaterialPageRoute(builder: (_) => const DataSearchPage()));
             // showSearch(context: context, delegate: DataSearch());
           },
           child: Container(
             width: 340,
             height: 36,
-            color: Color.fromRGBO(255, 255, 255, 0.1),
+            color: const Color.fromRGBO(255, 255, 255, 0.1),
             // child: SizedBox(
             //   width: 340,
             //   height: 36,

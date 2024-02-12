@@ -1,25 +1,21 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
-import '../buttons/meta_data_section.dart';
-import '../buttons/play_pause_button.dart';
 import '../buttons/play_pause_button_bar.dart';
 
-// ignore: must_be_immutable
 class VideoDetailPage extends StatefulWidget {
-  Video video;
+  final Video video;
 
-  VideoDetailPage({required this.video});
+  const VideoDetailPage({super.key, required this.video});
 
   @override
-  _VideoDetailPageState createState() => _VideoDetailPageState();
+  State<VideoDetailPage> createState() => _VideoDetailPageState();
 }
 
 class _VideoDetailPageState extends State<VideoDetailPage> {
@@ -144,7 +140,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     const SizedBox(height: 15),
                     Stack(
                       children: [
-                        Container(
+                        SizedBox(
                             width: 340,
                             height: 340,
                             child: ClipRRect(
@@ -167,7 +163,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                         ClipRRect(
                             child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: Container(
+                                child: const SizedBox(
                                   width: 340,
                                   height: 340,
                                 ))),
@@ -216,14 +212,13 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 }
 
 class Controls extends StatelessWidget {
-  ///
-  const Controls();
+  const Controls({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return const Stack(
       children: [
-        const Column(
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             VideoPositionSeeker(),
@@ -233,7 +228,7 @@ class Controls extends StatelessWidget {
         Center(
             child: Column(
           children: [
-            const SizedBox(height: 55),
+            SizedBox(height: 55),
             PlayPauseButtonBar(),
           ],
         )),

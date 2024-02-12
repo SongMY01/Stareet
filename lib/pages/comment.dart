@@ -6,8 +6,8 @@ import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
 
 class CommentPage extends StatefulWidget {
-  Video video;
-  CommentPage({super.key, required this.video});
+  final Video video;
+  const CommentPage({super.key, required this.video});
 
   @override
   State<CommentPage> createState() => _CommentPageState();
