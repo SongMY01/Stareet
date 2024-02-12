@@ -59,11 +59,15 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
+  Future<Position> getPosition()  {
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+  }
+
   // 마커 그리기 함수
   void drawMarker(
       BuildContext context, String videoTitle, String comment) async {
-    final Position location = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    final Position location = await getPosition();
 
     final String currentAddress =
         await _getAddress(location.latitude, location.longitude);

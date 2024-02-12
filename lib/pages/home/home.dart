@@ -27,10 +27,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  StreamSubscription<Position>? _positionSubscription;
   final Completer<NaverMapController> _controller = Completer();
   final ScrollController _scrollController = ScrollController();
   final _tooltipController = SuperTooltipController();
-  final _textController = TextEditingController();
   NMarker? _userLocationMarker;
   bool editMode = false;
   late NCameraPosition camera;
@@ -70,45 +70,44 @@ class _HomePageState extends State<HomePage> {
   void _updatePosition() async {
     final mapController =
         Provider.of<MapProvider>(context, listen: false).mapController;
-    camera = await mapController.getCameraPosition();
-    position = await _getPosition();
+    final results = await Future.wait([_getPosition()]);
+    position = results[0];
     mapController.updateCamera(NCameraUpdate.withParams(
-        target: NLatLng(position.latitude, position.longitude),
-        zoom: camera.zoom));
+        target: NLatLng(position.latitude, position.longitude)));
     // _drawCircle(position);
   }
 
   // 현재 위치에 마커 찍기
-  void _userLocation() {
-    final mapController =
-        Provider.of<MapProvider>(context, listen: false).mapController;
-    Geolocator.getPositionStream().listen((Position position) {
-      if (_userLocationMarker == null) {
-        // 초기 사용자 위치 마커를 생성합니다.
-        _userLocationMarker = NMarker(
-            id: 'user_location',
-            position: NLatLng(position.latitude, position.longitude),
-            icon: const NOverlayImage.fromAssetImage(
-                'assets/images/my_location.png'), // 동그라미 이미지
-            size: const Size(32, 32));
-        setState(() {
-          // 마커를 지도에 추가합니다.
-          mapController.addOverlay(_userLocationMarker!);
-        });
-      } else {
-        // 사용자 위치가 변경될 때마다 마커 위치를 업데이트합니다.
-        setState(() {
-          _userLocationMarker = NMarker(
-            id: 'user_location',
-            position: NLatLng(position.latitude, position.longitude),
-            icon: const NOverlayImage.fromAssetImage(
-                'assets/images/my_location.png'),
-            size: const Size(32, 32), // 동그라미 이미지
-          );
-        });
-      }
-    });
-  }
+  // void _userLocation() {
+  //   final mapController =
+  //       Provider.of<MapProvider>(context, listen: false).mapController;
+  //   Geolocator.getPositionStream().listen((Position position) {
+  //     if (_userLocationMarker == null) {
+  //       // 초기 사용자 위치 마커를 생성합니다.
+  //       _userLocationMarker = NMarker(
+  //           id: 'user_location',
+  //           position: NLatLng(position.latitude, position.longitude),
+  //           icon: const NOverlayImage.fromAssetImage(
+  //               'assets/images/my_location.png'), // 동그라미 이미지
+  //           size: const Size(32, 32));
+  //       setState(() {
+  //         // 마커를 지도에 추가합니다.
+  //         mapController.addOverlay(_userLocationMarker!);
+  //       });
+  //     } else {
+  //       // 사용자 위치가 변경될 때마다 마커 위치를 업데이트합니다.
+  //       setState(() {
+  //         _userLocationMarker = NMarker(
+  //           id: 'user_location',
+  //           position: NLatLng(position.latitude, position.longitude),
+  //           icon: const NOverlayImage.fromAssetImage(
+  //               'assets/images/my_location.png'),
+  //           size: const Size(32, 32), // 동그라미 이미지
+  //         );
+  //       });
+  //     }
+  //   });
+  // }
 
   // 이미지 저장
   void saveMapImage() async {
@@ -133,15 +132,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _updateUserMarker(Position position) {
+    _userLocationMarker = NMarker(
+        id: 'user_location',
+        position: NLatLng(position.latitude, position.longitude),
+        icon: const NOverlayImage.fromAssetImage(
+            'assets/images/my_location.png'), // 동그라미 이미지
+        size: const Size(30, 30));
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _determinePermission();
+    _positionSubscription = Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.best, distanceFilter: 10))
+        .listen(_updateUserMarker);
   }
 
   @override
   void dispose() {
     Geolocator.getPositionStream().listen((_) {}).cancel();
+    _positionSubscription?.cancel();
     super.dispose();
   }
 
@@ -171,7 +185,8 @@ class _HomePageState extends State<HomePage> {
             onMapReady: (controller) async {
               context.read<MapProvider>().setController(controller);
               _controller.complete(controller);
-              _userLocation();
+              _updateUserMarker(await mapProvider.getPosition());
+              mapProvider.mapController.addOverlay(_userLocationMarker!);
             },
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
