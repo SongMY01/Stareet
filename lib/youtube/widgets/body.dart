@@ -9,7 +9,7 @@ class Body extends StatefulWidget {
   Body({Key? key, required this.contentList}) : super(key: key);
 
   @override
-  _BodyState createState() => _BodyState(contentList);
+  State<Body> createState() => _BodyState(contentList);
 }
 
 class _BodyState extends State<Body> {

@@ -25,7 +25,6 @@ class VideoWidget extends StatelessWidget {
             );
           },
         );
-        debugPrint(video as String?);
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12, top: 10),

@@ -103,6 +103,19 @@ class StarInfo {
       like: snapshotData[likeFieldName],
     );
   }
+
+  Map<String, dynamic> toMap(){
+    return {
+      uidFieldName: uid,
+      registerTimeFieldName: registerTime,
+      locationFieldName: location,
+      songFieldName: song,
+      commentFieldName: comment,
+      ownerFieldName: owner,
+      addressFieldName: address,
+      likeFieldName: like,
+    };
+  }
 }
 
 const String uidFieldName = "uid";

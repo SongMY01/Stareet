@@ -75,11 +75,8 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _tryValidation() async {
     _isNicknameAvailable = await isNicknameAvailable(nickname);
-    debugPrint(_isNicknameAvailable as String?);
 
     final isValid = _formKey.currentState!.validate();
-    debugPrint(isValid as String?);
-
     if (isValid) {
       _formKey.currentState!.save();
 
@@ -93,7 +90,7 @@ class _SignupPageState extends State<SignupPage> {
         // Firebase Firestore에 사용자 정보 저장
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);
       } catch (e) {
-        debugPrint(e as String?);
+        print(e);
         // 에러 처리
       }
       Navigator.pushNamed(context, '/home');

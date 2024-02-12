@@ -16,10 +16,8 @@ import '../utilities/text_theme.dart';
 class PreviewPage extends StatefulWidget {
   const PreviewPage(
       {super.key,
-      required this.position,
-      required this.name});
+      required this.position});
   final NCameraPosition position;
-  final String name;
 
   @override
   State<PreviewPage> createState() => _PreviewPageState();
