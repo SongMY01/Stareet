@@ -9,9 +9,7 @@ import 'package:music_api/components/home_bottomsheet.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-import '../utilities/color_scheme.dart';
 import '../utilities/info.dart';
-import '../utilities/text_theme.dart';
 import 'switch_state.dart';
 
 class MapProvider extends ChangeNotifier {
@@ -59,7 +57,7 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
-  Future<Position> getPosition()  {
+  Future<Position> getPosition() {
     return Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
   }
@@ -167,7 +165,7 @@ class MapProvider extends ChangeNotifier {
       backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
       context: context,
       builder: (BuildContext context) {
-        return HomeBottomsheet();
+        return const HomeBottomsheet();
       },
     );
   }

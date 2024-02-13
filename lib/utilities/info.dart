@@ -104,7 +104,19 @@ class StarInfo {
     );
   }
 
-  Map<String, dynamic> toMap(){
+  static StarInfo fromMap(Map<String, dynamic> map) {
+    return StarInfo(
+        uid: map['uid'],
+        location: List<double>.from(map['location']),
+        song: map['song'],
+        comment: map['comment'],
+        owner: map['owner'],
+        registerTime: map['registerTime'],
+        address: map['address'],
+        like: List<String>.from(map['like']));
+  }
+
+  Map<String, dynamic> toMap() {
     return {
       uidFieldName: uid,
       registerTimeFieldName: registerTime,

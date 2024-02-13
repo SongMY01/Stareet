@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -16,6 +17,7 @@ import '../../components/home_components.dart';
 import '../../providers/map_state.dart';
 import '../../providers/switch_state.dart';
 import '../../utilities/color_scheme.dart';
+import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,6 +62,13 @@ class _HomePageState extends State<HomePage> {
     return Future.value(true);
   }
 
+  // firebase에서 Star 정보 가져오기
+  Future<List<StarInfo>> fetchUserStars(String uid) async {
+    final snapshot = await FirebaseFirestore.instance.collection('Star').where('owner', isEqualTo: uid).get();
+
+    return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
+  }
+
   // GPS 정보 얻기
   Future<Position> _getPosition() async {
     return await Geolocator.getCurrentPosition(
@@ -76,38 +85,6 @@ class _HomePageState extends State<HomePage> {
         target: NLatLng(position.latitude, position.longitude)));
     // _drawCircle(position);
   }
-
-  // 현재 위치에 마커 찍기
-  // void _userLocation() {
-  //   final mapController =
-  //       Provider.of<MapProvider>(context, listen: false).mapController;
-  //   Geolocator.getPositionStream().listen((Position position) {
-  //     if (_userLocationMarker == null) {
-  //       // 초기 사용자 위치 마커를 생성합니다.
-  //       _userLocationMarker = NMarker(
-  //           id: 'user_location',
-  //           position: NLatLng(position.latitude, position.longitude),
-  //           icon: const NOverlayImage.fromAssetImage(
-  //               'assets/images/my_location.png'), // 동그라미 이미지
-  //           size: const Size(32, 32));
-  //       setState(() {
-  //         // 마커를 지도에 추가합니다.
-  //         mapController.addOverlay(_userLocationMarker!);
-  //       });
-  //     } else {
-  //       // 사용자 위치가 변경될 때마다 마커 위치를 업데이트합니다.
-  //       setState(() {
-  //         _userLocationMarker = NMarker(
-  //           id: 'user_location',
-  //           position: NLatLng(position.latitude, position.longitude),
-  //           icon: const NOverlayImage.fromAssetImage(
-  //               'assets/images/my_location.png'),
-  //           size: const Size(32, 32), // 동그라미 이미지
-  //         );
-  //       });
-  //     }
-  //   });
-  // }
 
   // 이미지 저장
   void saveMapImage() async {
@@ -180,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 indoorEnable: true,
                 logoClickEnable: false,
                 consumeSymbolTapEvents: false,
+                locationButtonEnable: true,
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
