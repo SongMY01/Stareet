@@ -5,8 +5,16 @@ import '../../utilities/text_theme.dart';
 //-----페이지 3
 
 class StarDetail extends StatelessWidget {
-  const StarDetail({super.key});
+  final String owner;
+  final String image_url;
+  final String title;
 
+  const StarDetail(
+      {Key? key,
+      required this.owner,
+      required this.image_url,
+      required this.title})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,8 +43,12 @@ class StarDetail extends StatelessWidget {
                             Positioned(
                               left: 30,
                               bottom: 20,
-                              child:
-                                  Image.asset('assets/fonts/images/stars.png'),
+                              child: Image.network(
+                                this.image_url,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ],
                         ),
@@ -49,15 +61,24 @@ class StarDetail extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 170),
-                        const Text("용가리 자리",
-                            style: bold20),
-                        const Text("좌",
-                            style: medium16),
+                        Text(this.title, style: bold20),
+                        Text(this.owner, style: medium16),
                         Text("음악 7개",
-                            style:
-                                regular12.copyWith(color: AppColor.sub2)),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.share))
+                            style: regular12.copyWith(color: AppColor.sub2)),
+                        SizedBox(height: 15),
+                        Container(
+                          width: 43.0, // 원하는 너비 설정
+                          height: 43.0, // 원하는 높이 설정
+                          decoration: BoxDecoration(
+                            color: AppColor.text2,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.share_outlined,
+                                color: AppColor.sub1),
+                          ),
+                        )
                       ],
                     )
                   ],
@@ -169,8 +190,7 @@ class UserPlay extends StatelessWidget {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("잘 지내자, 우리",
-                  style: bold16.copyWith(color: AppColor.sub1)),
+              Text("잘 지내자, 우리", style: bold16.copyWith(color: AppColor.sub1)),
               Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
             ],
           ),
