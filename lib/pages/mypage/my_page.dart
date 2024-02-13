@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -8,7 +9,8 @@ import 'mypage_setting.dart';
 
 //------6페이지
 class MyPage extends StatefulWidget {
-  const MyPage({Key? key}) : super(key: key);
+  final String? nickName;
+  const MyPage({super.key, this.nickName});
 
   @override
   _MyPageState createState() => _MyPageState();
@@ -97,7 +99,7 @@ class _MyPageState extends State<MyPage> {
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('닉네임은 일곱글',
+                      Text('${widget.nickName}',
                           style: bold18.copyWith(color: AppColor.text)),
                       const Spacer(),
                       TextButton(

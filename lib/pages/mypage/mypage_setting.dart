@@ -14,7 +14,7 @@ class _SettingPageState extends State<SettingPage> {
   bool switchValue = false;
 
   void toggleSwitch(bool value) {
-    // 스위치 상태를 토글하고 UI를 업데이트하기 위해 setState를 호출합니다.
+    // 스위치 상태를 토글하고 UI를 업데이트하기 위해 setState를 호출.
     setState(() {
       switchValue = value;
     });

@@ -1,46 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class UserInfo {
+class UsersInfo {
   final String? uid;
   final String? nickName;
   final String? userEmail;
   final String? userPassword;
-  final String? profileImageURL;
+  final String? profileImage;
   final List<Map<String, dynamic>>? mate;
   final List<String>? playlist_my;
   final List<String>? playlist_others;
 
-  UserInfo({
+  UsersInfo({
     required this.uid,
     required this.nickName,
     required this.userEmail,
     required this.userPassword,
-    required this.profileImageURL,
+    required this.profileImage,
     required this.mate,
     required this.playlist_my,
     required this.playlist_others,
   });
 
-  factory UserInfo.fromFirebase(
-      QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
-    final snapshotData = docSnap.data();
-    return UserInfo(
+  factory UsersInfo.fromFirebase(
+      DocumentSnapshot<Map<String, dynamic>> docSnap) {
+    final snapshotData = docSnap.data() ?? {};
+    return UsersInfo(
         uid: snapshotData['uid'],
         nickName: snapshotData[userNameFieldName],
         userEmail: snapshotData[userEmailFieldName],
         userPassword: snapshotData[userPasswordFieldName],
-        profileImageURL: snapshotData[profileImageURLFieldName],
+        profileImage: snapshotData[profileImageURLFieldName],
         mate: snapshotData[mateFieldName],
         playlist_my: snapshotData[playlist_myFieldName],
         playlist_others: snapshotData[playlist_othersFieldName]);
   }
 }
 
-const String userNameFieldName = "userName";
-const String userEmailFieldName = "userEamil";
+const String userNameFieldName = "nickName";
+const String userEmailFieldName = "userEmail";
 const String userPasswordFieldName = "userPassword";
-const String profileImageURLFieldName = "profileImageURL";
+const String profileImageURLFieldName = "profileImage";
 const String mateFieldName = 'mate';
 const String playlist_myFieldName = 'playlist_my';
 const String playlist_othersFieldName = 'playlist_others';
@@ -108,7 +108,7 @@ const String likeFieldName = "like";
 class PlaylistInfo {
   final String? uid;
   final Timestamp? registerTime;
-  final String? image_URL;
+  final String? image_url;
   final String? owner;
   final String? title;
   final List? stars_id;
@@ -117,7 +117,7 @@ class PlaylistInfo {
   PlaylistInfo(
       {required this.uid,
       required this.registerTime,
-      required this.image_URL,
+      required this.image_url,
       required this.owner,
       required this.title,
       required this.stars_id,
@@ -129,7 +129,7 @@ class PlaylistInfo {
     return PlaylistInfo(
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
-      image_URL: snapshotData[image_URLFieldName],
+      image_url: snapshotData[image_URLFieldName],
       owner: snapshotData[ownerFieldName],
       title: snapshotData[titleFieldName],
       subscribe: snapshotData[subscribeFieldName],
@@ -138,7 +138,7 @@ class PlaylistInfo {
   }
 }
 
-const image_URLFieldName = 'image_URL';
+const image_URLFieldName = 'image_url';
 const titleFieldName = 'title';
 const subscribeFieldName = 'subscribe';
 const stars_idFieldName = 'stars_id';

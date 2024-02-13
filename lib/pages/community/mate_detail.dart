@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
 //------6페이지
 class MateDetail extends StatefulWidget {
-  const MateDetail({Key? key}) : super(key: key);
+  final String nickName;
+  final String profileImage;
+
+  const MateDetail(
+      {Key? key, required this.nickName, required this.profileImage})
+      : super(key: key);
 
   @override
-  _MateDetailState createState() => _MateDetailState();
+  _MateDetailState createState() => _MateDetailState(nickName, profileImage);
 }
 
 class _MateDetailState extends State<MateDetail> {
+  final String owner;
+  final String profileImage;
+
+  _MateDetailState(this.owner, this.profileImage);
   bool mateRequested = false;
 
   @override
@@ -63,8 +73,8 @@ class _MateDetailState extends State<MateDetail> {
                   SizedBox(
                     width: 20,
                   ),
-                  Image.asset(
-                    'assets/fonts/images/profile.png',
+                  Image.network(
+                    this.profileImage, //이미지 바꿀 때 network인지 asset인지 구분 잘할 것
                     width: 60,
                     height: 60,
                     fit: BoxFit.fill,
@@ -77,7 +87,8 @@ class _MateDetailState extends State<MateDetail> {
                   SizedBox(
                     width: 20,
                   ),
-                  Text('좌좌좌좌', style: bold18.copyWith(color: AppColor.sub1)),
+                  Text('${widget.nickName}', //닉네임 바꾸는 곳
+                      style: bold18.copyWith(color: AppColor.sub1)),
                   const Spacer(),
                   SizedBox(
                     height: 28,
