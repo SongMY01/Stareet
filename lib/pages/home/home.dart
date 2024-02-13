@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:music_api/pages/preview_page.dart';
+import 'package:music_api/youtube/music/video_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
+import 'package:youtube_data_api/models/video.dart';
 
 import '../../components/custom_drawer.dart';
 import '../../components/custom_snackbar.dart';
@@ -64,7 +66,10 @@ class _HomePageState extends State<HomePage> {
 
   // firebase에서 Star 정보 가져오기
   Future<List<StarInfo>> fetchUserStars(String uid) async {
-    final snapshot = await FirebaseFirestore.instance.collection('Star').where('owner', isEqualTo: uid).get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Star')
+        .where('owner', isEqualTo: uid)
+        .get();
 
     return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
   }
@@ -278,7 +283,16 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => VideoDetailPage(
+                              //               videoId: '_fd_hwSm9zI',
+                              //               musicTitle: '잘지내자 우리',
+                              //               musicChannel: '최유리',
+                              //             )));
+                            },
                             child: Image.asset("assets/images/logo.png",
                                 width: 85, height: 35),
                           ),

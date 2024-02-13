@@ -62,8 +62,10 @@ Future<void> fetchAuthInfo() async {
 
 class StarInfo {
   final String? uid;
-  final double? location;
-  final String? song;
+  final List<double>? location;
+  final String? title;
+  final String? singer;
+  final String? videoId;
   final String? comment;
   final String? owner;
   final Timestamp? registerTime;
@@ -73,7 +75,9 @@ class StarInfo {
   StarInfo(
       {required this.uid,
       required this.location,
-      required this.song,
+      required this.title,
+      this.singer,
+      this.videoId,
       required this.comment,
       required this.owner,
       required this.registerTime,
@@ -87,19 +91,53 @@ class StarInfo {
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
       location: snapshotData[locationFieldName],
-      song: snapshotData[songFieldName],
+      title: snapshotData[musciTitleFieldName],
+      singer: snapshotData[singerFieldName],
+      videoId: snapshotData[videoIdFieldName],
       comment: snapshotData[commentFieldName],
       owner: snapshotData[ownerFieldName],
       address: snapshotData[addressFieldName],
       like: snapshotData[likeFieldName],
     );
   }
+
+  static StarInfo fromMap(Map<String, dynamic> map) {
+    return StarInfo(
+        uid: map['uid'],
+        location: List<double>.from(map['location']),
+        title: map['title'],
+        singer: map['singer'],
+        videoId: map['videoId'],
+        comment: map['comment'],
+        owner: map['owner'],
+        registerTime: map['registerTime'],
+        address: map['address'],
+        like: List<String>.from(map['like']));
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      uidFieldName: uid,
+      registerTimeFieldName: registerTime,
+      locationFieldName: location,
+      musciTitleFieldName: title,
+      singerFieldName: singer,
+      videoIdFieldName: videoId,
+      commentFieldName: comment,
+      ownerFieldName: owner,
+      addressFieldName: address,
+      likeFieldName: like,
+    };
+  }
+
 }
 
 const String uidFieldName = "uid";
 const String registerTimeFieldName = "registerTime";
 const String locationFieldName = "location";
-const String songFieldName = "song";
+const String musciTitleFieldName = "song";
+const String singerFieldName = "singer";
+const String videoIdFieldName = "videoId";
 const String commentFieldName = "comment";
 const String ownerFieldName = "owner";
 const String addressFieldName = "address";
