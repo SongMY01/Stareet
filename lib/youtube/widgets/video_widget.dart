@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/color_scheme.dart';
+import 'package:music_api/utilities/text_theme.dart';
 import 'package:youtube_data_api/models/video.dart';
+import '../music/video_detail_page.dart';
 import 'alert.dart';
-import '../music/video_search_page.dart';
 
 class VideoWidget extends StatelessWidget {
   final Video video;
 
-  VideoWidget({
+  const VideoWidget({
+    super.key,
     required this.video,
   });
 
@@ -29,7 +32,7 @@ class VideoWidget extends StatelessWidget {
           children: <Widget>[
             Stack(
               children: [
-                Container(
+                SizedBox(
                   height: 51,
                   width: 51,
                   child: Image.network(
@@ -61,22 +64,16 @@ class VideoWidget extends StatelessWidget {
                     Text(
                       video.title ?? '',
                       textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      maxLines: 2,
+                      style: bold15.copyWith(color: AppColor.sub1),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ), //video title
+                    const SizedBox(height: 3),
                     Text(
                       video.channelName ?? '',
                       textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.white38,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: regular13.copyWith(color: AppColor.sub2),
+                      maxLines: 1,
                     ), //video channel
                     const SizedBox(
                       height: 5,
@@ -84,7 +81,13 @@ class VideoWidget extends StatelessWidget {
                   ],
                 ),
               ),
-            )
+            ),
+            Column(children: [
+              const SizedBox(height: 22),
+              Text(video.duration ?? '',
+                  textAlign: TextAlign.left,
+                  style: regular13.copyWith(color: AppColor.sub2)),
+            ]),
           ],
         ),
       ),
@@ -93,7 +96,7 @@ class VideoWidget extends StatelessWidget {
 
   navigateToPlayer(BuildContext context) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (_) => VideoSearchPage(video: video)));
+        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
 
     // List<String> videoIds = [];
     // videoIds.add(video.videoId!);

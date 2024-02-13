@@ -9,13 +9,22 @@ import '../mypage/my_page.dart';
 import 'search.dart';
 
 class CommunityPage extends StatefulWidget {
+  const CommunityPage({super.key});
+
   @override
-  _CommunityPage createState() => _CommunityPage();
+  State<CommunityPage> createState() => _CommunityPage();
 }
 
 class _CommunityPage extends State<CommunityPage> {
   final searchController = TextEditingController();
   String query = '';
+
+
+  List? contentList;
+  bool isLoading = false;
+  bool firstLoad = true;
+  String apiKeys = "";
+
 
   FocusNode textfieldFocusNode = FocusNode();
   @override

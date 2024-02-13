@@ -8,6 +8,8 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 ///
 class ListPlayPauseButtonBar extends StatelessWidget {
   final ValueNotifier<bool> _isMuted = ValueNotifier(false);
+
+  ListPlayPauseButtonBar({super.key});
   @override
   Widget build(BuildContext context) {
     return Row(

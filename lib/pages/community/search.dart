@@ -126,8 +126,9 @@ class TabTwo extends StatefulWidget {
     required this.query,
   }) : super(key: key);
 
+
   @override
-  _TabTwoState createState() => _TabTwoState();
+  State<TabTwo> createState() => _TabTwoState();
 }
 
 class _TabTwoState extends State<TabTwo> {

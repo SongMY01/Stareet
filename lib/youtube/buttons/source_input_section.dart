@@ -7,8 +7,10 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 ///
 class SourceInputSection extends StatefulWidget {
+  const SourceInputSection({super.key});
+
   @override
-  _SourceInputSectionState createState() => _SourceInputSectionState();
+  State<SourceInputSection> createState() => _SourceInputSectionState();
 }
 
 class _SourceInputSectionState extends State<SourceInputSection> {
@@ -198,7 +200,7 @@ class _PlaylistTypeDropDownState extends State<_PlaylistTypeDropDown> {
           ),
         ),
         ...ListType.values.map(
-          (type) => DropdownMenuItem(child: Text(type.value), value: type),
+          (type) => DropdownMenuItem(value: type, child: Text(type.value)),
         ),
       ],
       onChanged: (value) {

@@ -6,13 +6,12 @@ import '../utilities/text_theme.dart';
 
 // 홈 화면 FAB
 class PutStar extends StatelessWidget {
-  final Function() putMarker;
-  const PutStar({super.key, required this.putMarker});
+  const PutStar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => putMarker,
+        onTap: () => Navigator.pushNamed(context, '/search'),
         child:
             Image.asset("assets/images/put_marker.png", width: 74, height: 74));
   }

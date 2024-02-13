@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
-import '../../youtube/widgets/video_widget.dart';
+import 'video_widget.dart';
 
 // ignore: must_be_immutable
 class Body extends StatefulWidget {
@@ -9,7 +9,7 @@ class Body extends StatefulWidget {
   Body({Key? key, required this.contentList}) : super(key: key);
 
   @override
-  _BodyState createState() => _BodyState(contentList);
+  State<Body> createState() => _BodyState(contentList);
 }
 
 class _BodyState extends State<Body> {

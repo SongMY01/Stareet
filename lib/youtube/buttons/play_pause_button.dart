@@ -9,22 +9,25 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 ///
 class PlayPauseButton extends StatelessWidget {
+  const PlayPauseButton({super.key});
+
   // final ValueNotifier<bool> _isMuted = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return YoutubeValueBuilder(
       builder: (context, value) {
-        return IconButton(
-          icon: Icon(
-            value.playerState == PlayerState.playing
-                ? Icons.pause
-                : Icons.play_arrow,
+        return SizedBox(
+          width: 30,
+          child: IconButton(
+            icon: value.playerState == PlayerState.playing
+                ? Image.asset('assets/alert_stop.png')
+                : Image.asset('assets/alert_play.png'),
+            onPressed: () {
+              value.playerState == PlayerState.playing
+                  ? context.ytController.pauseVideo()
+                  : context.ytController.playVideo();
+            },
           ),
-          onPressed: () {
-            value.playerState == PlayerState.playing
-                ? context.ytController.pauseVideo()
-                : context.ytController.playVideo();
-          },
         );
       },
     );

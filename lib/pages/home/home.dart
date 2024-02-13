@@ -1,20 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
 import 'package:music_api/pages/preview_page.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 import '../../components/custom_drawer.dart';
+import '../../components/custom_snackbar.dart';
 import '../../components/custom_switch.dart';
 import '../../components/home_components.dart';
+import '../../providers/map_state.dart';
 import '../../providers/switch_state.dart';
 import '../../utilities/color_scheme.dart';
+import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,14 +29,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  StreamSubscription<Position>? _positionSubscription;
   final Completer<NaverMapController> _controller = Completer();
   final ScrollController _scrollController = ScrollController();
   final _tooltipController = SuperTooltipController();
-  final _textController = TextEditingController();
   NMarker? _userLocationMarker;
-  late NaverMapController mapController;
-  int markerCount = 0;
-  int lineCount = 0;
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
@@ -42,12 +42,6 @@ class _HomePageState extends State<HomePage> {
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
 
   late Position position;
-
-  Set<NMarker> markers = {};
-  Set<NPolylineOverlay> lineOverlays = {};
-
-  // 선 그리기 전 선택되는 마커
-  List<NLatLng> selectedMarkerCoords = [];
 
   // 권한 요청
   Future<bool> _determinePermission() async {
@@ -68,141 +62,34 @@ class _HomePageState extends State<HomePage> {
     return Future.value(true);
   }
 
+  // firebase에서 Star 정보 가져오기
+  Future<List<StarInfo>> fetchUserStars(String uid) async {
+    final snapshot = await FirebaseFirestore.instance.collection('Star').where('owner', isEqualTo: uid).get();
+
+    return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
+  }
+
   // GPS 정보 얻기
   Future<Position> _getPosition() async {
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  // GPS 정보 도로명 주소로 변환
-  Future<String> _getAddress(double lat, double lon) async {
-    // 네이버 API 키
-    String clientId = 'oic87mpcyw';
-    String clientSecret = 'ftEbewAoHtXhrpokEHAk7TUPAZzR1r4woeMja3hE';
-
-    // 요청 URL 만들기
-    String url =
-        'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=$lon,$lat&sourcecrs=epsg:4326&output=json&orders=addr,admcode,roadaddr';
-
-    // HTTP GET 요청 보내기
-    var response = await http.get(Uri.parse(url), headers: {
-      'X-NCP-APIGW-API-KEY-ID': clientId,
-      'X-NCP-APIGW-API-KEY': clientSecret
-    });
-
-    // 응답 처리
-    if (response.statusCode == 200) {
-      var jsonResponse = json.decode(response.body);
-      var address = jsonResponse['results'][0]['region']['area2']['name'] +
-          ' ' +
-          jsonResponse['results'][0]['region']['area3']['name'];
-      return address;
-    } else {
-      return '주소 정보를 가져오는데 실패했습니다.';
-    }
-  }
-
   // 현재 위치로 이동
   void _updatePosition() async {
-    camera = await mapController.getCameraPosition();
-    position = await _getPosition();
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
+    final results = await Future.wait([_getPosition()]);
+    position = results[0];
     mapController.updateCamera(NCameraUpdate.withParams(
-        target: NLatLng(position.latitude, position.longitude),
-        zoom: camera.zoom));
+        target: NLatLng(position.latitude, position.longitude)));
     // _drawCircle(position);
-  }
-
-  // 현재 위치에 마커 찍기
-  void _userLocation() {
-    Geolocator.getPositionStream().listen((Position position) {
-      if (_userLocationMarker == null) {
-        // 초기 사용자 위치 마커를 생성합니다.
-        _userLocationMarker = NMarker(
-            id: 'user_location',
-            position: NLatLng(position.latitude, position.longitude),
-            icon: const NOverlayImage.fromAssetImage(
-                'assets/images/my_location.png'), // 동그라미 이미지
-            size: const Size(32, 32));
-        setState(() {
-          // 마커를 지도에 추가합니다.
-          mapController.addOverlay(_userLocationMarker!);
-        });
-      } else {
-        // 사용자 위치가 변경될 때마다 마커 위치를 업데이트합니다.
-        setState(() {
-          _userLocationMarker = NMarker(
-            id: 'user_location',
-            position: NLatLng(position.latitude, position.longitude),
-            icon: const NOverlayImage.fromAssetImage(
-                'assets/images/my_location.png'),
-            size: const Size(32, 32), // 동그라미 이미지
-          );
-        });
-      }
-    });
-  }
-
-  // 마커 그리기 함수
-  void drawMarker(NLatLng latLng) async {
-    // 마커 생성
-    final marker = NMarker(
-      id: '$markerCount',
-      position: NLatLng(latLng.latitude, latLng.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
-      size: const Size(35, 35),
-      anchor: const NPoint(0.5, 0.5),
-    );
-    // 마커 클릭 시 이벤트 설정
-    marker.setOnTapListener((overlay) {
-      setState(() {
-        if (context.read<SwitchProvider>().switchMode) {
-          selectedMarkerCoords.add(overlay.position);
-          debugPrint("$selectedMarkerCoords");
-          if (selectedMarkerCoords.length == 2) {
-            drawPolyline();
-          }
-        }
-      });
-    });
-    marker.setGlobalZIndex(200000);
-    mapController.addOverlay(marker);
-    setState(() {
-      markers.add(marker);
-      markerCount++;
-    });
-    debugPrint("${marker.info}");
-  }
-
-  // 선 그리기 함수
-  void drawPolyline() {
-    // 선 생성
-    final polylineOverlay = NPolylineOverlay(
-        id: '$lineCount',
-        coords: List.from(selectedMarkerCoords),
-        color: Colors.white,
-        width: 3);
-    // 선 클릭 시 이벤트 설정
-    polylineOverlay.setOnTapListener((overlay) {
-      if (context.read<SwitchProvider>().switchMode) {
-        mapController.deleteOverlay(overlay.info);
-        setState(() {
-          lineOverlays.remove(polylineOverlay);
-          lineCount--;
-        });
-      }
-    });
-    polylineOverlay.setGlobalZIndex(190000);
-    mapController.addOverlay(polylineOverlay);
-    setState(() {
-      lineOverlays.add(polylineOverlay);
-      lineCount++;
-    });
-    // 선 그린 후 선택된 마커들 삭제
-    selectedMarkerCoords.clear();
   }
 
   // 이미지 저장
   void saveMapImage() async {
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
     try {
       // 현재 카메라 위치 저장
       camera = await mapController.getCameraPosition();
@@ -210,38 +97,49 @@ class _HomePageState extends State<HomePage> {
           target: camera.target,
           zoom: camera.zoom - 0.15,
           bearing: camera.bearing);
-      debugPrint("parent: ${await mapController.getContentBounds()}");
-      String name = _textController.text;
       if (!mounted) return;
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => PreviewPage(
-                    markers: markers,
-                    polylines: lineOverlays,
                     position: camera,
-                    name: name,
                   )));
     } catch (e) {
       debugPrint('이미지 저장 중 오류 발생: $e');
     }
   }
 
+  void _updateUserMarker(Position position) {
+    _userLocationMarker = NMarker(
+        id: 'user_location',
+        position: NLatLng(position.latitude, position.longitude),
+        icon: const NOverlayImage.fromAssetImage(
+            'assets/images/my_location.png'), // 동그라미 이미지
+        size: const Size(30, 30));
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _determinePermission();
+    _positionSubscription = Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.best, distanceFilter: 10))
+        .listen(_updateUserMarker);
   }
 
   @override
   void dispose() {
     Geolocator.getPositionStream().listen((_) {}).cancel();
+    _positionSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool switchMode = Provider.of<SwitchProvider>(context).switchMode;
+    final switchProvider = Provider.of<SwitchProvider>(context);
+    final mapProvider = Provider.of<MapProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -259,20 +157,65 @@ class _HomePageState extends State<HomePage> {
                 indoorEnable: true,
                 logoClickEnable: false,
                 consumeSymbolTapEvents: false,
+                locationButtonEnable: true,
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
-              mapController = controller;
+              context.read<MapProvider>().setController(controller);
               _controller.complete(controller);
-              _userLocation();
+              _updateUserMarker(await mapProvider.getPosition());
+              mapProvider.mapController.addOverlay(_userLocationMarker!);
             },
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
-              drawMarker(latLng);
-              debugPrint(await _getAddress(latLng.latitude, latLng.longitude));
+              // context.read<MapProvider>().drawMarker(context, latLng);
             },
           ),
         ),
+
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 95,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                          Colors.black.withOpacity(0.2),
+                          const Color(0xff191821).withOpacity(0)
+                        ])),
+                  ),
+                ),
+              ),
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 105,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                          Colors.black.withOpacity(0.2),
+                          const Color(0xff191821).withOpacity(0)
+                        ])),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
         // AppBar
         Align(
             alignment: Alignment.topCenter,
@@ -289,8 +232,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 25),
                       GestureDetector(
                           onTap: () {
-                            if (!switchMode) {
+                            if (!switchProvider.switchMode) {
                               context.read<SwitchProvider>().toggleMode();
+                              showCustomSnackbar(context, "별자리 공작소로 전환합니다.");
                             } else {
                               showCupertinoDialog(
                                   context: context,
@@ -313,16 +257,14 @@ class _HomePageState extends State<HomePage> {
                                                   style: regular17.copyWith(
                                                       color: AppColor.error)),
                                               onPressed: () {
-                                                mapController.clearOverlays(
-                                                    type: NOverlayType
-                                                        .polylineOverlay);
-                                                selectedMarkerCoords.clear();
-                                                lineOverlays.clear();
-                                                lineCount == 0;
+                                                mapProvider.mapController
+                                                    .clearOverlays(
+                                                        type: NOverlayType
+                                                            .polylineOverlay);
+
+                                                mapProvider.clearLines();
                                                 Navigator.pop(context);
-                                                context
-                                                    .read<SwitchProvider>()
-                                                    .toggleMode();
+                                                switchProvider.toggleMode();
                                               })
                                         ],
                                       ),
@@ -335,27 +277,30 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Image.asset("assets/images/logo.png",
-                              width: 85, height: 35),
+                          InkWell(
+                            onTap: () {},
+                            child: Image.asset("assets/images/logo.png",
+                                width: 85, height: 35),
+                          ),
                           const SizedBox(width: 8),
-                          switchMode
+                          switchProvider.switchMode
                               ? CustomTooltip(controller: _tooltipController)
                               : const SizedBox(width: 22)
                         ],
                       ),
-                      const SizedBox(width: 70),
+                      const SizedBox(width: 65),
                       GestureDetector(
-                          onTap: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
-                          child: const Icon(Icons.menu,
-                              color: AppColor.text, size: 22)),
+                        onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
+                        child: Image.asset("assets/images/menu.png",
+                            width: 24, height: 18),
+                      ),
                       const SizedBox(width: 25)
                     ],
                   ),
                   const SizedBox(height: 30),
                   // Chip들
                   Visibility(
-                    visible: !switchMode,
+                    visible: !switchProvider.switchMode,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 25),
                       child: SingleChildScrollView(
@@ -410,10 +355,10 @@ class _HomePageState extends State<HomePage> {
 
         // 현재 위치 버튼
         Visibility(
-          visible: !switchMode,
+          visible: !switchProvider.switchMode,
           child: Positioned(
-            top: 180,
-            right: 30,
+            bottom: 60,
+            right: 40,
             child: LocationButton(goToLocation: _updatePosition),
           ),
         ),
@@ -423,11 +368,11 @@ class _HomePageState extends State<HomePage> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: const EdgeInsets.only(bottom: 60),
-            child: switchMode
-                ? (lineOverlays.isEmpty
+            child: switchProvider.switchMode
+                ? (mapProvider.lineOverlays.isEmpty
                     ? const CompleteButtonDisable()
                     : CompleteButtonEnable(complete: saveMapImage))
-                : PutStar(putMarker: _userLocation),
+                : const PutStar(),
           ),
         ),
       ]),

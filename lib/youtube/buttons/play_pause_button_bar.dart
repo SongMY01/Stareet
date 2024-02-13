@@ -9,45 +9,58 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 ///
 class PlayPauseButtonBar extends StatelessWidget {
+  const PlayPauseButtonBar({super.key});
+
   // final ValueNotifier<bool> _isMuted = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: const Icon(Icons.replay_10),
-          onPressed: () async {
-            final double current = await context.ytController.currentTime;
-            final double newTime = (current - 10).clamp(0, current);
-            context.ytController.seekTo(seconds: newTime, allowSeekAhead: true);
-            await context.ytController.playVideo();
-          },
+        SizedBox(
+          width: 45,
+          child: IconButton(
+            icon: Image.asset('assets/10back.png'),
+            onPressed: () async {
+              final double current = await context.ytController.currentTime;
+              final double newTime = (current - 10).clamp(0, current);
+              context.ytController
+                  .seekTo(seconds: newTime, allowSeekAhead: true);
+              await context.ytController.playVideo();
+            },
+          ),
         ),
+        const SizedBox(width: 15),
         YoutubeValueBuilder(
           builder: (context, value) {
-            return IconButton(
-              icon: Icon(
-                value.playerState == PlayerState.playing
-                    ? Icons.pause
-                    : Icons.play_arrow,
+            return SizedBox(
+              width: 80,
+              child: IconButton(
+                icon: value.playerState == PlayerState.playing
+                    ? Image.asset('assets/stopButton.png')
+                    : Image.asset('assets/playButton.png'),
+                onPressed: () {
+                  value.playerState == PlayerState.playing
+                      ? context.ytController.pauseVideo()
+                      : context.ytController.playVideo();
+                },
               ),
-              onPressed: () {
-                value.playerState == PlayerState.playing
-                    ? context.ytController.pauseVideo()
-                    : context.ytController.playVideo();
-              },
             );
           },
         ),
-        IconButton(
-          icon: const Icon(Icons.forward_10),
-          onPressed: () async {
-            final double current = await context.ytController.currentTime;
-            final double newTime = current + 10;
-            context.ytController.seekTo(seconds: newTime, allowSeekAhead: true);
-            await context.ytController.playVideo();
-          },
+        const SizedBox(width: 15),
+        SizedBox(
+          width: 45,
+          child: IconButton(
+            icon: Image.asset('assets/10go.png'),
+            onPressed: () async {
+              final double current = await context.ytController.currentTime;
+              final double newTime = current + 10;
+              context.ytController
+                  .seekTo(seconds: newTime, allowSeekAhead: true);
+              await context.ytController.playVideo();
+            },
+          ),
         ),
       ],
     );

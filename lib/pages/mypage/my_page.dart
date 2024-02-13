@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:music_api/utilities/info.dart';
 
+
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import 'my_starmate.dart';
 import 'mypage_profile.dart';
 import 'mypage_setting.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 //------6페이지
 class MyPage extends StatefulWidget {
@@ -13,8 +16,39 @@ class MyPage extends StatefulWidget {
   const MyPage({super.key, this.nickName});
 
   @override
-  _MyPageState createState() => _MyPageState();
+  State<MyPage> createState() => _MyPageState();
 }
+
+String uid = FirebaseAuth.instance.currentUser!.uid;
+
+Future<Map<String, dynamic>> getUserInfo() async {
+  var result =
+      await FirebaseFirestore.instance.collection('user').doc(uid).get();
+  return result.data() as Map<String, dynamic>;
+}
+
+Future<List<Map<String, dynamic>>> getPlaylistMyInfo() async {
+  var result = await FirebaseFirestore.instance
+      .collection('playlist')
+      .where('uid', whereIn: playlistMy)
+      .get();
+
+  return result.docs.map((doc) => doc.data()).toList();
+}
+
+Future<List<Map<String, dynamic>>> getPlaylistOthersInfo() async {
+  var result = await FirebaseFirestore.instance
+      .collection('playlist')
+      .where('uid', whereIn: playlistOthers)
+      .get();
+
+  return result.docs.map((doc) => doc.data()).toList();
+}
+
+var mateListReal = [];
+var mateListFriend = [];
+var playlistMy = [];
+var playlistOthers = [];
 
 class _MyPageState extends State<MyPage> {
   bool mateRequested = false;
@@ -34,6 +68,12 @@ class _MyPageState extends State<MyPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
+              },
+            ),
             title: Text(
               "마이페이지",
               style: bold16.copyWith(color: AppColor.text),
@@ -43,8 +83,8 @@ class _MyPageState extends State<MyPage> {
                 icon: const Icon(
                   Icons.settings,
                   color: Colors.white,
-                ), // 아이콘 설정
-                offset: const Offset(0, 50), // X와 Y 오프셋을 조정하여 팝업 위치 설정
+                ),
+                offset: const Offset(0, 50),
                 itemBuilder: (context) => [
                   PopupMenuItem(
                       value: 1,
@@ -108,13 +148,39 @@ class _MyPageState extends State<MyPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => MyStarMate(),
+
                               ),
-                            );
-                          },
-                          child: Text('4 스타 메이트',
-                              style: medium13.copyWith(color: AppColor.text))),
-                      const SizedBox(
-                        width: 20,
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(userInfo['email'],
+                                style:
+                                    regular15.copyWith(color: AppColor.sub2)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const TabBar(
+                      tabs: [
+                        Tab(text: "내 플리"),
+                        Tab(text: "저장한 플리"),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          MySongList(),
+                          SaveSongList(),
+                        ],
                       ),
                     ],
                   ),
@@ -143,13 +209,11 @@ class _MyPageState extends State<MyPage> {
                   children: [
                     MySongList(),
                     SaveSongList(),
+
                   ],
-                ),
-              ),
-              const SizedBox(
-                height: 28,
-              )
-            ],
+                );
+              }
+            },
           ),
         ),
       ),
@@ -158,85 +222,115 @@ class _MyPageState extends State<MyPage> {
 }
 
 class MySongList extends StatelessWidget {
-  const MySongList({Key? key}) : super(key: key);
-
+  MySongList({Key? key}) : super(key: key);
+  String imageUrl = '';
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 15,
-      itemBuilder: (BuildContext context, int index) {
-        return const MySong();
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: getPlaylistMyInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          var playlistInfoList = snapshot.data!;
+
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemCount: playlistInfoList.length,
+            itemBuilder: (BuildContext context, int index) {
+              var playlistInfo = playlistInfoList[index];
+              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              debugPrint('$imageUrl입니다!');
+              return MySong(imageUrl: imageUrl);
+            },
+          );
+        }
       },
     );
   }
 }
 
-class MySong extends StatelessWidget {
-  const MySong({Key? key}) : super(key: key);
+class MySong extends StatefulWidget {
+  final String imageUrl;
 
+  const MySong({Key? key, required this.imageUrl}) : super(key: key);
+
+  @override
+  State<MySong> createState() => _MySongState();
+}
+
+class _MySongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: const DecorationImage(
-          image: AssetImage('assets/fonts/images/starback.jpeg'),
-          fit: BoxFit.fill,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(widget.imageUrl),
+            fit: BoxFit.fill,
+          ),
         ),
-      ),
-      child: Stack(children: [
-        Positioned(
-            left: 25,
-            bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
-      ]),
-    );
+        child: const SizedBox());
   }
 }
 
 class SaveSongList extends StatelessWidget {
-  const SaveSongList({Key? key}) : super(key: key);
-
+  SaveSongList({Key? key}) : super(key: key);
+  String imageUrl = '';
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return const SaveSong();
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: getPlaylistOthersInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          var playlistInfoList = snapshot.data!;
+          debugPrint(playlistInfoList[1]['imageUrl']);
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemCount: playlistInfoList.length,
+            itemBuilder: (BuildContext context, int index) {
+              var playlistInfo = playlistInfoList[index];
+              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              debugPrint('$imageUrl입니다!');
+              return MySong(imageUrl: imageUrl);
+            },
+          );
+        }
       },
     );
   }
 }
 
-class SaveSong extends StatelessWidget {
-  const SaveSong({Key? key}) : super(key: key);
+class SaveSong extends StatefulWidget {
+  final String imageUrl;
 
+  const SaveSong({Key? key, required this.imageUrl}) : super(key: key);
+
+  @override
+  State<MySong> createState() => _SaveSongState();
+}
+
+class _SaveSongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: const DecorationImage(
-          image: AssetImage('assets/fonts/images/starback.jpeg'),
-          fit: BoxFit.fill,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(widget.imageUrl),
+            fit: BoxFit.fill,
+          ),
         ),
-      ),
-      child: Stack(children: [
-        Positioned(
-            left: 25,
-            bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
-      ]),
-    );
+        child: const SizedBox());
   }
 }

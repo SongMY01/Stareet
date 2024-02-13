@@ -11,12 +11,12 @@ import '../../utilities/text_theme.dart';
 import '../buttons/play_pause_button.dart';
 
 class CustomDialog extends StatefulWidget {
-  Video video;
+  final Video video;
 
-  CustomDialog({super.key, required this.video});
+  const CustomDialog({super.key, required this.video});
 
   @override
-  _CustomDialogState createState() => _CustomDialogState();
+  State<CustomDialog> createState() => _CustomDialogState();
 }
 
 class _CustomDialogState extends State<CustomDialog> {
@@ -88,6 +88,14 @@ class _CustomDialogState extends State<CustomDialog> {
                                     ),
                                   ),
                                 );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => VideoDetailPage(
+                                //       video: widget.video,
+                                //     ),
+                                //   ),
+                                // );
                               },
                               child: Text(
                                 '선택',
@@ -98,7 +106,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           ]),
                       Stack(
                         children: [
-                          Container(
+                          SizedBox(
                               width: 139,
                               height: 139,
                               child: ClipRRect(
@@ -156,12 +164,7 @@ class Controls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        VideoPositionSeeker(),
-      ],
-    );
+    return const VideoPositionSeeker();
   }
 }
 
@@ -198,8 +201,10 @@ class VideoPositionSeeker extends StatelessWidget {
     var value = 0.0;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        SizedBox(
+          width: 280,
           child: StreamBuilder<YoutubeVideoState>(
             stream: context.ytController.videoStateStream,
             initialData: const YoutubeVideoState(),
@@ -238,7 +243,7 @@ class VideoPositionSeeker extends StatelessWidget {
             },
           ),
         ),
-        PlayPauseButton(),
+        const PlayPauseButton(),
       ],
     );
   }

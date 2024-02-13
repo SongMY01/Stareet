@@ -2,35 +2,33 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../buttons/listplay_pause_button_bar.dart';
 import '../buttons/meta_data_section.dart';
-import '../buttons/play_pause_button_bar.dart';
 
-// ignore: must_be_immutable
-class VideoSearchPage extends StatefulWidget {
-  Video video;
+class VideoListDetailPage extends StatefulWidget {
+  final List<String> videoIds;
 
-  VideoSearchPage({super.key, required this.video});
+  const VideoListDetailPage({super.key, required this.videoIds});
 
   @override
-  _VideoSearchPageState createState() => _VideoSearchPageState();
+  State<VideoListDetailPage> createState() => _VideoListDetailPageState();
 }
 
-class _VideoSearchPageState extends State<VideoSearchPage> {
+class _VideoListDetailPageState extends State<VideoListDetailPage> {
   late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: widget.video.videoId as String,
-      autoPlay: true,
+
+    _controller = YoutubePlayerController(
       params: const YoutubePlayerParams(
         showControls: true,
         mute: false,
-        showFullscreenButton: false,
+        showFullscreenButton: true,
+        loop: false,
       ),
     );
 
@@ -39,6 +37,17 @@ class _VideoSearchPageState extends State<VideoSearchPage> {
         log('${isFullScreen ? 'Entered' : 'Exited'} Fullscreen.');
       },
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _controller.loadPlaylist(
+            list: widget.videoIds,
+            listType: ListType.playlist,
+            startSeconds: 136,
+          );
+        });
+      }
+    });
   }
 
   @override
@@ -48,14 +57,8 @@ class _VideoSearchPageState extends State<VideoSearchPage> {
       builder: (context, player) {
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
             title: const Text('Youtube Player IFrame Demo'),
-            // actions: const [VideoPlaylistIconButton()],
+            actions: const [VideoPlaylistIconButton()],
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
@@ -81,43 +84,9 @@ class _VideoSearchPageState extends State<VideoSearchPage> {
                   ],
                 );
               }
-              return Column(
+              return ListView(
                 children: [
-                  Stack(
-                    children: [
-                      Container(
-                          width: 200,
-                          height: 200,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: player,
-                          )),
-                      Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Image.network(
-                          'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                          fit: BoxFit.fitHeight,
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return Image.network(
-                              'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
-                              fit: BoxFit.fitHeight,
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return Container(
-                                  color: Colors.yellow,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  player,
                   const VideoPositionIndicator(),
                   const Controls(),
                 ],
@@ -137,7 +106,6 @@ class _VideoSearchPageState extends State<VideoSearchPage> {
 }
 
 class Controls extends StatelessWidget {
-  ///
   const Controls({super.key});
 
   @override
@@ -147,18 +115,47 @@ class Controls extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MetaDataSection(),
-          const SizedBox(height: 10),
-          PlayPauseButtonBar(),
-          const SizedBox(height: 10),
+          const MetaDataSection(),
+          _space,
+          ListPlayPauseButtonBar(),
+          _space,
           const VideoPositionSeeker(),
         ],
       ),
     );
   }
+
+  Widget get _space => const SizedBox(height: 10);
 }
 
+///
+class VideoPlaylistIconButton extends StatelessWidget {
+  ///
+  const VideoPlaylistIconButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.ytController;
+
+    return IconButton(
+      onPressed: () async {
+        // controller.pauseVideo();
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => const VideoListPage(),
+        //   ),
+        // );
+        // controller.playVideo();
+      },
+      icon: const Icon(Icons.playlist_play_sharp),
+    );
+  }
+}
+
+///
 class VideoPositionIndicator extends StatelessWidget {
+  ///
   const VideoPositionIndicator({super.key});
 
   @override

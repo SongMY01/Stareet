@@ -35,7 +35,7 @@ class StarDetail extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 30, top: 20),
-                      child: Container(
+                      child: SizedBox(
                         height: 264,
                         child: Stack(
                           children: [

@@ -50,6 +50,7 @@ android {
         versionCode flutterVersionCode.toInteger()  // 이 부분을 수정하세요
         versionName flutterVersionName // 이 부분을 수정하세요
         multiDexEnabled true // 이 줄을 추가!!!
+
     }
 
     buildTypes {
@@ -65,6 +66,4 @@ flutter {
     source '../..'
 }
 
-dependencies {
-        implementation "com.android.support:multidex:2.0.1" // 이 줄을 추가!!!
-}
+dependencies {}
