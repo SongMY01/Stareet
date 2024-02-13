@@ -72,7 +72,9 @@ Future<void> fetchAuthInfo() async {
 class StarInfo {
   final String? uid;
   final List<double>? location;
-  final String? song;
+  final String? title;
+  final String? singer;
+  final String? videoId;
   final String? comment;
   final String? owner;
   final Timestamp? registerTime;
@@ -82,7 +84,9 @@ class StarInfo {
   StarInfo(
       {required this.uid,
       required this.location,
-      required this.song,
+      required this.title,
+      this.singer,
+      this.videoId,
       required this.comment,
       required this.owner,
       required this.registerTime,
@@ -96,7 +100,9 @@ class StarInfo {
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
       location: snapshotData[locationFieldName],
-      song: snapshotData[songFieldName],
+      title: snapshotData[musciTitleFieldName],
+      singer: snapshotData[singerFieldName],
+      videoId: snapshotData[videoIdFieldName],
       comment: snapshotData[commentFieldName],
       owner: snapshotData[ownerFieldName],
       address: snapshotData[addressFieldName],
@@ -108,7 +114,9 @@ class StarInfo {
     return StarInfo(
         uid: map['uid'],
         location: List<double>.from(map['location']),
-        song: map['song'],
+        title: map['title'],
+        singer: map['singer'],
+        videoId: map['videoId'],
         comment: map['comment'],
         owner: map['owner'],
         registerTime: map['registerTime'],
@@ -121,7 +129,9 @@ class StarInfo {
       uidFieldName: uid,
       registerTimeFieldName: registerTime,
       locationFieldName: location,
-      songFieldName: song,
+      musciTitleFieldName: title,
+      singerFieldName: singer,
+      videoIdFieldName: videoId,
       commentFieldName: comment,
       ownerFieldName: owner,
       addressFieldName: address,
@@ -133,7 +143,9 @@ class StarInfo {
 const String uidFieldName = "uid";
 const String registerTimeFieldName = "registerTime";
 const String locationFieldName = "location";
-const String songFieldName = "song";
+const String musciTitleFieldName = "song";
+const String singerFieldName = "singer";
+const String videoIdFieldName = "videoId";
 const String commentFieldName = "comment";
 const String ownerFieldName = "owner";
 const String addressFieldName = "address";

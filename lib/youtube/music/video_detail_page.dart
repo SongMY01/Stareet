@@ -7,12 +7,20 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
+import '../buttons/meta_data_section.dart';
 import '../buttons/play_pause_button_bar.dart';
 
 class VideoDetailPage extends StatefulWidget {
-  final Video video;
+  // final Video video;
+  final String videoId;
+  final String musicTitle;
+  final String musicChannel;
 
-  const VideoDetailPage({super.key, required this.video});
+  VideoDetailPage(
+      {super.key,
+      required this.videoId,
+      required this.musicTitle,
+      required this.musicChannel});
 
   @override
   State<VideoDetailPage> createState() => _VideoDetailPageState();
@@ -25,7 +33,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   void initState() {
     super.initState();
     _controller = YoutubePlayerController.fromVideoId(
-      videoId: widget.video.videoId as String,
+      videoId: widget.videoId,
       autoPlay: true,
       params: const YoutubePlayerParams(
         showControls: true,
@@ -154,7 +162,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                             borderRadius: BorderRadius.circular(5),
                             image: DecorationImage(
                               image: NetworkImage(
-                                'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
+                                'https://i1.ytimg.com/vi/${widget.videoId}/maxresdefault.jpg',
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -180,13 +188,13 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     ),
                     const SizedBox(height: 15),
                     Text(
-                      widget.video.title ?? '',
+                      widget.musicTitle,
                       style: bold22,
                       maxLines: 1,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.video.channelName ?? '',
+                      widget.musicChannel,
                       style: bold18.copyWith(color: AppColor.sub1),
                       maxLines: 1,
                     ),

@@ -63,8 +63,8 @@ class MapProvider extends ChangeNotifier {
   }
 
   // 마커 그리기 함수
-  void drawMarker(
-      BuildContext context, String videoTitle, String comment) async {
+  void drawMarker(BuildContext context, String videoTitle, String videoSinger,
+      String videoId, String comment) async {
     final Position location = await getPosition();
 
     final String currentAddress =
@@ -100,7 +100,9 @@ class MapProvider extends ChangeNotifier {
     final starInfo = StarInfo(
       uid: docRef.id,
       location: [location.latitude, location.longitude],
-      song: videoTitle,
+      title: videoTitle,
+      singer: videoSinger,
+      videoId: videoId,
       comment: comment,
       owner: FirebaseAuth.instance.currentUser?.uid,
       registerTime: Timestamp.now(),
@@ -165,7 +167,7 @@ class MapProvider extends ChangeNotifier {
       backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
       context: context,
       builder: (BuildContext context) {
-        return const HomeBottomsheet();
+        return HomeBottomsheet();
       },
     );
   }
