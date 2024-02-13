@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/color_scheme.dart';
 
 import '../../utilities/text_theme.dart';
 
@@ -13,7 +14,7 @@ class _SettingPageState extends State<SettingPage> {
   bool switchValue = false;
 
   void toggleSwitch(bool value) {
-    // 스위치 상태를 토글하고 UI를 업데이트하기 위해 setState를 호출합니다.
+    // 스위치 상태를 토글하고 UI를 업데이트하기 위해 setState를 호출.
     setState(() {
       switchValue = value;
     });
@@ -60,8 +61,8 @@ class _SettingPageState extends State<SettingPage> {
                   height: 28,
                   width: 53,
                   child: Image.asset(switchValue
-                      ? 'assets/fonts/images/switch_active.png'
-                      : 'assets/fonts/images/switch_inactive.png'),
+                      ? 'assets/fonts/images/switch_inactive.png'
+                      : 'assets/fonts/images/switch_active.png'),
                 ),
               ),
             ),
@@ -70,7 +71,14 @@ class _SettingPageState extends State<SettingPage> {
             Row(
               children: [
                 const Spacer(),
-                TextButton(onPressed: () {}, child: const Text('로그아웃')),
+                TextButton(
+                    onPressed: () {},
+                    child: const Text('로그아웃',
+                        style: TextStyle(
+                            color: AppColor.error,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColor.error,
+                            decorationThickness: 2))),
               ],
             ),
             const SizedBox(height: 20)

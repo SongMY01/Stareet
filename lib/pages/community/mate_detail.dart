@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
 //------6페이지
 class MateDetail extends StatefulWidget {
-  const MateDetail({Key? key}) : super(key: key);
+  final String nickName;
+  final String profileImage;
+
+  const MateDetail(
+      {Key? key, required this.nickName, required this.profileImage})
+      : super(key: key);
 
   @override
-  State<MateDetail> createState() => _MateDetailState();
+  _MateDetailState createState() => _MateDetailState(nickName, profileImage);
 }
 
 class _MateDetailState extends State<MateDetail> {
+  final String owner;
+  final String profileImage;
+
+  _MateDetailState(this.owner, this.profileImage);
   bool mateRequested = false;
 
   @override
@@ -58,17 +68,28 @@ class _MateDetailState extends State<MateDetail> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/fonts/images/profile.png',
-                height: 72,
-                width: 72,
+              Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Image.network(
+                    this.profileImage, //이미지 바꿀 때 network인지 asset인지 구분 잘할 것
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.fill,
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
               Row(
                 children: [
                   const SizedBox(
                     width: 20,
                   ),
-                  Text('좌좌좌좌', style: bold18.copyWith(color: AppColor.sub1)),
+                  Text('${widget.nickName}', //닉네임 바꾸는 곳
+                      style: bold18.copyWith(color: AppColor.sub1)),
+
                   const Spacer(),
                   SizedBox(
                     height: 28,
@@ -112,6 +133,8 @@ class _MateDetailState extends State<MateDetail> {
               ),
               const SizedBox(height: 20),
               const TabBar(
+                labelColor: AppColor.text,
+                indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
                 tabs: [
                   Tab(text: "내 플리"),
                   Tab(text: "저장한 플리"),
