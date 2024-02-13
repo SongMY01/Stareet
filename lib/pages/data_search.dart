@@ -11,8 +11,10 @@ import '../youtube/widgets/video_widget.dart';
 import 'community/coumunity.dart';
 
 class DataSearchPage extends StatefulWidget {
+  const DataSearchPage({super.key});
+
   @override
-  _DataSearchPageState createState() => _DataSearchPageState();
+  State<DataSearchPage> createState() => _DataSearchPageState();
 }
 
 class _DataSearchPageState extends State<DataSearchPage> {
@@ -25,7 +27,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
   List? contentList;
   bool isLoading = false;
   bool firstLoad = true;
-  String API_KEY = "";
+  String apiKeys = "";
 
   FocusNode textfieldFocusNode = FocusNode();
 
@@ -147,7 +149,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
       isLoading = true;
     });
     try {
-      final results = await youtubeDataApi.fetchSearchVideo(query, API_KEY);
+      final results = await youtubeDataApi.fetchSearchVideo(query, apiKeys);
       setState(() {
         contentList = results;
         isLoading = false;
@@ -209,7 +211,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CommunityPage(),
+                      builder: (context) => const CommunityPage(),
                     ),
                   );
                 },
@@ -311,14 +313,12 @@ class _DataSearchPageState extends State<DataSearchPage> {
                       return const Text("Connection None");
                     case ConnectionState.done:
                       if (snapshot.hasError) {
-                        return Container(
-                            child: Text(snapshot.error.toString()));
+                        return Text(snapshot.error.toString());
                       } else if (snapshot.hasData) {
                         List<Video> contentList = snapshot.data;
                         return Body(contentList: contentList);
                       } else {
-                        return Center(
-                            child: Container(child: const Text("No data")));
+                        return const Center(child: Text("No data"));
                       }
                     default:
                       return const SizedBox.shrink();

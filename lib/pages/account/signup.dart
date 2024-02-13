@@ -53,7 +53,7 @@ class _SignupPageState extends State<SignupPage> {
         'email': FirebaseAuth.instance.currentUser?.email, // 이미지 URL 저장
       });
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
     }
   }
 
@@ -66,7 +66,7 @@ class _SignupPageState extends State<SignupPage> {
 
       return result.docs.isEmpty;
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
       return false;
     }
   }
@@ -75,11 +75,8 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _tryValidation() async {
     _isNicknameAvailable = await isNicknameAvailable(nickname);
-    print(_isNicknameAvailable);
 
     final isValid = _formKey.currentState!.validate();
-    print(isValid);
-
     if (isValid) {
       _formKey.currentState!.save();
 
@@ -88,7 +85,7 @@ class _SignupPageState extends State<SignupPage> {
 
         // 이미지 업로드
         final imageUrl = await uploadImageToFirebaseStorage(_image!, user.uid);
-        print(nickname);
+        debugPrint(nickname);
 
         // Firebase Firestore에 사용자 정보 저장
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);

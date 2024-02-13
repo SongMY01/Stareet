@@ -1,26 +1,24 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/mypage/mate_manage.dart';
-import 'package:music_api/pages/mypage/mypage_profile.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import '../community/search.dart';
 
-var mate_real = [];
-var mate_friend = [];
+var mateReal = [];
+var mateFriend = [];
 
 class MyStarMate extends StatelessWidget {
-  MyStarMate({super.key});
+  const MyStarMate({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
           image: AssetImage('assets/fonts/images/background.gif'),
@@ -30,7 +28,7 @@ class MyStarMate extends StatelessWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -45,7 +43,7 @@ class MyStarMate extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => mateMagnage(),
+                      builder: (context) => const MateManage(),
                     ),
                   );
                 },
@@ -62,15 +60,15 @@ class MyStarMate extends StatelessWidget {
           stream: getUserInfoStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-              print(userInfo);
-              mate_real = userInfo['mate_real'] as List<dynamic>? ?? [];
-              mate_friend = userInfo['mate_friend'] as List<dynamic>? ?? [];
-              print(mate_real);
+              debugPrint(userInfo as String?);
+              mateReal = userInfo['mateReal'] as List<dynamic>? ?? [];
+              mateFriend = userInfo['mateFriend'] as List<dynamic>? ?? [];
+              debugPrint(mateReal as String?);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -85,7 +83,7 @@ class MyStarMate extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => TabOne(),
+                            builder: (context) => const TabOne(),
                           ),
                         );
                       },
@@ -139,12 +137,10 @@ OutlineInputBorder myinputborder() {
 Stream<List<Map<String, dynamic>>> getMateListRealStream() {
   return FirebaseFirestore.instance
       .collection('user')
-      .where('user-id', whereIn: mate_real)
+      .where('user-id', whereIn: mateReal)
       .snapshots()
       .map((querySnapshot) {
-    return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
   });
 }
 
@@ -162,23 +158,23 @@ class _MateNameListRealState extends State<MateNameListReal> {
         stream: getMateListRealStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            var mate_realInfoList = snapshot.data!;
+            var mateRealInfoList = snapshot.data!;
 
-            return Container(
-              height: 60.0 * (mate_realInfoList.length) as double,
+            return SizedBox(
+              height: 60.0 * (mateRealInfoList.length),
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: mate_realInfoList.length,
+                itemCount: mateRealInfoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var mate_realInfo = mate_realInfoList[index];
-                  var uid = mate_realInfo['user-id'] ?? '없음';
-                  var nickName = mate_realInfo['nickName'] ?? '없음';
-                  var imageUrl = mate_realInfo['profileImage'] ?? '없음';
-                  print('$imageUrl 입니다요');
+                  var mateRealInfo = mateRealInfoList[index];
+                  var uid = mateRealInfo['user-id'] ?? '없음';
+                  var nickName = mateRealInfo['nickName'] ?? '없음';
+                  var imageUrl = mateRealInfo['profileImage'] ?? '없음';
+                  debugPrint('$imageUrl 입니다요');
                   return MateNameReal(
                     uid: uid,
                     nickName: nickName,
@@ -205,7 +201,7 @@ class MateNameReal extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MateNameRealState createState() => _MateNameRealState();
+  State<MateNameReal> createState() => _MateNameRealState();
 }
 
 class _MateNameRealState extends State<MateNameReal> {
@@ -238,19 +234,19 @@ class _MateNameRealState extends State<MateNameReal> {
                     _isStarSelected = !_isStarSelected;
                     String currentUserId =
                         FirebaseAuth.instance.currentUser!.uid;
-                    print('${currentUserId}입니다!');
-                    print('${widget.uid}입니다');
+                    debugPrint('$currentUserId입니다!');
+                    debugPrint('${widget.uid}입니다');
                     FirebaseFirestore.instance
                         .collection('user')
                         .doc(currentUserId)
                         .update({
-                      'mate_real': FieldValue.arrayRemove([widget.uid])
+                      'mateReal': FieldValue.arrayRemove([widget.uid])
                     }).then((_) {
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mate_friend': FieldValue.arrayUnion([widget.uid])
+                        'mateFriend': FieldValue.arrayUnion([widget.uid])
                       });
                     });
                   });
@@ -271,12 +267,12 @@ class _MateNameRealState extends State<MateNameReal> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     content: Container(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       width: 270,
                       height: 100,
                       child: Column(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 44,
                             child: Center(
                               child: Text(
@@ -285,15 +281,15 @@ class _MateNameRealState extends State<MateNameReal> {
                               ),
                             ),
                           ),
-                          Divider(),
-                          Container(
+                          const Divider(),
+                          SizedBox(
                             width: 270,
                             height: 40,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 100,
                                     child: Center(
                                       child: Text('취소',
@@ -306,7 +302,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                   },
                                 ),
                                 TextButton(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 100,
                                     child: Center(
                                       child: Text('삭제',
@@ -317,36 +313,36 @@ class _MateNameRealState extends State<MateNameReal> {
                                   onPressed: () {
                                     String currentUserId =
                                         FirebaseAuth.instance.currentUser!.uid;
-                                    print('${currentUserId}입니다!');
-                                    print('${widget.uid}입니다');
+                                    debugPrint('$currentUserId입니다!');
+                                    debugPrint('${widget.uid}입니다');
 
                                     FirebaseFirestore.instance
                                         .collection('user')
                                         .doc(currentUserId)
                                         .update({
-                                      'mate_friend':
+                                      'mateFriend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
-                                      print('${widget.uid}입니다.');
+                                      debugPrint('${widget.uid}입니다.');
                                       FirebaseFirestore.instance
                                           .collection('user')
                                           .doc(currentUserId)
                                           .update({
-                                        'mate_real':
+                                        'mateReal':
                                             FieldValue.arrayRemove([widget.uid])
                                       }).then((_) {
                                         FirebaseFirestore.instance
                                             .collection('user')
                                             .doc(widget.uid)
                                             .update({
-                                          'mate_real': FieldValue.arrayRemove(
+                                          'mateReal': FieldValue.arrayRemove(
                                               [currentUserId])
                                         }).then((_) {
                                           FirebaseFirestore.instance
                                               .collection('user')
                                               .doc(widget.uid)
                                               .update({
-                                            'mate_friend':
+                                            'mateFriend':
                                                 FieldValue.arrayRemove(
                                                     [currentUserId])
                                           }).then((_) {
@@ -356,7 +352,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    MyStarMate(),
+                                                    const MyStarMate(),
                                               ),
                                             );
                                           });
@@ -390,12 +386,10 @@ class _MateNameRealState extends State<MateNameReal> {
 Stream<List<Map<String, dynamic>>> getMateListFriendStream() {
   return FirebaseFirestore.instance
       .collection('user')
-      .where('user-id', whereIn: mate_friend)
+      .where('user-id', whereIn: mateFriend)
       .snapshots()
       .map((querySnapshot) {
-    return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
   });
 }
 
@@ -409,27 +403,27 @@ class MateNameListFriend extends StatefulWidget {
 class _MateNameListFriendState extends State<MateNameListFriend> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 60.0 * (mate_friend.length) as double,
+    return SizedBox(
+      height: 60.0 * (mateFriend.length),
       child: StreamBuilder<List<Map<String, dynamic>>>(
           stream: getMateListFriendStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              var mate_realInfoList = snapshot.data!;
+              var mateRealInfoList = snapshot.data!;
 
               return ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: mate_realInfoList.length,
+                itemCount: mateRealInfoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var mate_friendInfo = mate_realInfoList[index];
-                  var uid = mate_friendInfo['user-id'] ?? '없음';
-                  var nickName = mate_friendInfo['nickName'] ?? '없음';
-                  var imageUrl = mate_friendInfo['profileImage'] ?? '없음';
-                  print('$imageUrl 입니다요');
+                  var mateFriendInfo = mateRealInfoList[index];
+                  var uid = mateFriendInfo['user-id'] ?? '없음';
+                  var nickName = mateFriendInfo['nickName'] ?? '없음';
+                  var imageUrl = mateFriendInfo['profileImage'] ?? '없음';
+                  debugPrint('$imageUrl 입니다요');
                   return MateNameFriend(
                     uid: uid,
                     nickName: nickName,
@@ -456,7 +450,7 @@ class MateNameFriend extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MateNameFriendState createState() => _MateNameFriendState();
+  State<MateNameFriend> createState() => _MateNameFriendState();
 }
 
 class _MateNameFriendState extends State<MateNameFriend> {
@@ -489,19 +483,19 @@ class _MateNameFriendState extends State<MateNameFriend> {
                     _isStarSelected = !_isStarSelected;
                     String currentUserId =
                         FirebaseAuth.instance.currentUser!.uid;
-                    print('${currentUserId}입니다!');
-                    print('${widget.uid}입니다');
+                    debugPrint('$currentUserId입니다!');
+                    debugPrint('${widget.uid}입니다');
                     FirebaseFirestore.instance
                         .collection('user')
                         .doc(currentUserId)
                         .update({
-                      'mate_friend': FieldValue.arrayRemove([widget.uid])
+                      'mateFriend': FieldValue.arrayRemove([widget.uid])
                     }).then((_) {
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mate_real': FieldValue.arrayUnion([widget.uid])
+                        'mateReal': FieldValue.arrayUnion([widget.uid])
                       });
                     });
                   });
@@ -522,12 +516,12 @@ class _MateNameFriendState extends State<MateNameFriend> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     content: Container(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       width: 270,
                       height: 100,
                       child: Column(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 44,
                             child: Center(
                               child: Text(
@@ -536,15 +530,15 @@ class _MateNameFriendState extends State<MateNameFriend> {
                               ),
                             ),
                           ),
-                          Divider(),
-                          Container(
+                          const Divider(),
+                          SizedBox(
                             width: 270,
                             height: 40,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 100,
                                     child: Center(
                                       child: Text('취소',
@@ -557,7 +551,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                   },
                                 ),
                                 TextButton(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 100,
                                     child: Center(
                                       child: Text('삭제',
@@ -568,36 +562,36 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                   onPressed: () {
                                     String currentUserId =
                                         FirebaseAuth.instance.currentUser!.uid;
-                                    print('${currentUserId}입니다!');
-                                    print('${widget.uid}입니다');
+                                    debugPrint('$currentUserId입니다!');
+                                    debugPrint('${widget.uid}입니다');
 
                                     FirebaseFirestore.instance
                                         .collection('user')
                                         .doc(currentUserId)
                                         .update({
-                                      'mate_friend':
+                                      'mateFriend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
-                                      print('${widget.uid}입니다.');
+                                      debugPrint('${widget.uid}입니다.');
                                       FirebaseFirestore.instance
                                           .collection('user')
                                           .doc(currentUserId)
                                           .update({
-                                        'mate_real':
+                                        'mateReal':
                                             FieldValue.arrayRemove([widget.uid])
                                       }).then((_) {
                                         FirebaseFirestore.instance
                                             .collection('user')
                                             .doc(widget.uid)
                                             .update({
-                                          'mate_real': FieldValue.arrayRemove(
+                                          'mateReal': FieldValue.arrayRemove(
                                               [currentUserId])
                                         }).then((_) {
                                           FirebaseFirestore.instance
                                               .collection('user')
                                               .doc(widget.uid)
                                               .update({
-                                            'mate_friend':
+                                            'mateFriend':
                                                 FieldValue.arrayRemove(
                                                     [currentUserId])
                                           }).then((_) {
@@ -607,7 +601,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    MyStarMate(),
+                                                    const MyStarMate(),
                                               ),
                                             );
                                           });

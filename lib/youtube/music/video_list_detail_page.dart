@@ -4,17 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import '../buttons/Listplay_pause_button_bar.dart';
+import '../buttons/listplay_pause_button_bar.dart';
 import '../buttons/meta_data_section.dart';
 
-// ignore: must_be_immutable
 class VideoListDetailPage extends StatefulWidget {
-  List<String> videoIds;
+  final List<String> videoIds;
 
-  VideoListDetailPage({required this.videoIds});
+  const VideoListDetailPage({super.key, required this.videoIds});
 
   @override
-  _VideoListDetailPageState createState() => _VideoListDetailPageState();
+  State<VideoListDetailPage> createState() => _VideoListDetailPageState();
 }
 
 class _VideoListDetailPageState extends State<VideoListDetailPage> {
@@ -106,10 +105,8 @@ class _VideoListDetailPageState extends State<VideoListDetailPage> {
   }
 }
 
-///
 class Controls extends StatelessWidget {
-  ///
-  const Controls();
+  const Controls({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +115,7 @@ class Controls extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MetaDataSection(),
+          const MetaDataSection(),
           _space,
           ListPlayPauseButtonBar(),
           _space,

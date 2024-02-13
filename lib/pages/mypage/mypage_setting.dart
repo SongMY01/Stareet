@@ -6,7 +6,7 @@ class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
 
   @override
-  _SettingPageState createState() => _SettingPageState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
 class _SettingPageState extends State<SettingPage> {
@@ -42,24 +42,21 @@ class _SettingPageState extends State<SettingPage> {
                 Icons.announcement,
                 color: Colors.white,
               ),
-              title:
-                  const Text("공지사항", style: regular17),
+              title: Text("공지사항", style: regular17),
             ),
             const ListTile(
               leading: Icon(
                 Icons.question_mark_outlined,
                 color: Colors.white,
               ),
-              title: Text("고객센터/운영정책",
-                  style: regular17),
+              title: Text("고객센터/운영정책", style: regular17),
             ),
             ListTile(
               leading: const Icon(Icons.notifications, color: Colors.white),
-              title: const Text("푸쉬 알림",
-                  style: regular17),
+              title: const Text("푸쉬 알림", style: regular17),
               trailing: GestureDetector(
                 onTap: () => toggleSwitch(!switchValue), // 탭 시 스위치 값을 토글합니다.
-                child: Container(
+                child: SizedBox(
                   height: 28,
                   width: 53,
                   child: Image.asset(switchValue

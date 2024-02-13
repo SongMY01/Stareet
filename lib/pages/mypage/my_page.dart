@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:music_api/utilities/info.dart' as myInfo;
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -14,7 +13,7 @@ class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
 
   @override
-  _MyPageState createState() => _MyPageState();
+  State<MyPage> createState() => _MyPageState();
 }
 
 String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -28,25 +27,25 @@ Future<Map<String, dynamic>> getUserInfo() async {
 Future<List<Map<String, dynamic>>> getPlaylistMyInfo() async {
   var result = await FirebaseFirestore.instance
       .collection('playlist')
-      .where('uid', whereIn: playlist_my)
+      .where('uid', whereIn: playlistMy)
       .get();
 
-  return result.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  return result.docs.map((doc) => doc.data()).toList();
 }
 
 Future<List<Map<String, dynamic>>> getPlaylistOthersInfo() async {
   var result = await FirebaseFirestore.instance
       .collection('playlist')
-      .where('uid', whereIn: playlist_others)
+      .where('uid', whereIn: playlistOthers)
       .get();
 
-  return result.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  return result.docs.map((doc) => doc.data()).toList();
 }
 
 var mateListReal = [];
 var mateListFriend = [];
-var playlist_my = [];
-var playlist_others = [];
+var playlistMy = [];
+var playlistOthers = [];
 
 class _MyPageState extends State<MyPage> {
   bool mateRequested = false;
@@ -67,11 +66,11 @@ class _MyPageState extends State<MyPage> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/home'));
-            },
-          ),
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
+              },
+            ),
             title: Text(
               "마이페이지",
               style: bold16.copyWith(color: AppColor.text),
@@ -122,7 +121,7 @@ class _MyPageState extends State<MyPage> {
             future: getUserInfo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
@@ -131,9 +130,9 @@ class _MyPageState extends State<MyPage> {
                 mateListFriend =
                     userInfo['mate_friend'] as List<dynamic>? ?? [];
                 mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
-                playlist_my = userInfo['playlist_my'] as List<dynamic>? ?? [];
-                playlist_others =
-                    userInfo['playlist_others'] as List<dynamic>? ?? [];
+                playlistMy = userInfo['playlistMy'] as List<dynamic>? ?? [];
+                playlistOthers =
+                    userInfo['playlistOthers'] as List<dynamic>? ?? [];
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +165,7 @@ class _MyPageState extends State<MyPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MyStarMate(),
+                                    builder: (context) => const MyStarMate(),
                                   ),
                                 );
                               },
@@ -182,7 +181,7 @@ class _MyPageState extends State<MyPage> {
                         ),
                         Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 20,
                             ),
                             Text(userInfo['email'],
@@ -223,14 +222,14 @@ class _MyPageState extends State<MyPage> {
 
 class MySongList extends StatelessWidget {
   MySongList({Key? key}) : super(key: key);
-  String image_url = '';
+  String imageUrl = '';
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: getPlaylistMyInfo(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -243,9 +242,9 @@ class MySongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              image_url = playlistInfo['image_url'] ?? '없음';
-              print('${image_url}입니다!');
-              return MySong(imageUrl: image_url);
+              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              debugPrint('$imageUrl입니다!');
+              return MySong(imageUrl: imageUrl);
             },
           );
         }
@@ -274,25 +273,25 @@ class _MySongState extends State<MySong> {
             fit: BoxFit.fill,
           ),
         ),
-        child: SizedBox());
+        child: const SizedBox());
   }
 }
 
 class SaveSongList extends StatelessWidget {
   SaveSongList({Key? key}) : super(key: key);
-  String image_url = '';
+  String imageUrl = '';
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: getPlaylistOthersInfo(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
           var playlistInfoList = snapshot.data!;
-          print(playlistInfoList[1]['image_url']);
+          debugPrint(playlistInfoList[1]['imageUrl']);
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
@@ -300,9 +299,9 @@ class SaveSongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              image_url = playlistInfo['image_url'] ?? '없음';
-              print('${image_url}입니다!');
-              return MySong(imageUrl: image_url);
+              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              debugPrint('$imageUrl입니다!');
+              return MySong(imageUrl: imageUrl);
             },
           );
         }
@@ -331,6 +330,6 @@ class _SaveSongState extends State<MySong> {
             fit: BoxFit.fill,
           ),
         ),
-        child: SizedBox());
+        child: const SizedBox());
   }
 }

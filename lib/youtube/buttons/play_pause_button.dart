@@ -9,6 +9,8 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 ///
 class PlayPauseButton extends StatelessWidget {
+  const PlayPauseButton({super.key});
+
   // final ValueNotifier<bool> _isMuted = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {

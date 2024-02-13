@@ -6,8 +6,10 @@ import '../mypage/my_page.dart';
 import 'search.dart';
 
 class CommunityPage extends StatefulWidget {
+  const CommunityPage({super.key});
+
   @override
-  _CommunityPage createState() => _CommunityPage();
+  State<CommunityPage> createState() => _CommunityPage();
 }
 
 class _CommunityPage extends State<CommunityPage> {
@@ -17,7 +19,7 @@ class _CommunityPage extends State<CommunityPage> {
   List? contentList;
   bool isLoading = false;
   bool firstLoad = true;
-  String API_KEY = "";
+  String apiKeys = "";
 
   FocusNode textfieldFocusNode = FocusNode();
   @override
@@ -330,8 +332,7 @@ class SongPicture extends StatelessWidget {
             Positioned(
               left: 20,
               bottom: 10,
-              child:
-                  Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
+              child: Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
             ),
           ],
         ),

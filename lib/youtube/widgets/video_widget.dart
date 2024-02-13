@@ -8,7 +8,8 @@ import 'alert.dart';
 class VideoWidget extends StatelessWidget {
   final Video video;
 
-  VideoWidget({
+  const VideoWidget({
+    super.key,
     required this.video,
   });
 
@@ -24,7 +25,6 @@ class VideoWidget extends StatelessWidget {
             );
           },
         );
-        print(video);
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12, top: 10),
@@ -32,7 +32,7 @@ class VideoWidget extends StatelessWidget {
           children: <Widget>[
             Stack(
               children: [
-                Container(
+                SizedBox(
                   height: 51,
                   width: 51,
                   child: Image.network(
@@ -68,7 +68,7 @@ class VideoWidget extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ), //video title
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     Text(
                       video.channelName ?? '',
                       textAlign: TextAlign.left,
@@ -83,7 +83,7 @@ class VideoWidget extends StatelessWidget {
               ),
             ),
             Column(children: [
-              SizedBox(height: 22),
+              const SizedBox(height: 22),
               Text(video.duration ?? '',
                   textAlign: TextAlign.left,
                   style: regular13.copyWith(color: AppColor.sub2)),

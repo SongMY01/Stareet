@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
-
 //------6페이지
 class MateDetail extends StatefulWidget {
   const MateDetail({Key? key}) : super(key: key);
 
   @override
-  _MateDetailState createState() => _MateDetailState();
+  State<MateDetail> createState() => _MateDetailState();
 }
 
 class _MateDetailState extends State<MateDetail> {
@@ -34,7 +33,7 @@ class _MateDetailState extends State<MateDetail> {
               PopupMenuButton<String>(
                 onSelected: (String value) {
                   // 메뉴 항목을 선택했을 때 실행될 코드
-                  print(value); // 선택된 값을 사용하여 로직을 처리할 수 있습니다.
+                  debugPrint(value); // 선택된 값을 사용하여 로직을 처리할 수 있습니다.
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>(
@@ -43,7 +42,7 @@ class _MateDetailState extends State<MateDetail> {
                       height: 20.0, // 원하는 높이로 설정
                       width: 80.0, // 원하는 너비로 설정
                       alignment: Alignment.center,
-                      child: Text(
+                      child: const Text(
                         '신고하기',
                         style: TextStyle(color: Colors.white), // 텍스트 색상 설정
                       ),
@@ -52,7 +51,7 @@ class _MateDetailState extends State<MateDetail> {
                 ],
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 // 팝업 메뉴의 위치를 조정하고 싶다면 offset 값을 조정하세요.
-                offset: Offset(0.0, 40.0),
+                offset: const Offset(0.0, 40.0),
               )
             ],
           ),
@@ -66,11 +65,10 @@ class _MateDetailState extends State<MateDetail> {
               ),
               Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
-                  Text('좌좌좌좌',
-                      style: bold18.copyWith(color: AppColor.sub1)),
+                  Text('좌좌좌좌', style: bold18.copyWith(color: AppColor.sub1)),
                   const Spacer(),
                   SizedBox(
                     height: 28,
@@ -107,7 +105,7 @@ class _MateDetailState extends State<MateDetail> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Text('4 스타 메이트',
                       style: medium13.copyWith(color: AppColor.text)),
                 ],

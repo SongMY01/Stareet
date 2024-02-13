@@ -9,15 +9,14 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import '../buttons/play_pause_button.dart';
-import '../music/video_detail_page.dart';
 
 class CustomDialog extends StatefulWidget {
-  Video video;
+  final Video video;
 
-  CustomDialog({super.key, required this.video});
+  const CustomDialog({super.key, required this.video});
 
   @override
-  _CustomDialogState createState() => _CustomDialogState();
+  State<CustomDialog> createState() => _CustomDialogState();
 }
 
 class _CustomDialogState extends State<CustomDialog> {
@@ -165,7 +164,7 @@ class Controls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return VideoPositionSeeker();
+    return const VideoPositionSeeker();
   }
 }
 
@@ -244,7 +243,7 @@ class VideoPositionSeeker extends StatelessWidget {
             },
           ),
         ),
-        PlayPauseButton(),
+        const PlayPauseButton(),
       ],
     );
   }

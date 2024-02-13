@@ -66,8 +66,7 @@ class TabOne extends StatelessWidget {
                   bottom: 23,
                   child: Text(
                     "용가리자리",
-                    style:
-                        bold15, //bold 17이 큰거 같다.
+                    style: bold15, //bold 17이 큰거 같다.
                   ),
                 ),
                 Positioned(
@@ -88,10 +87,10 @@ class TabOne extends StatelessWidget {
 }
 
 class TabTwo extends StatefulWidget {
-  const TabTwo({Key? key});
+  const TabTwo({super.key});
 
   @override
-  _TabTwoState createState() => _TabTwoState();
+  State<TabTwo> createState() => _TabTwoState();
 }
 
 class _TabTwoState extends State<TabTwo> {
