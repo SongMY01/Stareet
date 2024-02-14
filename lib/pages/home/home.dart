@@ -29,6 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> get getGlobalKey => _scaffoldKey;
   StreamSubscription<Position>? _positionSubscription;
   final Completer<NaverMapController> _controller = Completer();
   final ScrollController _scrollController = ScrollController();
@@ -76,14 +77,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   // 현재 위치로 이동
+  // void _updatePosition() async {
+  //   final mapController =
+  //       Provider.of<MapProvider>(context, listen: false).mapController;
+  //   final results = await Future.wait([_getPosition()]);
+  //   position = results[0];
+  //   mapController.updateCamera(NCameraUpdate.withParams(
+  //       target: NLatLng(position.latitude, position.longitude)));
+  //   // _drawCircle(position);
+  // }
+
   void _updatePosition() async {
-    final mapController =
-        Provider.of<MapProvider>(context, listen: false).mapController;
-    final results = await Future.wait([_getPosition()]);
-    position = results[0];
-    mapController.updateCamera(NCameraUpdate.withParams(
-        target: NLatLng(position.latitude, position.longitude)));
-    // _drawCircle(position);
+    final geolocator = GeolocatorPlatform.instance;
+    final currentPosition = await geolocator.getCurrentPosition();
+    final currentLocation = NLatLng(currentPosition.latitude, currentPosition.longitude);
+    _controller.future.then(
+      (controller) => controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: currentLocation))
+    );
   }
 
   // 이미지 저장
@@ -157,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                 indoorEnable: true,
                 logoClickEnable: false,
                 consumeSymbolTapEvents: false,
-                locationButtonEnable: true,
+                // locationButtonEnable: true,
                 pickTolerance: 10),
             // 지도 실행 시 이벤트
             onMapReady: (controller) async {
@@ -166,6 +176,7 @@ class _HomePageState extends State<HomePage> {
               _updateUserMarker(await mapProvider.getPosition());
               mapProvider.mapController.addOverlay(_userLocationMarker!);
             },
+            
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
               // context.read<MapProvider>().drawMarker(context, latLng);
@@ -180,7 +191,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               ClipRect(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: 95,
@@ -197,7 +208,7 @@ class _HomePageState extends State<HomePage> {
               ),
               ClipRect(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: 105,
