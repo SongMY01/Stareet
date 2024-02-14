@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 
 import 'dart:async';
@@ -84,13 +83,13 @@ class MyStarMate extends StatelessWidget {
                     height: 36,
                     child: TextField(
                       onSubmitted: (String searchText) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TabOne(),
-                          ),
-                        );
-                      },
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => TabOne(query: query),
+                        //   ),
+                        // );
+                      }, //문제
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
@@ -262,20 +261,18 @@ class _MateNameRealState extends State<MateNameReal> {
                 width: 30,
                 height: 30,
                 fit: BoxFit.fill,
-              ) // 이미지가 공간에 꽉 차도록 조절),
+              ), // 이미지가 공간에 꽉 차도록 조절),
 
               CircleAvatar(
                 radius: 25,
                 backgroundImage: NetworkImage(widget.imageUrl),
               ),
-
             ],
           ),
           title: Text(widget.nickName,
               style: medium16.copyWith(color: AppColor.text)),
           trailing: IconButton(
             onPressed: () {
-
               showCupertinoDialog(
                   context: context,
                   builder: (BuildContext ctx) {
@@ -300,7 +297,6 @@ class _MateNameRealState extends State<MateNameReal> {
                       ),
                     );
                   });
-=======
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
