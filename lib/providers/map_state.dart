@@ -62,12 +62,21 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  void drawMarker(BuildContext context, String id, Position location) {
-// 마커 생성
+  // 마커 그리기 함수
+  void drawMarker(BuildContext context, String id, Position location) async {
+    String imagePath = 'asssets/images/my_marker.png';
+    String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
+    final docs =
+        await FirebaseFirestore.instance.collection('Star').doc(id).get();
+    final String owner = docs['owner'];
+    if (loggedInUid != owner) {
+      imagePath = 'assets/images/other_marker.png';
+    }
+
     final marker = NMarker(
       id: id,
       position: NLatLng(location.latitude, location.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
+      icon: NOverlayImage.fromAssetImage(imagePath),
       size: const Size(35, 35),
       anchor: const NPoint(0.5, 0.5),
     );
@@ -90,7 +99,7 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 마커 그리기 함수
+  // 마커 추가 함수
   void addMarker(BuildContext context, String videoTitle, String videoSinger,
       String videoId, String comment) async {
     final Position location = await getPosition();
@@ -99,9 +108,6 @@ class MapProvider extends ChangeNotifier {
         await _getAddress(location.latitude, location.longitude);
 
     final docRef = FirebaseFirestore.instance.collection("Star").doc();
-
-    // 마커 그리기
-    drawMarker(context, docRef.id, location);
 
     final starInfo = StarInfo(
       uid: docRef.id,
@@ -116,6 +122,10 @@ class MapProvider extends ChangeNotifier {
       like: [],
     );
     await docRef.set(starInfo.toMap());
+
+    // 마커 그리기
+    drawMarker(context, docRef.id, location);
+
     notifyListeners();
   }
 
