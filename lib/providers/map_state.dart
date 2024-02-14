@@ -65,7 +65,7 @@ class MapProvider extends ChangeNotifier {
   void drawMarker(BuildContext context, String id, Position location) {
 // 마커 생성
     final marker = NMarker(
-      id: docRef.id,
+      id: id,
       position: NLatLng(location.latitude, location.longitude),
       icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
       size: const Size(35, 35),
