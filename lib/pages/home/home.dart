@@ -7,10 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:music_api/pages/preview_page.dart';
-import 'package:music_api/youtube/music/video_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
-import 'package:youtube_data_api/models/video.dart';
 
 import '../../components/custom_drawer.dart';
 import '../../components/custom_snackbar.dart';
@@ -186,6 +184,7 @@ class _HomePageState extends State<HomePage> {
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
               // context.read<MapProvider>().drawMarker(context, latLng);
+              context.read<MapProvider>().showBottomSheet(context);
             },
           ),
         ),

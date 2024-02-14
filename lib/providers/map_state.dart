@@ -78,11 +78,10 @@ class MapProvider extends ChangeNotifier {
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
-      }
-      if (!context.read<SwitchProvider>().switchMode) {
+      } else {
         // 기본 홈 화면일 때
         debugPrint('hello~');
-        _showBottomSheet(context);
+        showBottomSheet(context);
       }
     });
     marker.setGlobalZIndex(200000);
@@ -169,7 +168,7 @@ class MapProvider extends ChangeNotifier {
 
   void addToFirebase() {}
 
-  void _showBottomSheet(BuildContext context) {
+  void showBottomSheet(BuildContext context) {
     if (context.mounted) {
       showModalBottomSheet(
         backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
