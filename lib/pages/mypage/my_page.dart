@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_api/utilities/info.dart';
 
-
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 import 'my_starmate.dart';
@@ -13,7 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 //------6페이지
 class MyPage extends StatefulWidget {
   final String? nickName;
-  const MyPage({super.key, this.nickName});
+  const MyPage({Key? key, this.nickName}) : super(key: key);
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -87,31 +86,35 @@ class _MyPageState extends State<MyPage> {
                 offset: const Offset(0, 50),
                 itemBuilder: (context) => [
                   PopupMenuItem(
-                      value: 1,
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfilePage(),
-                              ),
-                            );
-                          },
-                          child: Text('프로필 편집',
-                              style: medium14.copyWith(color: AppColor.sub1)))),
+                    value: 1,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: Text('프로필 편집',
+                          style: medium14.copyWith(color: AppColor.sub1)),
+                    ),
+                  ),
                   PopupMenuItem(
-                      value: 2,
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SettingPage(),
-                              ),
-                            );
-                          },
-                          child: Text('설정',
-                              style: medium14.copyWith(color: AppColor.sub1)))),
+                    value: 2,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingPage(),
+                          ),
+                        );
+                      },
+                      child: Text('설정',
+                          style: medium14.copyWith(color: AppColor.sub1)),
+                    ),
+                  ),
                 ],
               )
             ],
@@ -143,53 +146,24 @@ class _MyPageState extends State<MyPage> {
                           style: bold18.copyWith(color: AppColor.text)),
                       const Spacer(),
                       TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MyStarMate(),
-
-                              ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MyStarMate(),
                             ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Text(userInfo['email'],
-                                style:
-                                    regular15.copyWith(color: AppColor.sub2)),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    const TabBar(
-                      tabs: [
-                        Tab(text: "내 플리"),
-                        Tab(text: "저장한 플리"),
-                      ],
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          MySongList(),
-                          SaveSongList(),
-                        ],
+                          );
+                        },
+                        child: const Text('Your Widget Here'),
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
-                      Text('soda@handong.ac.kr',
+                      Text('userInfo(email들어가야함)',
                           style: regular15.copyWith(color: AppColor.sub2)),
                     ],
                   ),
@@ -198,22 +172,21 @@ class _MyPageState extends State<MyPage> {
               const SizedBox(height: 10),
               const TabBar(
                 labelColor: AppColor.text,
-                indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
+                indicatorColor: AppColor.text,
                 tabs: [
                   Tab(text: "내 플리"),
                   Tab(text: "저장한 플리"),
                 ],
               ),
-              const Expanded(
+              Expanded(
                 child: TabBarView(
                   children: [
                     MySongList(),
                     SaveSongList(),
-
                   ],
-                );
-              }
-            },
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -267,14 +240,15 @@ class _MySongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 0.3),
-          image: DecorationImage(
-            image: NetworkImage(widget.imageUrl),
-            fit: BoxFit.fill,
-          ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 0.3),
+        image: DecorationImage(
+          image: NetworkImage(widget.imageUrl),
+          fit: BoxFit.fill,
         ),
-        child: const SizedBox());
+      ),
+      child: const SizedBox(),
+    );
   }
 }
 
@@ -302,7 +276,7 @@ class SaveSongList extends StatelessWidget {
               var playlistInfo = playlistInfoList[index];
               imageUrl = playlistInfo['imageUrl'] ?? '없음';
               debugPrint('$imageUrl입니다!');
-              return MySong(imageUrl: imageUrl);
+              return SaveSong(imageUrl: imageUrl);
             },
           );
         }
@@ -324,13 +298,14 @@ class _SaveSongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 0.3),
-          image: DecorationImage(
-            image: NetworkImage(widget.imageUrl),
-            fit: BoxFit.fill,
-          ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 0.3),
+        image: DecorationImage(
+          image: NetworkImage(widget.imageUrl),
+          fit: BoxFit.fill,
         ),
-        child: const SizedBox());
+      ),
+      child: const SizedBox(),
+    );
   }
 }

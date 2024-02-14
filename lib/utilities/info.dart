@@ -62,13 +62,13 @@ Future<void> fetchAuthInfo() async {
 
 class StarInfo {
   final String? uid;
-  final double? location;
+  final List<double>? location;
   final String? song;
   final String? comment;
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
-  final List? like;
+  final List<String>? like;
 
   StarInfo(
       {required this.uid,
@@ -80,19 +80,33 @@ class StarInfo {
       required this.address,
       required this.like});
 
-  factory StarInfo.fromFirebase(
-      QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
-    final snapshotData = docSnap.data();
+  // Firestore 문서를 StarInfo 객체로 변환하는 팩토리 메서드
+  factory StarInfo.fromMap(Map<String, dynamic> map) {
     return StarInfo(
-      uid: snapshotData[uidFieldName],
-      registerTime: snapshotData[registerTimeFieldName],
-      location: snapshotData[locationFieldName],
-      song: snapshotData[songFieldName],
-      comment: snapshotData[commentFieldName],
-      owner: snapshotData[ownerFieldName],
-      address: snapshotData[addressFieldName],
-      like: snapshotData[likeFieldName],
+      uid: map['uid'],
+      location: List<double>.from(map['location'].map((e) => (e as num)
+          .toDouble())), // Firestore에서는 모든 숫자를 double로 처리하지 않으므로, 명시적으로 변환해야 합니다.
+      song: map['song'],
+      comment: map['comment'],
+      owner: map['owner'],
+      registerTime: map['registerTime'],
+      address: map['address'],
+      like: List<String>.from(map['like']),
     );
+  }
+
+  // StarInfo 객체를 Firestore 문서로 변환하는 메서드
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'location': location,
+      'song': song,
+      'comment': comment,
+      'owner': owner,
+      'registerTime': registerTime,
+      'address': address,
+      'like': like,
+    };
   }
 }
 

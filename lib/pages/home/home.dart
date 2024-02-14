@@ -63,8 +63,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   // firebase에서 Star 정보 가져오기
-  Future<List<StarInfo>> fetchUserStars(String uid) async {
-    final snapshot = await FirebaseFirestore.instance.collection('Star').where('owner', isEqualTo: uid).get();
+  Future<List> fetchUserStars(String uid) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Star')
+        .where('owner', isEqualTo: uid)
+        .get();
 
     return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
   }

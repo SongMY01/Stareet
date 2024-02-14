@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "859784822505-fuc159p4v629qm5ub96ptcslvt189702.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_api",
+            "certificate_hash": "1d7a76933762c742a53de4632cfc40f40e41dee6"
+          }
+        },
+        {
           "client_id": "859784822505-5povspchqhjk4v6tq8sesleiio6885nl.apps.googleusercontent.com",
           "client_type": 3
         }
