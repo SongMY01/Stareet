@@ -1,58 +1,49 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
-class UserInfo {
+class UsersInfo {
   final String? uid;
   final String? nickName;
   final String? userEmail;
+  final String? userPassword;
+  final String? profileImage;
+  final List<Map<String, dynamic>>? mate;
+  final List<String>? playlist_my;
+  final List<String>? playlist_others;
 
-  // final String? userPassword;
-  final String? profileImageURL;
-  // final List<Map<String, dynamic>>? mate;
-  // final List<String>? playlist_my;
-  // final List<String>? playlist_others;
-
-  UserInfo({
+  UsersInfo({
     required this.uid,
     required this.nickName,
     required this.userEmail,
-
-    // required this.userPassword,
-    required this.profileImageURL,
-    // required this.mate,
-    // required this.playlist_my,
-    // required this.playlist_others,
+    required this.userPassword,
+    required this.profileImage,
+    required this.mate,
+    required this.playlist_my,
+    required this.playlist_others,
   });
 
-  String? get userNickName => nickName;
-
-  // userEmail에 대한 getter를 추가
-  String? get userEmail1 => userEmail;
-
-  factory UserInfo.fromFirebase(
+  factory UsersInfo.fromFirebase(
       DocumentSnapshot<Map<String, dynamic>> docSnap) {
-    final snapshotData = docSnap.data();
-    return UserInfo(
-      uid: snapshotData?['uid'],
-      nickName: snapshotData?[userNameFieldName],
-      userEmail: snapshotData?[userEmailFieldName],
-      // userPassword: snapshotData?[userPasswordFieldName],
-      profileImageURL: snapshotData?[profileImageURLFieldName],
-      // mate: snapshotData?[mateFieldName],
-      // playlist_my: snapshotData?[playlistMyFieldName],
-      // playlist_others: snapshotData?[playlistOthersFieldName],
-    );
+    final snapshotData = docSnap.data() ?? {};
+    return UsersInfo(
+        uid: snapshotData['uid'],
+        nickName: snapshotData[userNameFieldName],
+        userEmail: snapshotData[userEmailFieldName],
+        userPassword: snapshotData[userPasswordFieldName],
+        profileImage: snapshotData[profileImageURLFieldName],
+        mate: snapshotData[mateFieldName],
+        playlist_my: snapshotData[playlist_myFieldName],
+        playlist_others: snapshotData[playlist_othersFieldName]);
   }
 }
 
-const String userNameFieldName = "userName";
-const String userEmailFieldName = "userEmail"; // <-- 수정된 부분
+const String userNameFieldName = "nickName";
+const String userEmailFieldName = "userEmail";
 const String userPasswordFieldName = "userPassword";
-const String profileImageURLFieldName = "profileImageURL";
+const String profileImageURLFieldName = "profileImage";
 const String mateFieldName = 'mate';
-const String playlistMyFieldName = 'playlist_my';
-const String playlistOthersFieldName = 'playlist_others';
+const String playlist_myFieldName = 'playlist_my';
+const String playlist_othersFieldName = 'playlist_others';
 
 Future<void> fetchAuthInfo() async {
   Map data = {};
@@ -61,10 +52,10 @@ Future<void> fetchAuthInfo() async {
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid);
 
-  await docref.get().then((doc) => {
+  docref.get().then((doc) => {
         (DocumentSnapshot doc) {
           data = doc.data() as Map<String, dynamic>;
-          debugPrint(data as String?);
+          print(data);
         },
       });
 }
@@ -72,31 +63,36 @@ Future<void> fetchAuthInfo() async {
 class StarInfo {
   final String? uid;
   final List<double>? location;
-  final String? song;
+  final String? title;
+  final String? singer;
+  final String? videoId;
   final String? comment;
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
-  final List? like;
+  final List<String>? like;
 
   StarInfo(
       {required this.uid,
       required this.location,
-      required this.song,
+      required this.title,
+      this.singer,
+      this.videoId,
       required this.comment,
       required this.owner,
       required this.registerTime,
       required this.address,
       required this.like});
 
-  factory StarInfo.fromFirebase(
-      QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
-    final snapshotData = docSnap.data();
+  // Firestore 문서를 StarInfo 객체로 변환하는 팩토리 메서드
+  factory StarInfo.fromMap(Map<String, dynamic> map) {
     return StarInfo(
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
       location: snapshotData[locationFieldName],
-      song: snapshotData[songFieldName],
+      title: snapshotData[musciTitleFieldName],
+      singer: snapshotData[singerFieldName],
+      videoId: snapshotData[videoIdFieldName],
       comment: snapshotData[commentFieldName],
       owner: snapshotData[ownerFieldName],
       address: snapshotData[addressFieldName],
@@ -107,8 +103,11 @@ class StarInfo {
   static StarInfo fromMap(Map<String, dynamic> map) {
     return StarInfo(
         uid: map['uid'],
-        location: List<double>.from(map['location']),
-        song: map['song'],
+      location: List<double>.from(map['location'].map((e) => (e as num)
+          .toDouble())), // Firestore에서는 모든 숫자를 double로 처리하지 않으므로, 명시적으로 변환해야 합니다.
+        title: map['title'],
+        singer: map['singer'],
+        videoId: map['videoId'],
         comment: map['comment'],
         owner: map['owner'],
         registerTime: map['registerTime'],
@@ -121,19 +120,24 @@ class StarInfo {
       uidFieldName: uid,
       registerTimeFieldName: registerTime,
       locationFieldName: location,
-      songFieldName: song,
+      musciTitleFieldName: title,
+      singerFieldName: singer,
+      videoIdFieldName: videoId,
       commentFieldName: comment,
       ownerFieldName: owner,
       addressFieldName: address,
       likeFieldName: like,
     };
   }
+
 }
 
 const String uidFieldName = "uid";
 const String registerTimeFieldName = "registerTime";
 const String locationFieldName = "location";
-const String songFieldName = "song";
+const String musciTitleFieldName = "song";
+const String singerFieldName = "singer";
+const String videoIdFieldName = "videoId";
 const String commentFieldName = "comment";
 const String ownerFieldName = "owner";
 const String addressFieldName = "address";
@@ -142,19 +146,19 @@ const String likeFieldName = "like";
 class PlaylistInfo {
   final String? uid;
   final Timestamp? registerTime;
-  final String? imageUrl;
+  final String? image_url;
   final String? owner;
   final String? title;
-  final List? starsId;
+  final List? stars_id;
   final List? subscribe;
 
   PlaylistInfo(
       {required this.uid,
       required this.registerTime,
-      required this.imageUrl,
+      required this.image_url,
       required this.owner,
       required this.title,
-      required this.starsId,
+      required this.stars_id,
       required this.subscribe});
 
   factory PlaylistInfo.fromFirebase(
@@ -163,16 +167,16 @@ class PlaylistInfo {
     return PlaylistInfo(
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
-      imageUrl: snapshotData[imageUrlFieldName],
+      image_url: snapshotData[image_URLFieldName],
       owner: snapshotData[ownerFieldName],
       title: snapshotData[titleFieldName],
       subscribe: snapshotData[subscribeFieldName],
-      starsId: snapshotData[starsIdFieldName],
+      stars_id: snapshotData[stars_idFieldName],
     );
   }
 }
 
-const imageUrlFieldName = 'imageUrl';
+const image_URLFieldName = 'image_url';
 const titleFieldName = 'title';
 const subscribeFieldName = 'subscribe';
-const starsIdFieldName = 'starsId';
+const stars_idFieldName = 'stars_id';

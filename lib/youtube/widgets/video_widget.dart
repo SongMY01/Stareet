@@ -94,13 +94,15 @@ class VideoWidget extends StatelessWidget {
     );
   }
 
-  navigateToPlayer(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (_) => VideoDetailPage(video: video)));
+  // navigateToPlayer(BuildContext context) {
+  //   Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (_) => VideoDetailPage(videoId: video.videoId as String, musicTitle: '', musicChannel: '',)));
 
-    // List<String> videoIds = [];
-    // videoIds.add(video.videoId!);
-    // Navigator.push(context,
-    //     MaterialPageRoute(builder: (_) => VideoDetailPage(videoIds: videoIds)));
-  }
+  //   // List<String> videoIds = [];
+  //   // videoIds.add(video.videoId!);
+  //   // Navigator.push(context,
+  //   //     MaterialPageRoute(builder: (_) => VideoDetailPage(videoIds: videoIds)));
+  // }
 }

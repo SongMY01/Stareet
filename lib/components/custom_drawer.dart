@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_api/pages/community/coumunity.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/mypage/my_page.dart';
@@ -63,15 +64,21 @@ class CustomDrawer extends StatelessWidget {
                           decorationColor: AppColor.text)
                       : semibold24.copyWith(color: AppColor.sub2))),
           ListTile(
-            leading: Image.asset("assets/images/leave_star.png",
-                width: 23,
-                height: 26,
-                color: ModalRoute.of(context)?.settings.name == '/search'
-                    ? AppColor.text
-                    : AppColor.sub2),
-            onTap: () {
-              Navigator.pushNamed(context, '/search');
-            },
+            //여기서부터
+            leading: Image.asset("assets/images/drawer2.png",
+                width: 23, height: 26, color: AppColor.sub2),
+            onTap: () {},
+            //
+
+//             leading: Image.asset("assets/images/leave_star.png",
+//                 width: 23,
+//                 height: 26,
+//                 color: ModalRoute.of(context)?.settings.name == '/search'
+//                     ? AppColor.text
+//                     : AppColor.sub2),
+//             onTap: () {
+//               Navigator.pushNamed(context, '/search');
+//             },
             title: Text("별자국 남기기",
             style: (ModalRoute.of(context)?.settings.name == '/search')
                       ? semibold24.copyWith(
@@ -99,7 +106,15 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
               leading: Image.asset("assets/images/community.png",
                   width: 23, height: 25, color: AppColor.sub2),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CommunityPage(),
+                  ),
+                );
+              },
+
               title: Text("별별 게시판",
                   style: semibold24.copyWith(color: AppColor.sub2))),
           const Spacer(),

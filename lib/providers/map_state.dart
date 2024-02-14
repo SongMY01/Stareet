@@ -62,8 +62,18 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  void drawMarker(BuildContext context, String id, Position location) {
-// 마커 생성
+
+  // 마커 그리기 함수
+  void drawMarker(BuildContext context, String videoTitle, String videoSinger,
+      String videoId, String comment) async {
+    final Position location = await getPosition();
+
+    final String currentAddress =
+        await _getAddress(location.latitude, location.longitude);
+
+    final docRef = FirebaseFirestore.instance.collection("Star").doc();
+
+
     final marker = NMarker(
       id: id,
       position: NLatLng(location.latitude, location.longitude),
@@ -107,7 +117,9 @@ class MapProvider extends ChangeNotifier {
     final starInfo = StarInfo(
       uid: docRef.id,
       location: [location.latitude, location.longitude],
-      song: videoTitle,
+      title: videoTitle,
+      singer: videoSinger,
+      videoId: videoId,
       comment: comment,
       owner: FirebaseAuth.instance.currentUser?.uid,
       registerTime: Timestamp.now(),
@@ -179,5 +191,6 @@ class MapProvider extends ChangeNotifier {
     } else {
       debugPrint("this widget doesn't mounted!!!");
     }
+
   }
 }

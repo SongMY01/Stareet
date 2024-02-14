@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/mypage/mate_manage.dart';
 
@@ -80,13 +83,13 @@ class MyStarMate extends StatelessWidget {
                     height: 36,
                     child: TextField(
                       onSubmitted: (String searchText) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TabOne(),
-                          ),
-                        );
-                      },
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => TabOne(query: query),
+                        //   ),
+                        // );
+                      }, //문제
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
@@ -252,6 +255,14 @@ class _MateNameRealState extends State<MateNameReal> {
                   });
                 },
               ),
+
+              Image.asset(
+                'assets/fonts/images/profile.png',
+                width: 30,
+                height: 30,
+                fit: BoxFit.fill,
+              ), // 이미지가 공간에 꽉 차도록 조절),
+
               CircleAvatar(
                 radius: 25,
                 backgroundImage: NetworkImage(widget.imageUrl),
@@ -262,6 +273,30 @@ class _MateNameRealState extends State<MateNameReal> {
               style: medium16.copyWith(color: AppColor.text)),
           trailing: IconButton(
             onPressed: () {
+              showCupertinoDialog(
+                  context: context,
+                  builder: (BuildContext ctx) {
+                    return Theme(
+                      data: ThemeData.dark(),
+                      child: CupertinoAlertDialog(
+                        title: const Text("메이트를 삭제하시겠어요?", style: regular17),
+                        actions: [
+                          CupertinoDialogAction(
+                              child: Text("취소",
+                                  style:
+                                      regular17.copyWith(color: AppColor.sub2)),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                          CupertinoDialogAction(
+                              child: Text("삭제",
+                                  style: regular17.copyWith(
+                                      color: AppColor.error)),
+                              onPressed: () {})
+                        ],
+                      ),
+                    );
+                  });
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
