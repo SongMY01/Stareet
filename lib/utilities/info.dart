@@ -135,7 +135,7 @@ class StarInfo {
 const String uidFieldName = "uid";
 const String registerTimeFieldName = "registerTime";
 const String locationFieldName = "location";
-const String musciTitleFieldName = "song";
+const String musciTitleFieldName = "title";
 const String singerFieldName = "singer";
 const String videoIdFieldName = "videoId";
 const String commentFieldName = "comment";
