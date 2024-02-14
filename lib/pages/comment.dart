@@ -192,7 +192,8 @@ class _CommentPageState extends State<CommentPage> {
                       //   addressFieldName: '포항시 북구 양덕동',
                       //   likeFieldName: 'FirebaseAuth.instance.currentUser!.uid'
                       // });
-                      context.read<MapProvider>().drawMarker(
+
+                      context.read<MapProvider>().addMarker(
                           context,
                           widget.video.title!,
                           widget.video.channelName!,

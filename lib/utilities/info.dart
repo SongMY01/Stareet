@@ -76,16 +76,17 @@ class StarInfo {
       {required this.uid,
       required this.location,
       required this.title,
-      this.singer,
-      this.videoId,
+      required this.singer,
+      required this.videoId,
       required this.comment,
       required this.owner,
       required this.registerTime,
       required this.address,
       required this.like});
 
-  // Firestore 문서를 StarInfo 객체로 변환하는 팩토리 메서드
-  factory StarInfo.fromMap(Map<String, dynamic> map) {
+  factory StarInfo.fromFirebase(
+      QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
+    final snapshotData = docSnap.data();
     return StarInfo(
       uid: snapshotData[uidFieldName],
       registerTime: snapshotData[registerTimeFieldName],
@@ -103,8 +104,8 @@ class StarInfo {
   static StarInfo fromMap(Map<String, dynamic> map) {
     return StarInfo(
         uid: map['uid'],
-      location: List<double>.from(map['location'].map((e) => (e as num)
-          .toDouble())), // Firestore에서는 모든 숫자를 double로 처리하지 않으므로, 명시적으로 변환해야 합니다.
+        location: List<double>.from(map['location'].map((e) => (e as num)
+            .toDouble())), // Firestore에서는 모든 숫자를 double로 처리하지 않으므로, 명시적으로 변환해야 합니다.
         title: map['title'],
         singer: map['singer'],
         videoId: map['videoId'],
@@ -129,7 +130,6 @@ class StarInfo {
       likeFieldName: like,
     };
   }
-
 }
 
 const String uidFieldName = "uid";
