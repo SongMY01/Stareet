@@ -62,6 +62,7 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
+
   // 마커 그리기 함수
   void drawMarker(BuildContext context, String videoTitle, String videoSinger,
       String videoId, String comment) async {
@@ -72,9 +73,9 @@ class MapProvider extends ChangeNotifier {
 
     final docRef = FirebaseFirestore.instance.collection("Star").doc();
 
-    // 마커 생성
+
     final marker = NMarker(
-      id: docRef.id,
+      id: id,
       position: NLatLng(location.latitude, location.longitude),
       icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
       size: const Size(35, 35),
@@ -90,12 +91,28 @@ class MapProvider extends ChangeNotifier {
       }
       if (!context.read<SwitchProvider>().switchMode) {
         // 기본 홈 화면일 때
+        debugPrint('hello~');
         _showBottomSheet(context);
       }
     });
     marker.setGlobalZIndex(200000);
     _mapController.addOverlay(marker);
     _markers.add(marker);
+    notifyListeners();
+  }
+
+  // 마커 그리기 함수
+  void addMarker(
+      BuildContext context, String videoTitle, String comment) async {
+    final Position location = await getPosition();
+
+    final String currentAddress =
+        await _getAddress(location.latitude, location.longitude);
+
+    final docRef = FirebaseFirestore.instance.collection("Star").doc();
+
+    // 마커 그리기
+    drawMarker(context, docRef.id, location);
 
     final starInfo = StarInfo(
       uid: docRef.id,
@@ -163,12 +180,17 @@ class MapProvider extends ChangeNotifier {
   void addToFirebase() {}
 
   void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
-      context: context,
-      builder: (BuildContext context) {
-        return HomeBottomsheet();
-      },
-    );
+    if (context.mounted) {
+      showModalBottomSheet(
+        backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
+        context: context,
+        builder: (BuildContext context) {
+          return const HomeBottomsheet();
+        },
+      );
+    } else {
+      debugPrint("this widget doesn't mounted!!!");
+    }
+
   }
 }

@@ -198,6 +198,7 @@ class _CommentPageState extends State<CommentPage> {
                           widget.video.channelName!,
                           widget.video.videoId!,
                           _textFieldController.text);
+
                       Navigator.popUntil(context, ModalRoute.withName('/home'));
                     },
                     child: Container(
