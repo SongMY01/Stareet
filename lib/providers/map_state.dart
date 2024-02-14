@@ -75,7 +75,7 @@ class MapProvider extends ChangeNotifier {
 
 
     final marker = NMarker(
-      id: id,
+      id: docRef.id,
       position: NLatLng(location.latitude, location.longitude),
       icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
       size: const Size(35, 35),
