@@ -1,10 +1,7 @@
-import 'package:flutter/cupertino.dart';
-
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/mypage/mate_manage.dart';
 
@@ -68,10 +65,8 @@ class MyStarMate extends StatelessWidget {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-              debugPrint(userInfo as String?);
-              mateReal = userInfo['mateReal'] as List<dynamic>? ?? [];
-              mateFriend = userInfo['mateFriend'] as List<dynamic>? ?? [];
-              debugPrint(mateReal as String?);
+              mateReal = userInfo['mate_real'] as List<dynamic>? ?? [];
+              mateFriend = userInfo['mate_friend'] as List<dynamic>? ?? [];
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -86,10 +81,10 @@ class MyStarMate extends StatelessWidget {
                         // Navigator.push(
                         //   context,
                         //   MaterialPageRoute(
-                        //     builder: (context) => TabOne(query: query),
+                        //     builder: (context) => const TabOne(),
                         //   ),
                         // );
-                      }, //문제
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
@@ -243,26 +238,18 @@ class _MateNameRealState extends State<MateNameReal> {
                         .collection('user')
                         .doc(currentUserId)
                         .update({
-                      'mateReal': FieldValue.arrayRemove([widget.uid])
+                      'mate_real': FieldValue.arrayRemove([widget.uid])
                     }).then((_) {
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mateFriend': FieldValue.arrayUnion([widget.uid])
+                        'mate_friend': FieldValue.arrayUnion([widget.uid])
                       });
                     });
                   });
                 },
               ),
-
-              Image.asset(
-                'assets/fonts/images/profile.png',
-                width: 30,
-                height: 30,
-                fit: BoxFit.fill,
-              ), // 이미지가 공간에 꽉 차도록 조절),
-
               CircleAvatar(
                 radius: 25,
                 backgroundImage: NetworkImage(widget.imageUrl),
@@ -273,30 +260,6 @@ class _MateNameRealState extends State<MateNameReal> {
               style: medium16.copyWith(color: AppColor.text)),
           trailing: IconButton(
             onPressed: () {
-              showCupertinoDialog(
-                  context: context,
-                  builder: (BuildContext ctx) {
-                    return Theme(
-                      data: ThemeData.dark(),
-                      child: CupertinoAlertDialog(
-                        title: const Text("메이트를 삭제하시겠어요?", style: regular17),
-                        actions: [
-                          CupertinoDialogAction(
-                              child: Text("취소",
-                                  style:
-                                      regular17.copyWith(color: AppColor.sub2)),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              }),
-                          CupertinoDialogAction(
-                              child: Text("삭제",
-                                  style: regular17.copyWith(
-                                      color: AppColor.error)),
-                              onPressed: () {})
-                        ],
-                      ),
-                    );
-                  });
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -355,7 +318,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                         .collection('user')
                                         .doc(currentUserId)
                                         .update({
-                                      'mateFriend':
+                                      'mate_friend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
                                       debugPrint('${widget.uid}입니다.');
@@ -363,21 +326,21 @@ class _MateNameRealState extends State<MateNameReal> {
                                           .collection('user')
                                           .doc(currentUserId)
                                           .update({
-                                        'mateReal':
+                                        'mate_real':
                                             FieldValue.arrayRemove([widget.uid])
                                       }).then((_) {
                                         FirebaseFirestore.instance
                                             .collection('user')
                                             .doc(widget.uid)
                                             .update({
-                                          'mateReal': FieldValue.arrayRemove(
+                                          'mate_real': FieldValue.arrayRemove(
                                               [currentUserId])
                                         }).then((_) {
                                           FirebaseFirestore.instance
                                               .collection('user')
                                               .doc(widget.uid)
                                               .update({
-                                            'mateFriend':
+                                            'mate_friend':
                                                 FieldValue.arrayRemove(
                                                     [currentUserId])
                                           }).then((_) {
@@ -524,13 +487,13 @@ class _MateNameFriendState extends State<MateNameFriend> {
                         .collection('user')
                         .doc(currentUserId)
                         .update({
-                      'mateFriend': FieldValue.arrayRemove([widget.uid])
+                      'mate_friend': FieldValue.arrayRemove([widget.uid])
                     }).then((_) {
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mateReal': FieldValue.arrayUnion([widget.uid])
+                        'mate_real': FieldValue.arrayUnion([widget.uid])
                       });
                     });
                   });
@@ -604,7 +567,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                         .collection('user')
                                         .doc(currentUserId)
                                         .update({
-                                      'mateFriend':
+                                      'mate_friend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
                                       debugPrint('${widget.uid}입니다.');
@@ -612,21 +575,21 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                           .collection('user')
                                           .doc(currentUserId)
                                           .update({
-                                        'mateReal':
+                                        'mate_real':
                                             FieldValue.arrayRemove([widget.uid])
                                       }).then((_) {
                                         FirebaseFirestore.instance
                                             .collection('user')
                                             .doc(widget.uid)
                                             .update({
-                                          'mateReal': FieldValue.arrayRemove(
+                                          'mate_real': FieldValue.arrayRemove(
                                               [currentUserId])
                                         }).then((_) {
                                           FirebaseFirestore.instance
                                               .collection('user')
                                               .doc(widget.uid)
                                               .update({
-                                            'mateFriend':
+                                            'mate_friend':
                                                 FieldValue.arrayRemove(
                                                     [currentUserId])
                                           }).then((_) {

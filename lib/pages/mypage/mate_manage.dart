@@ -98,9 +98,7 @@ Stream<List<Map<String, dynamic>>> getMateListRealStream() {
       .where('user-id', whereIn: mateIng)
       .snapshots()
       .map((querySnapshot) {
-    return querySnapshot.docs
-        .map((doc) => doc.data())
-        .toList();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
   });
 }
 
