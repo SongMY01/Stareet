@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -9,10 +8,8 @@ import 'mypage_setting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-//------6페이지
 class MyPage extends StatefulWidget {
-  final String? nickName;
-  const MyPage({Key? key, this.nickName}) : super(key: key);
+  const MyPage({Key? key, String? nickName}) : super(key: key);
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -119,74 +116,102 @@ class _MyPageState extends State<MyPage> {
               )
             ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  SizedBox(width: 20),
-                  Image.asset(
-                    'assets/fonts/images/profile.png',
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.fill,
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text('${widget.nickName}',
-                          style: bold18.copyWith(color: AppColor.text)),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MyStarMate(),
-                            ),
-                          );
-                        },
-                        child: const Text('Your Widget Here'),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text('userInfo(email들어가야함)',
-                          style: regular15.copyWith(color: AppColor.sub2)),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const TabBar(
-                labelColor: AppColor.text,
-                indicatorColor: AppColor.text,
-                tabs: [
-                  Tab(text: "내 플리"),
-                  Tab(text: "저장한 플리"),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
+          body: FutureBuilder<Map<String, dynamic>>(
+            future: getUserInfo(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                var userInfo = snapshot.data!;
+
+                mateListFriend =
+                    userInfo['mate_friend'] as List<dynamic>? ?? [];
+                mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
+                playlistMy = userInfo['playlist_my'] as List<dynamic>? ?? [];
+                playlistOthers =
+                    userInfo['playlist_others'] as List<dynamic>? ?? [];
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MySongList(),
-                    SaveSongList(),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        CircleAvatar(
+                          radius: 36,
+                          backgroundImage:
+                              NetworkImage(userInfo['profileImage']),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(userInfo['nickName'],
+                                style: bold18.copyWith(color: AppColor.text)),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const MyStarMate(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                '${mateListFriend.length + mateListReal.length - 2}  스타 메이트',
+                                style: medium13.copyWith(color: AppColor.text),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(userInfo['email'],
+                                style:
+                                    regular15.copyWith(color: AppColor.sub2)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const TabBar(
+                      tabs: [
+                        Tab(text: "내 플리"),
+                        Tab(text: "저장한 플리"),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          MySongList(),
+                          SaveSongList(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 28,
+                    )
                   ],
-                ),
-              ),
-            ],
+                );
+              }
+            },
           ),
         ),
       ),
@@ -216,7 +241,7 @@ class MySongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              imageUrl = playlistInfo['image_url'] ?? '없음';
               debugPrint('$imageUrl입니다!');
               return MySong(imageUrl: imageUrl);
             },
@@ -240,15 +265,14 @@ class _MySongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: DecorationImage(
-          image: NetworkImage(widget.imageUrl),
-          fit: BoxFit.fill,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(widget.imageUrl),
+            fit: BoxFit.fill,
+          ),
         ),
-      ),
-      child: const SizedBox(),
-    );
+        child: const SizedBox());
   }
 }
 
@@ -274,9 +298,9 @@ class SaveSongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              imageUrl = playlistInfo['image_url'] ?? '없음';
               debugPrint('$imageUrl입니다!');
-              return SaveSong(imageUrl: imageUrl);
+              return MySong(imageUrl: imageUrl);
             },
           );
         }
@@ -298,14 +322,13 @@ class _SaveSongState extends State<MySong> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: DecorationImage(
-          image: NetworkImage(widget.imageUrl),
-          fit: BoxFit.fill,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(widget.imageUrl),
+            fit: BoxFit.fill,
+          ),
         ),
-      ),
-      child: const SizedBox(),
-    );
+        child: const SizedBox());
   }
 }
