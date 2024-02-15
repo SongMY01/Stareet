@@ -32,8 +32,10 @@ class UsersInfo {
         userPassword: snapshotData[userPasswordFieldName],
         profileImage: snapshotData[profileImageURLFieldName],
         mate: snapshotData[mateFieldName],
-        playlist_my: snapshotData[playlist_myFieldName],
-        playlist_others: snapshotData[playlist_othersFieldName]);
+        playlist_my:
+            List<String>.from(snapshotData[playlist_myFieldName] ?? []),
+        playlist_others:
+            List<String>.from(snapshotData[playlist_othersFieldName] ?? []));
   }
 }
 
