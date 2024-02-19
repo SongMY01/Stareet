@@ -62,12 +62,21 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  void drawMarker(BuildContext context, String id, Position location) {
-// 마커 생성
+  // 마커 만들기 함수
+  Future<NMarker> createMarker(BuildContext context, String id, NLatLng location) async {
+    String imagePath = 'asssets/images/my_marker.png';
+    String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
+    final docs =
+        await FirebaseFirestore.instance.collection('Star').doc(id).get();
+    final String owner = docs['owner'];
+    if (loggedInUid != owner) {
+      imagePath = 'assets/images/other_marker.png';
+    }
+
     final marker = NMarker(
       id: id,
       position: NLatLng(location.latitude, location.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
+      icon: NOverlayImage.fromAssetImage(imagePath),
       size: const Size(35, 35),
       anchor: const NPoint(0.5, 0.5),
     );
@@ -78,20 +87,25 @@ class MapProvider extends ChangeNotifier {
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
-      }
-      if (!context.read<SwitchProvider>().switchMode) {
+      } else {
         // 기본 홈 화면일 때
         debugPrint('hello~');
-        _showBottomSheet(context);
+        showBottomSheet(context);
       }
     });
     marker.setGlobalZIndex(200000);
+    return marker;
+  }
+
+  // 마커 그리기 함수
+  void drawMarker(BuildContext context, String id, NLatLng location) async {
+    NMarker marker = await createMarker(context, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
     notifyListeners();
   }
 
-  // 마커 그리기 함수
+  // 마커 추가 함수
   void addMarker(BuildContext context, String videoTitle, String videoSinger,
       String videoId, String comment) async {
     final Position location = await getPosition();
@@ -100,9 +114,6 @@ class MapProvider extends ChangeNotifier {
         await _getAddress(location.latitude, location.longitude);
 
     final docRef = FirebaseFirestore.instance.collection("Star").doc();
-
-    // 마커 그리기
-    drawMarker(context, docRef.id, location);
 
     final starInfo = StarInfo(
       uid: docRef.id,
@@ -117,6 +128,10 @@ class MapProvider extends ChangeNotifier {
       like: [],
     );
     await docRef.set(starInfo.toMap());
+
+    // 마커 그리기
+    drawMarker(context, docRef.id, NLatLng(location.latitude, location.longitude));
+
     notifyListeners();
   }
 
@@ -169,7 +184,7 @@ class MapProvider extends ChangeNotifier {
 
   void addToFirebase() {}
 
-  void _showBottomSheet(BuildContext context) {
+  void showBottomSheet(BuildContext context) {
     if (context.mounted) {
       showModalBottomSheet(
         backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
