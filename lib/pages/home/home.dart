@@ -182,8 +182,6 @@ class _HomePageState extends State<HomePage> {
 
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
-              // context.read<MapProvider>().drawMarker(context, latLng);
-              // context.read<MapProvider>().showBottomSheet(context);
             },
           ),
         ),
