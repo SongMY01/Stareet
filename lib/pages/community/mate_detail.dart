@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
-//------6페이지
+//tabtwo에서 유저 누르면 detail page
 class MateDetail extends StatefulWidget {
   final String nickName;
   final String profileImage;
@@ -89,7 +91,6 @@ class _MateDetailState extends State<MateDetail> {
                   ),
                   Text('${widget.nickName}', //닉네임 바꾸는 곳
                       style: bold18.copyWith(color: AppColor.sub1)),
-
                   const Spacer(),
                   SizedBox(
                     height: 28,
@@ -159,25 +160,48 @@ class _MateDetailState extends State<MateDetail> {
   }
 }
 
+Future<UsersInfo> fetchUserInfo() async {
+  var docref = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+
+  DocumentSnapshot<Map<String, dynamic>> doc = await docref.get();
+
+  return UsersInfo.fromFirebase(doc);
+}
+
 class MySongList extends StatelessWidget {
   const MySongList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 15,
-      itemBuilder: (BuildContext context, int index) {
-        return const MySong();
+    return FutureBuilder<UsersInfo>(
+      future: fetchUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+        if (snapshot.hasData) {
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemCount: snapshot.data!.playlist_my!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return MySong(imageUrl: snapshot.data!.playlist_my![index]);
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     );
   }
 }
 
 class MySong extends StatelessWidget {
-  const MySong({Key? key}) : super(key: key);
+  final String imageUrl;
+
+  const MySong({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -193,9 +217,7 @@ class MySong extends StatelessWidget {
         Positioned(
             left: 25,
             bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
+            child: SizedBox(height: 100, child: Image.network(imageUrl)))
       ]),
     );
   }
@@ -206,20 +228,33 @@ class SaveSongList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return const SaveSong();
+    return FutureBuilder<UsersInfo>(
+      future: fetchUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+        if (snapshot.hasData) {
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemCount: snapshot.data!.playlist_others!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return SaveSong(imageUrl: snapshot.data!.playlist_others![index]);
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     );
   }
 }
 
 class SaveSong extends StatelessWidget {
-  const SaveSong({Key? key}) : super(key: key);
+  final String imageUrl;
+
+  const SaveSong({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +270,7 @@ class SaveSong extends StatelessWidget {
         Positioned(
             left: 25,
             bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
+            child: SizedBox(height: 100, child: Image.network(imageUrl)))
       ]),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/community/mate_detail.dart';
 import 'package:music_api/pages/community/star_detail.dart';
@@ -119,6 +120,19 @@ class TabOne extends StatelessWidget {
   }
 }
 
+Future<String> fetchAuthInfo() async {
+  String currentUserNickName = '';
+  var docref = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+
+  await docref.get().then((doc) => {
+        currentUserNickName = doc.data()![userNameFieldName],
+      });
+
+  return currentUserNickName;
+}
+
 class TabTwo extends StatefulWidget {
   final String query;
   const TabTwo({
@@ -126,13 +140,23 @@ class TabTwo extends StatefulWidget {
     required this.query,
   }) : super(key: key);
 
-
   @override
   State<TabTwo> createState() => _TabTwoState();
 }
 
 class _TabTwoState extends State<TabTwo> {
   List<bool> mateRequested = List.generate(5, (index) => false);
+  late String currentUserNickName;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAuthInfo().then((value) {
+      setState(() {
+        currentUserNickName = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +180,7 @@ class _TabTwoState extends State<TabTwo> {
           itemBuilder: (BuildContext context, int index) {
             UsersInfo userInfo = UsersInfo.fromFirebase(snapshot.data!
                 .docs[index] as QueryDocumentSnapshot<Map<String, dynamic>>);
+            bool isCurrentUser = (userInfo.nickName == currentUserNickName);
 
             return GestureDetector(
               onTap: () {
@@ -191,37 +216,39 @@ class _TabTwoState extends State<TabTwo> {
                         style: medium16.copyWith(color: Colors.white)),
                   ],
                 ),
-                trailing: SizedBox(
-                  height: 30,
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        mateRequested[index] = !mateRequested[index];
-                      });
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: mateRequested[index]
-                          ? const Color.fromRGBO(19, 228, 206, 1)
-                          : Colors.black,
-                      backgroundColor: mateRequested[index]
-                          ? Colors.black
-                          : const Color.fromRGBO(19, 228, 206, 1),
-                      side: const BorderSide(
-                        color: Color.fromRGBO(19, 228, 206, 1),
-                        width: 1,
+                trailing: isCurrentUser
+                    ? null
+                    : SizedBox(
+                        height: 30,
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              mateRequested[index] = !mateRequested[index];
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: mateRequested[index]
+                                ? const Color.fromRGBO(19, 228, 206, 1)
+                                : Colors.black,
+                            backgroundColor: mateRequested[index]
+                                ? Colors.black
+                                : const Color.fromRGBO(19, 228, 206, 1),
+                            side: const BorderSide(
+                              color: Color.fromRGBO(19, 228, 206, 1),
+                              width: 1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                          ),
+                          child: Text(
+                            mateRequested[index] ? "메이트" : "메이트 신청",
+                            style: mateRequested[index]
+                                ? bold12.copyWith(color: AppColor.primary)
+                                : bold12.copyWith(color: AppColor.text2),
+                          ),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                    ),
-                    child: Text(
-                      mateRequested[index] ? "메이트" : "메이트 신청",
-                      style: mateRequested[index]
-                          ? bold12.copyWith(color: AppColor.primary)
-                          : bold12.copyWith(color: AppColor.text2),
-                    ),
-                  ),
-                ),
               ),
             );
           },

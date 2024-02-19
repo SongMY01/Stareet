@@ -19,12 +19,10 @@ class _CommunityPage extends State<CommunityPage> {
   final searchController = TextEditingController();
   String query = '';
 
-
   List? contentList;
   bool isLoading = false;
   bool firstLoad = true;
   String apiKeys = "";
-
 
   FocusNode textfieldFocusNode = FocusNode();
   @override
