@@ -141,11 +141,15 @@ class _MateDetailState extends State<MateDetail> {
                   Tab(text: "저장한 플리"),
                 ],
               ),
-              const Expanded(
+              Expanded(
                 child: TabBarView(
                   children: [
-                    MySongList(),
-                    SaveSongList(),
+                    MySongList(
+                      nickName: owner,
+                    ),
+                    SaveSongList(
+                      nickName: owner,
+                    ),
                   ],
                 ),
               ),
@@ -160,10 +164,22 @@ class _MateDetailState extends State<MateDetail> {
   }
 }
 
-Future<UsersInfo> fetchUserInfo() async {
-  var docref = FirebaseFirestore.instance
+Future<String> fetchUIDFromNickname(String nickname) async {
+  QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore.instance
       .collection('user')
-      .doc(FirebaseAuth.instance.currentUser!.uid);
+      .where('nickName', isEqualTo: nickname)
+      .get();
+
+  if (!query.docs.isEmpty) {
+    return query
+        .docs.first.id; // Return the uid of the user with the given nickname
+  } else {
+    throw Exception('User not found');
+  }
+}
+
+Future<UsersInfo> fetchUserInfo(String uid) async {
+  var docref = FirebaseFirestore.instance.collection('user').doc(uid);
 
   DocumentSnapshot<Map<String, dynamic>> doc = await docref.get();
 
@@ -171,25 +187,38 @@ Future<UsersInfo> fetchUserInfo() async {
 }
 
 class MySongList extends StatelessWidget {
-  const MySongList({Key? key}) : super(key: key);
+  final String nickName;
+
+  const MySongList({Key? key, required this.nickName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UsersInfo>(
-      future: fetchUserInfo(),
-      builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
-        if (snapshot.hasData) {
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-            ),
-            itemCount: snapshot.data!.playlist_my!.length,
-            itemBuilder: (BuildContext context, int index) {
-              return MySong(imageUrl: snapshot.data!.playlist_my![index]);
+    return FutureBuilder<String>(
+      future: fetchUIDFromNickname(nickName),
+      builder: (BuildContext context, AsyncSnapshot<String> uidSnapshot) {
+        if (uidSnapshot.hasData) {
+          return FutureBuilder<UsersInfo>(
+            future: fetchUserInfo(uidSnapshot.data!),
+            builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+              if (snapshot.hasData) {
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: snapshot.data!.playlist_my!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return MySong(imageUrl: snapshot.data!.playlist_my![index]);
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
             },
           );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+        } else if (uidSnapshot.hasError) {
+          return Text('Error: ${uidSnapshot.error}');
         } else {
           return CircularProgressIndicator();
         }
@@ -224,25 +253,39 @@ class MySong extends StatelessWidget {
 }
 
 class SaveSongList extends StatelessWidget {
-  const SaveSongList({Key? key}) : super(key: key);
+  final String nickName;
+
+  const SaveSongList({Key? key, required this.nickName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UsersInfo>(
-      future: fetchUserInfo(),
-      builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
-        if (snapshot.hasData) {
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-            ),
-            itemCount: snapshot.data!.playlist_others!.length,
-            itemBuilder: (BuildContext context, int index) {
-              return SaveSong(imageUrl: snapshot.data!.playlist_others![index]);
+    return FutureBuilder<String>(
+      future: fetchUIDFromNickname(nickName),
+      builder: (BuildContext context, AsyncSnapshot<String> uidSnapshot) {
+        if (uidSnapshot.hasData) {
+          return FutureBuilder<UsersInfo>(
+            future: fetchUserInfo(uidSnapshot.data!),
+            builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+              if (snapshot.hasData) {
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: snapshot.data!.playlist_others!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return SaveSong(
+                        imageUrl: snapshot.data!.playlist_others![index]);
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
             },
           );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+        } else if (uidSnapshot.hasError) {
+          return Text('Error: ${uidSnapshot.error}');
         } else {
           return CircularProgressIndicator();
         }
