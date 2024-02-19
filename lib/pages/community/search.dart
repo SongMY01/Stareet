@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/pages/community/mate_detail.dart';
 import 'package:music_api/pages/community/star_detail.dart';
+import 'package:music_api/pages/mypage/my_page.dart';
 import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
@@ -184,15 +185,17 @@ class _TabTwoState extends State<TabTwo> {
 
             return GestureDetector(
               onTap: () {
-                // Navigate to the MateDetail page
+                // Navigate to the MyPage if current user, else navigate to MateDetail
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MateDetail(
-                      nickName: userInfo.nickName ?? 'default_owner',
-                      profileImage:
-                          userInfo.profileImage ?? 'default_image_url',
-                    ),
+                    builder: (context) => isCurrentUser
+                        ? MyPage() //별별게시판에서 유저가 현재 유저이면 mypage로
+                        : MateDetail(
+                            nickName: userInfo.nickName ?? 'default_owner',
+                            profileImage:
+                                userInfo.profileImage ?? 'default_image_url',
+                          ),
                   ),
                 );
               },
