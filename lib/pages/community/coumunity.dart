@@ -22,7 +22,6 @@ class _CommunityPage extends State<CommunityPage> {
   List? contentList;
   bool isLoading = false;
   bool firstLoad = true;
-  String apiKeys = "";
 
   FocusNode textfieldFocusNode = FocusNode();
   @override
@@ -125,11 +124,11 @@ class _CommunityPage extends State<CommunityPage> {
                         },
                         icon: const Icon(Icons.close, color: Colors.white)),
                   ),
-                  // onChanged: (value) {
-                  //   setState(() {
-                  //     query = value; //textfield 입력하자마자 바뀜
-                  //   });
-                  // },
+                  onChanged: (value) {
+                    setState(() {
+                      query = value; //textfield 입력하자마자 바뀜
+                    });
+                  },
                   onSubmitted: (value) {
                     setState(() {
                       query = value; //textfield 입력 후 enter 누르면 바뀜
