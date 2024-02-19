@@ -235,12 +235,12 @@ class _DataSearchPageState extends State<DataSearchPage> {
                           itemBuilder: (BuildContext context, int index) {
                             return GestureDetector(
                               onTap: () {
-                                //           setState(() {
-
-                                //           query = recently[index];
-                                //           _search(query);
-                                //           });
-                                // FocusScope.of(context).unfocus();
+                                setState(() {
+                                  query = recently[index];
+                                  searchController.text = recently[index];
+                                  _search(query);
+                                });
+                                FocusScope.of(context).unfocus();
                               },
                               child: Padding(
                                   padding: EdgeInsets.only(
