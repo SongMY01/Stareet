@@ -62,8 +62,8 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  // 마커 그리기 함수
-  void drawMarker(BuildContext context, String id, Position location) async {
+  // 마커 만들기 함수
+  Future<NMarker> createMarker(BuildContext context, String id, NLatLng location) async {
     String imagePath = 'asssets/images/my_marker.png';
     String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
     final docs =
@@ -94,6 +94,12 @@ class MapProvider extends ChangeNotifier {
       }
     });
     marker.setGlobalZIndex(200000);
+    return marker;
+  }
+
+  // 마커 그리기 함수
+  void drawMarker(BuildContext context, String id, NLatLng location) async {
+    NMarker marker = await createMarker(context, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
     notifyListeners();
@@ -124,7 +130,7 @@ class MapProvider extends ChangeNotifier {
     await docRef.set(starInfo.toMap());
 
     // 마커 그리기
-    drawMarker(context, docRef.id, location);
+    drawMarker(context, docRef.id, NLatLng(location.latitude, location.longitude));
 
     notifyListeners();
   }

@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   late NCameraPosition camera;
   int selectedIndex = 0;
 
-  NCameraPosition initPosition = const NCameraPosition(
+  late NCameraPosition initPosition = const NCameraPosition(
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
 
   late Position position;
@@ -64,14 +64,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   // firebase에서 Star 정보 가져오기
-
-  Future<List<StarInfo>> fetchUserStars(String uid) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Star')
-        .where('owner', isEqualTo: uid)
-        .get();
+  Future<List<StarInfo>> fetchUserStars() async {
+    final snapshot = await FirebaseFirestore.instance.collection('Star').get();
 
     return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
+  }
+
+  // 지도에 Star 그리기
+  void pickMarker(BuildContext context, List<StarInfo> stars) {
+    final mapProvider =
+        Provider.of<MapProvider>(context, listen: false).mapController;
+    for (StarInfo star in stars) {
+      context.read<MapProvider>().drawMarker(
+          context, star.uid!, NLatLng(star.location![0], star.location![1]));
+    }
   }
 
   // GPS 정보 얻기
@@ -81,23 +87,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   // 현재 위치로 이동
-  // void _updatePosition() async {
-  //   final mapController =
-  //       Provider.of<MapProvider>(context, listen: false).mapController;
-  //   final results = await Future.wait([_getPosition()]);
-  //   position = results[0];
-  //   mapController.updateCamera(NCameraUpdate.withParams(
-  //       target: NLatLng(position.latitude, position.longitude)));
-  //   // _drawCircle(position);
-  // }
-
   void _updatePosition() async {
-    final geolocator = GeolocatorPlatform.instance;
-    final currentPosition = await geolocator.getCurrentPosition();
-    final currentLocation = NLatLng(currentPosition.latitude, currentPosition.longitude);
-    _controller.future.then(
-      (controller) => controller.updateCamera(NCameraUpdate.scrollAndZoomTo(target: currentLocation))
-    );
+    final mapController =
+        Provider.of<MapProvider>(context, listen: false).mapController;
+    final results = await Future.wait([_getPosition()]);
+    position = results[0];
+    mapController.updateCamera(NCameraUpdate.withParams(
+        target: NLatLng(position.latitude, position.longitude)));
+    // _drawCircle(position);
   }
 
   // 이미지 저장
@@ -179,12 +176,14 @@ class _HomePageState extends State<HomePage> {
               _controller.complete(controller);
               _updateUserMarker(await mapProvider.getPosition());
               mapProvider.mapController.addOverlay(_userLocationMarker!);
+              List<StarInfo> stars = await fetchUserStars();
+              pickMarker(context, stars);
             },
-            
+
             // 지도 탭 이벤트
             onMapTapped: (point, latLng) async {
               // context.read<MapProvider>().drawMarker(context, latLng);
-              context.read<MapProvider>().showBottomSheet(context);
+              // context.read<MapProvider>().showBottomSheet(context);
             },
           ),
         ),
