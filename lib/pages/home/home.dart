@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -65,7 +66,11 @@ class _HomePageState extends State<HomePage> {
 
   // firebase에서 Star 정보 가져오기
   Future<List<StarInfo>> fetchUserStars() async {
-    final snapshot = await FirebaseFirestore.instance.collection('Star').get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("Star")
+        .get();
 
     return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
   }
@@ -181,8 +186,7 @@ class _HomePageState extends State<HomePage> {
             },
 
             // 지도 탭 이벤트
-            onMapTapped: (point, latLng) async {
-            },
+            onMapTapped: (point, latLng) async {},
           ),
         ),
 

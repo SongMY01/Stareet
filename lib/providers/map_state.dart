@@ -63,16 +63,21 @@ class MapProvider extends ChangeNotifier {
   }
 
   // 마커 만들기 함수
-  Future<NMarker> createMarker(BuildContext context, String id, NLatLng location) async {
+  Future<NMarker> createMarker(
+      BuildContext context, String id, NLatLng location) async {
     String imagePath = 'asssets/images/my_marker.png';
     String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
-    final docs =
-        await FirebaseFirestore.instance.collection('Star').doc(id).get();
+    final docs = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .collection('Star')
+        .doc(id)
+        .get();
     final String owner = docs['owner'];
     if (loggedInUid != owner) {
       imagePath = 'assets/images/other_marker.png';
     }
-
+    print('lat: ${location.latitude}, lng: ${location.longitude}');
     final marker = NMarker(
       id: id,
       position: NLatLng(location.latitude, location.longitude),
@@ -101,6 +106,7 @@ class MapProvider extends ChangeNotifier {
     NMarker marker = await createMarker(context, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
+    debugPrint('$marker');
     notifyListeners();
   }
 
@@ -111,8 +117,11 @@ class MapProvider extends ChangeNotifier {
 
     final String currentAddress =
         await _getAddress(location.latitude, location.longitude);
-
-    final docRef = FirebaseFirestore.instance.collection("Star").doc();
+    final docRef = FirebaseFirestore.instance
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("Star")
+        .doc();
 
     final starInfo = StarInfo(
       uid: docRef.id,
@@ -129,7 +138,8 @@ class MapProvider extends ChangeNotifier {
     await docRef.set(starInfo.toMap());
 
     // 마커 그리기
-    drawMarker(context, docRef.id, NLatLng(location.latitude, location.longitude));
+    drawMarker(
+        context, docRef.id, NLatLng(location.latitude, location.longitude));
 
     notifyListeners();
   }
