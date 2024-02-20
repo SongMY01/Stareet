@@ -23,7 +23,6 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
         .collection('user')
         .doc(loggedInUid)
         .get();
-
     return user['nickName'];
   }
 
@@ -33,15 +32,10 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
 
   Future<StarInfo> fetchStarInfo(String markerId) async {
     final doc =
-        await FirebaseFirestore.instance.collection('Star').doc(markerId).get();
+        await FirebaseFirestore.instance.collection('user').doc(loggedInUid).collection('Star').doc(markerId).get();
 
     // 가져온 문서를 StarInfo 객체로 변환하여 반환함
     return StarInfo.fromMap(doc.data()!);
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
