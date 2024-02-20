@@ -67,7 +67,7 @@ class MapProvider extends ChangeNotifier {
   // 마커 만들기 함수
   Future<NMarker> createMarker(
       BuildContext context, String id, NLatLng location) async {
-    String imagePath = 'asssets/images/my_marker.png';
+    String imagePath = 'assets/images/my_marker.png';
     String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
     final docs = await FirebaseFirestore.instance
         .collection('user')
@@ -79,7 +79,6 @@ class MapProvider extends ChangeNotifier {
     if (loggedInUid != owner) {
       imagePath = 'assets/images/other_marker.png';
     }
-    print('lat: ${location.latitude}, lng: ${location.longitude}');
     final marker = NMarker(
       id: id,
       position: NLatLng(location.latitude, location.longitude),
@@ -109,7 +108,6 @@ class MapProvider extends ChangeNotifier {
     NMarker marker = await createMarker(context, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
-    debugPrint('$marker');
     notifyListeners();
   }
 
