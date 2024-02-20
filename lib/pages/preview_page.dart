@@ -42,12 +42,19 @@ class _PreviewPageState extends State<PreviewPage> {
     return file;
   }
 
-  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+  Future<String> uploadImageToFirebaseStorage(
+      File imageFile, List<NMarker> markers) async {
+    //파베 구조 만들기
     final docRef = FirebaseFirestore.instance
         .collection("user")
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection("Star")
         .doc();
+
+    final List<String> stars = [];
+    for (final marker in markers) {
+      stars.add(marker.info.id);
+    }
 
     final playlistInfo = PlaylistInfo(
       uid: docRef.id,
@@ -55,11 +62,12 @@ class _PreviewPageState extends State<PreviewPage> {
       image_url: '',
       owner: FirebaseAuth.instance.currentUser?.uid,
       title: textController.text,
-      stars_id: [],
+      stars_id: stars,
       subscribe: [],
     );
     await docRef.set(playlistInfo.toMap());
 
+    // Storage에 playlist id로 올리기.
     final storage = firebase_storage.FirebaseStorage.instance;
     final storageRef =
         storage.ref().child('playlist_images').child('$docRef.id.jpg');
@@ -67,11 +75,25 @@ class _PreviewPageState extends State<PreviewPage> {
     await storageRef.putFile(imageFile);
 
     final imageUrl = await storageRef.getDownloadURL();
+
     return imageUrl;
   }
 
-  Future<void> saveUserDataToFirestore(
-      String userId, String nickname, String imageUrl) async {}
+  Future<void> saveUserDataToFirestore(String imageUrl) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection("Star")
+          .add({
+        'profileImage': imageUrl,
+      });
+      debugPrint("파베 저장 완료~");
+    } catch (e) {
+      debugPrint("save에서 파베 저장 실패ㅠ");
+      debugPrint(e as String?);
+    }
+  }
 
   Future<DocumentSnapshot> fetchUser(String userId) async {
     final user = await FirebaseFirestore.instance
@@ -104,7 +126,7 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
-
+// markerList[0].info.id
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -137,8 +159,8 @@ class _PreviewPageState extends State<PreviewPage> {
                     context.read<SwitchProvider>().setMode(false);
                     final imageFile =
                         await convertUint8ListToFile(capturedImage!);
-                    final imageUrl =
-                        await uploadImageToFirebaseStorage(imageFile);
+                    final imageUrl = await uploadImageToFirebaseStorage(
+                        imageFile, markerList);
                     debugPrint('Image URL: $imageUrl');
                   } else {
                     debugPrint("이미지 저장 실패");
