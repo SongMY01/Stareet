@@ -30,7 +30,7 @@ class _PreviewPageState extends State<PreviewPage> {
   String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
   String nickName = '';
   String profileLink = '';
-  List<String> markerList = [];
+  List<NMarker> markerList = [];
 
   Future<DocumentSnapshot> fetchUser(String userId) async {
     final user = await FirebaseFirestore.instance
@@ -196,7 +196,7 @@ class _PreviewPageState extends State<PreviewPage> {
                     // 지도 실행 시 이벤트
                     onMapReady: (controller) async {
                       newController = controller;
-                      newController.addOverlayAll(mapProvider.markers);
+                      newController.addOverlayAll(markerList.toSet());
                       newController.addOverlayAll(mapProvider.lineOverlays);
                       debugPrint(
                           "child: ${await newController.getContentBounds()}");
@@ -220,7 +220,7 @@ class _PreviewPageState extends State<PreviewPage> {
                       itemCount: markerList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return FutureBuilder(
-                          future: getMarkerData(markerList[index]),
+                          future: getMarkerData(markerList[index].info.id),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -276,9 +276,8 @@ class MusicBar extends StatelessWidget {
                 width: 60,
                 height: 60,
                 child: Image.network(
-                  'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
-                  fit: BoxFit.fitHeight
-                ),
+                    'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
+                    fit: BoxFit.fitHeight),
               )),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
