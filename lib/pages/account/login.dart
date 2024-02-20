@@ -108,8 +108,6 @@ class _LoginPageScreenState extends State<LoginPage> {
                 InkWell(
                   onTap: () async {
                     try {
-                      UserCredential userCredential = await signInWithGoogle();
-
                       final db = FirebaseFirestore.instance;
                       final docSnapshot = await db
                           .collection('user')

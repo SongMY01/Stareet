@@ -7,7 +7,6 @@ import 'package:music_api/pages/mypage/mate_manage.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
-import '../community/search.dart';
 
 var mateReal = [];
 var mateFriend = [];
