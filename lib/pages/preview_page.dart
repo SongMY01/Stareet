@@ -33,7 +33,7 @@ class _PreviewPageState extends State<PreviewPage> {
   String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
   String nickName = '';
   String profileLink = '';
-  List<String> markerList = [];
+  List<NMarker> markerList = [];
 // Uint8List를 File로 변환하는 함수
   Future<File> convertUint8ListToFile(Uint8List data) async {
     final tempDir = await getTemporaryDirectory();
@@ -247,7 +247,7 @@ class _PreviewPageState extends State<PreviewPage> {
                     // 지도 실행 시 이벤트
                     onMapReady: (controller) async {
                       newController = controller;
-                      newController.addOverlayAll(mapProvider.markers);
+                      newController.addOverlayAll(markerList.toSet());
                       newController.addOverlayAll(mapProvider.lineOverlays);
                       // debugPrint(
                       //     "child: ${await newController.getContentBounds()}");
@@ -271,7 +271,7 @@ class _PreviewPageState extends State<PreviewPage> {
                       itemCount: markerList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return FutureBuilder(
-                          future: getMarkerData(markerList[index]),
+                          future: getMarkerData(markerList[index].info.id),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
