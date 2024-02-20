@@ -123,7 +123,6 @@ class _SignupPageState extends State<SignupPage> {
     return null;
   }
 
-  final _authentication = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -27,16 +27,16 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
     return user['nickName'];
   }
 
+  Future<void> setNickname() async {
+    nickName = await fetchNickname(loggedInUid);
+  }
+
   Future<StarInfo> fetchStarInfo(String markerId) async {
     final doc =
         await FirebaseFirestore.instance.collection('Star').doc(markerId).get();
 
     // 가져온 문서를 StarInfo 객체로 변환하여 반환함
     return StarInfo.fromMap(doc.data()!);
-  }
-
-  Future<void> setNickname() async {
-    nickName = await fetchNickname(loggedInUid);
   }
 
   @override
@@ -59,7 +59,7 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
           future: fetchStarInfo(widget.markerId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // 로딩 중일 때 표시할 위젯
+              return const LoadingWidget(); // 로딩 중일 때 표시할 위젯
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
             } else {
@@ -208,6 +208,27 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
           },
         ),
       ),
+    );
+  }
+}
+
+class LoadingWidget extends StatelessWidget {
+  const LoadingWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 15),
+            width: 124,
+            height: 6,
+            decoration: BoxDecoration(
+                color: AppColor.text, borderRadius: BorderRadius.circular(24)),
+          ),
+        ),
+      ],
     );
   }
 }

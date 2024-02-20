@@ -15,11 +15,13 @@ import 'switch_state.dart';
 class MapProvider extends ChangeNotifier {
   // 선 그리기 전 선택되는 마커
   final List<NLatLng> _selectedMarkerCoords = [];
+  final List<String> _selectedList = [];
   final Set<NMarker> _markers = {};
   final Set<NPolylineOverlay> _lineOverlays = {};
   late NaverMapController _mapController;
 
   List<NLatLng> get selectedMarkerCoords => _selectedMarkerCoords;
+  List<String> get selectedList => _selectedList;
   Set<NMarker> get markers => _markers;
   Set<NPolylineOverlay> get lineOverlays => _lineOverlays;
   NaverMapController get mapController => _mapController;
@@ -84,6 +86,7 @@ class MapProvider extends ChangeNotifier {
     marker.setOnTapListener((overlay) {
       if (context.read<SwitchProvider>().switchMode) {
         _selectedMarkerCoords.add(marker.position);
+        _selectedList.add(marker.info.id);
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
