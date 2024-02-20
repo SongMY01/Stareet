@@ -16,7 +16,7 @@ class UserProvider extends ChangeNotifier {
   User get user => _user!;
   DocumentSnapshot get userData => _userData!;
   String get userUid => _userUid;
-
+  
   Future<void> _loadUserData() async {
     if (_user != null) {
       _userUid = _user!.uid;

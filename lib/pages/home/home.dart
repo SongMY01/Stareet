@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
-  List<String> chipList = ['전체', '나', '메이트 전체'];
+  List<String> chipList = ['전체', '나', '메이트 전체']; // 칩 항목들 리스트
 
   late NCameraPosition initPosition = const NCameraPosition(
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
