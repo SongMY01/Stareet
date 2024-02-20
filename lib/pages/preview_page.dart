@@ -13,6 +13,7 @@ import '../components/card_frame.dart';
 import '../components/custom_snackbar.dart';
 import '../providers/map_state.dart';
 import '../providers/switch_state.dart';
+import '../providers/user_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/info.dart';
 import '../utilities/text_theme.dart';
@@ -88,15 +89,6 @@ class _PreviewPageState extends State<PreviewPage> {
     }
   }
 
-  Future<DocumentSnapshot> fetchUser(String userId) async {
-    final user = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(loggedInUid)
-        .get();
-
-    return user;
-  }
-
   // 이미지 캡처
   Future<Uint8List?> captureMap() async {
     final Uint8List mapImage =
@@ -118,8 +110,8 @@ class _PreviewPageState extends State<PreviewPage> {
   @override
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
-// markerList[0].info.id
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -205,38 +197,17 @@ class _PreviewPageState extends State<PreviewPage> {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FutureBuilder(
-                      future: fetchUser(loggedInUid),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else {
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            final user = snapshot.data as DocumentSnapshot;
-                            nickName = user['nickName'];
-                            profileLink = user['profileImage'];
-                            return Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: Image.network(profileLink)),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(nickName, style: medium16)
-                              ],
-                            );
-                          }
-                        }
-                      },
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Image.network(
+                              userProvider.userData['profileLink'])),
                     ),
+                    const SizedBox(width: 8),
+                    Text(userProvider.getNickName(), style: medium16)
                   ],
                 ),
                 const SizedBox(height: 13),

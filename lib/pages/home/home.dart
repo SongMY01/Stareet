@@ -17,6 +17,7 @@ import '../../components/custom_switch.dart';
 import '../../components/home_components.dart';
 import '../../providers/map_state.dart';
 import '../../providers/switch_state.dart';
+import '../../providers/user_state.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
+  List<String> chipList = ['전체', '나', '메이트 전체'];
 
   late NCameraPosition initPosition = const NCameraPosition(
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
@@ -66,12 +68,15 @@ class _HomePageState extends State<HomePage> {
 
   // 현재 로그인 User의 mate uid 가져오기
   Future<List<String>> fetchMate() async {
-    final doc = await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser?.uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
     return doc['mate_friend'];
   }
 
   // firebase에서 Star 정보 가져오기
-  Future<List<StarInfo>> fetchUserStars() async {
+  Future<List<StarInfo>> fetchAllStars() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -139,6 +144,15 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  // mate 닉네임 리스트로 변경
+  void addMate(List<String> mateList) async {
+    for(String mate in mateList) {
+      final user = await FirebaseFirestore.instance.collection('user').doc(mate).get();
+      String nickName = user['nickName'];
+      chipList.add(nickName);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -160,6 +174,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final switchProvider = Provider.of<SwitchProvider>(context);
     final mapProvider = Provider.of<MapProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
+    addMate(userProvider.getMate());
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -185,7 +201,7 @@ class _HomePageState extends State<HomePage> {
               _controller.complete(controller);
               _updateUserMarker(await mapProvider.getPosition());
               mapProvider.mapController.addOverlay(_userLocationMarker!);
-              List<StarInfo> stars = await fetchUserStars();
+              List<StarInfo> stars = await fetchAllStars();
               pickMarker(context, stars);
             },
 
@@ -326,23 +342,20 @@ class _HomePageState extends State<HomePage> {
                         // physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                            children: List.generate(6, (int index) {
+                            children: List.generate(chipList.length, (int index) {
                           return Row(children: [
                             CustomChip(
-                                name: [
-                                  '전체',
-                                  '나',
-                                  '메이트 전체',
-                                  '메이트 1',
-                                  '메이트 2',
-                                  '메이트 3'
-                                ][index],
+                                name: chipList[index],
                                 isSelected: index == selectedIndex,
-                                function: () {
+                                function: () async {
                                   setState(() {
                                     selectedIndex = index;
                                   });
-
+                                  mapProvider.mapController.clearOverlays(type: NOverlayType.marker);
+                                  _updateUserMarker(await mapProvider.getPosition());
+                                  if(index == 0) {
+                                    
+                                  }
                                 }),
                             const SizedBox(width: 7.2)
                           ]);
