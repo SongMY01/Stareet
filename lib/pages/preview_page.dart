@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +16,7 @@ import '../providers/switch_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/info.dart';
 import '../utilities/text_theme.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class PreviewPage extends StatefulWidget {
   const PreviewPage({super.key, required this.position});
@@ -31,6 +34,44 @@ class _PreviewPageState extends State<PreviewPage> {
   String nickName = '';
   String profileLink = '';
   List<String> markerList = [];
+// Uint8List를 File로 변환하는 함수
+  Future<File> convertUint8ListToFile(Uint8List data) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = await File('${tempDir.path}/temp.jpg').create();
+    await file.writeAsBytes(data);
+    return file;
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+    final docRef = FirebaseFirestore.instance
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("Star")
+        .doc();
+
+    final playlistInfo = PlaylistInfo(
+      uid: docRef.id,
+      registerTime: Timestamp.now(),
+      image_url: '',
+      owner: FirebaseAuth.instance.currentUser?.uid,
+      title: textController.text,
+      stars_id: [],
+      subscribe: [],
+    );
+    await docRef.set(playlistInfo.toMap());
+
+    final storage = firebase_storage.FirebaseStorage.instance;
+    final storageRef =
+        storage.ref().child('playlist_images').child('$docRef.id.jpg');
+
+    await storageRef.putFile(imageFile);
+
+    final imageUrl = await storageRef.getDownloadURL();
+    return imageUrl;
+  }
+
+  Future<void> saveUserDataToFirestore(
+      String userId, String nickname, String imageUrl) async {}
 
   Future<DocumentSnapshot> fetchUser(String userId) async {
     final user = await FirebaseFirestore.instance
@@ -50,8 +91,12 @@ class _PreviewPageState extends State<PreviewPage> {
   }
 
   Future<StarInfo> getMarkerData(String markerId) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('Star').doc(markerId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .collection("Star")
+        .doc(markerId)
+        .get();
     return StarInfo.fromMap(doc.data()!);
   }
 
@@ -59,6 +104,7 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
+
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -89,6 +135,11 @@ class _PreviewPageState extends State<PreviewPage> {
                     context.read<MapProvider>().clearLines();
                     Navigator.pop(context);
                     context.read<SwitchProvider>().setMode(false);
+                    final imageFile =
+                        await convertUint8ListToFile(capturedImage!);
+                    final imageUrl =
+                        await uploadImageToFirebaseStorage(imageFile);
+                    debugPrint('Image URL: $imageUrl');
                   } else {
                     debugPrint("이미지 저장 실패");
                   }
@@ -198,8 +249,8 @@ class _PreviewPageState extends State<PreviewPage> {
                       newController = controller;
                       newController.addOverlayAll(mapProvider.markers);
                       newController.addOverlayAll(mapProvider.lineOverlays);
-                      debugPrint(
-                          "child: ${await newController.getContentBounds()}");
+                      // debugPrint(
+                      //     "child: ${await newController.getContentBounds()}");
                       // 배경 이미지
                       final imageOverlay = NGroundOverlay(
                           id: "background",
@@ -276,9 +327,8 @@ class MusicBar extends StatelessWidget {
                 width: 60,
                 height: 60,
                 child: Image.network(
-                  'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
-                  fit: BoxFit.fitHeight
-                ),
+                    'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
+                    fit: BoxFit.fitHeight),
               )),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
