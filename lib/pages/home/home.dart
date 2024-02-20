@@ -64,6 +64,12 @@ class _HomePageState extends State<HomePage> {
     return Future.value(true);
   }
 
+  // 현재 로그인 User의 mate uid 가져오기
+  Future<List<String>> fetchMate() async {
+    final doc = await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser?.uid).get();
+    return doc['mate_friend'];
+  }
+
   // firebase에서 Star 정보 가져오기
   Future<List<StarInfo>> fetchUserStars() async {
     final snapshot = await FirebaseFirestore.instance
@@ -129,7 +135,7 @@ class _HomePageState extends State<HomePage> {
         position: NLatLng(position.latitude, position.longitude),
         icon: const NOverlayImage.fromAssetImage(
             'assets/images/my_location.png'), // 동그라미 이미지
-        size: const Size(30, 30));
+        size: const Size(20, 20));
     setState(() {});
   }
 
@@ -321,27 +327,8 @@ class _HomePageState extends State<HomePage> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                             children: List.generate(6, (int index) {
-                          if (index != 5) {
-                            return Row(children: [
-                              CustomChip(
-                                  name: [
-                                    '전체',
-                                    '나',
-                                    '메이트 전체',
-                                    '메이트 1',
-                                    '메이트 2',
-                                    '메이트 3'
-                                  ][index],
-                                  isSelected: index == selectedIndex,
-                                  function: () {
-                                    setState(() {
-                                      selectedIndex = index;
-                                    });
-                                  }),
-                              const SizedBox(width: 7.2)
-                            ]);
-                          } else {
-                            return CustomChip(
+                          return Row(children: [
+                            CustomChip(
                                 name: [
                                   '전체',
                                   '나',
@@ -355,8 +342,10 @@ class _HomePageState extends State<HomePage> {
                                   setState(() {
                                     selectedIndex = index;
                                   });
-                                });
-                          }
+
+                                }),
+                            const SizedBox(width: 7.2)
+                          ]);
                         }).toList()),
                       ),
                     ),
