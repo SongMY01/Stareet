@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +16,7 @@ import '../providers/switch_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/info.dart';
 import '../utilities/text_theme.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class PreviewPage extends StatefulWidget {
   const PreviewPage({super.key, required this.position});
@@ -31,6 +34,59 @@ class _PreviewPageState extends State<PreviewPage> {
   String nickName = '';
   String profileLink = '';
   List<NMarker> markerList = [];
+// Uint8List를 File로 변환하는 함수
+  Future<File> convertUint8ListToFile(Uint8List data) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = await File('${tempDir.path}/temp.jpg').create();
+    await file.writeAsBytes(data);
+    return file;
+  }
+
+  Future<void> uploadImageToFirebaseStorage(
+      File imageFile, List<NMarker> markers) async {
+    //파베 구조 만들기
+    final docRef = FirebaseFirestore.instance.collection("playlist").doc();
+
+    final List<String> stars = [];
+    for (final marker in markers) {
+      stars.add(marker.info.id);
+    }
+
+    final playlistInfo = PlaylistInfo(
+      uid: docRef.id,
+      registerTime: Timestamp.now(),
+      image_url: '',
+      owner: FirebaseAuth.instance.currentUser?.uid,
+      title: textController.text,
+      stars_id: stars,
+      subscribe: [],
+    );
+    await docRef.set(playlistInfo.toMap());
+
+    // Storage에 playlist id로 올리기.
+    final storage = firebase_storage.FirebaseStorage.instance;
+    final storageRef =
+        storage.ref().child('playlist_images').child('$docRef.id.jpg');
+
+    await storageRef.putFile(imageFile);
+
+    final imageUrl = await storageRef.getDownloadURL();
+    await saveImageToFirebase(docRef.id, imageUrl);
+  }
+
+  Future<void> saveImageToFirebase(String docId, String imageUrl) async {
+    try {
+      await FirebaseFirestore.instance.collection('playlist').doc(docId).set(
+          {
+            'image_url': imageUrl,
+          },
+          SetOptions(
+              merge: true)); // merge: true 옵션으로 기존 데이터를 보존하면서 새로운 필드를 추가합니다.
+      debugPrint("파베 저장 완료~");
+    } catch (e) {
+      debugPrint(e as String?);
+    }
+  }
 
   Future<DocumentSnapshot> fetchUser(String userId) async {
     final user = await FirebaseFirestore.instance
@@ -50,8 +106,12 @@ class _PreviewPageState extends State<PreviewPage> {
   }
 
   Future<StarInfo> getMarkerData(String markerId) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('Star').doc(markerId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .collection("Star")
+        .doc(markerId)
+        .get();
     return StarInfo.fromMap(doc.data()!);
   }
 
@@ -59,6 +119,7 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
+// markerList[0].info.id
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -89,6 +150,9 @@ class _PreviewPageState extends State<PreviewPage> {
                     context.read<MapProvider>().clearLines();
                     Navigator.pop(context);
                     context.read<SwitchProvider>().setMode(false);
+                    final imageFile =
+                        await convertUint8ListToFile(capturedImage!);
+                    await uploadImageToFirebaseStorage(imageFile, markerList);
                   } else {
                     debugPrint("이미지 저장 실패");
                   }
@@ -198,8 +262,8 @@ class _PreviewPageState extends State<PreviewPage> {
                       newController = controller;
                       newController.addOverlayAll(markerList.toSet());
                       newController.addOverlayAll(mapProvider.lineOverlays);
-                      debugPrint(
-                          "child: ${await newController.getContentBounds()}");
+                      // debugPrint(
+                      //     "child: ${await newController.getContentBounds()}");
                       // 배경 이미지
                       final imageOverlay = NGroundOverlay(
                           id: "background",

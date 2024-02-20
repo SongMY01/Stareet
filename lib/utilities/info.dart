@@ -176,6 +176,18 @@ class PlaylistInfo {
       stars_id: snapshotData[stars_idFieldName],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      uidFieldName: uid,
+      registerTimeFieldName: registerTime,
+      image_URLFieldName: image_url,
+      ownerFieldName: owner,
+      titleFieldName: title,
+      subscribeFieldName: subscribe,
+      stars_idFieldName: stars_id,
+    };
+  }
 }
 
 const image_URLFieldName = 'image_url';
