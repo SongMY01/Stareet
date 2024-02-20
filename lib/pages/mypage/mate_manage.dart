@@ -163,8 +163,6 @@ class MateNameIng extends StatefulWidget {
 }
 
 class _MateNameIngState extends State<MateNameIng> {
-  final bool _isStarSelected = true;
-
   @override
   Widget build(BuildContext context) {
     return Column(

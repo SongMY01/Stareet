@@ -72,8 +72,6 @@ class _HomePageState extends State<HomePage> {
 
   // 지도에 Star 그리기
   void pickMarker(BuildContext context, List<StarInfo> stars) {
-    final mapProvider =
-        Provider.of<MapProvider>(context, listen: false).mapController;
     for (StarInfo star in stars) {
       context.read<MapProvider>().drawMarker(
           context, star.uid!, NLatLng(star.location![0], star.location![1]));
@@ -181,8 +179,7 @@ class _HomePageState extends State<HomePage> {
             },
 
             // 지도 탭 이벤트
-            onMapTapped: (point, latLng) async {
-            },
+            onMapTapped: (point, latLng) async {},
           ),
         ),
 
@@ -290,20 +287,8 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          InkWell(
-                            onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => VideoDetailPage(
-                              //               videoId: '_fd_hwSm9zI',
-                              //               musicTitle: '잘지내자 우리',
-                              //               musicChannel: '최유리',
-                              //             )));
-                            },
-                            child: Image.asset("assets/images/logo.png",
-                                width: 85, height: 35),
-                          ),
+                          Image.asset("assets/images/logo.png",
+                              width: 85, height: 35),
                           const SizedBox(width: 8),
                           switchProvider.switchMode
                               ? CustomTooltip(controller: _tooltipController)

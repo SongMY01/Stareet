@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:music_api/utilities/info.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_data_api/models/video.dart';
 import '../providers/map_state.dart';
