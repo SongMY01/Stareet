@@ -42,14 +42,10 @@ class _PreviewPageState extends State<PreviewPage> {
     return file;
   }
 
-  Future<String> uploadImageToFirebaseStorage(
+  Future<void> uploadImageToFirebaseStorage(
       File imageFile, List<NMarker> markers) async {
     //파베 구조 만들기
-    final docRef = FirebaseFirestore.instance
-        .collection("user")
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .collection("Star")
-        .doc();
+    final docRef = FirebaseFirestore.instance.collection("playlist").doc();
 
     final List<String> stars = [];
     for (final marker in markers) {
@@ -75,22 +71,19 @@ class _PreviewPageState extends State<PreviewPage> {
     await storageRef.putFile(imageFile);
 
     final imageUrl = await storageRef.getDownloadURL();
-
-    return imageUrl;
+    await saveImageToFirebase(docRef.id, imageUrl);
   }
 
-  Future<void> saveUserDataToFirestore(String imageUrl) async {
+  Future<void> saveImageToFirebase(String docId, String imageUrl) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection("Star")
-          .add({
-        'profileImage': imageUrl,
-      });
+      await FirebaseFirestore.instance.collection('playlist').doc(docId).set(
+          {
+            'image_url': imageUrl,
+          },
+          SetOptions(
+              merge: true)); // merge: true 옵션으로 기존 데이터를 보존하면서 새로운 필드를 추가합니다.
       debugPrint("파베 저장 완료~");
     } catch (e) {
-      debugPrint("save에서 파베 저장 실패ㅠ");
       debugPrint(e as String?);
     }
   }
@@ -159,9 +152,7 @@ class _PreviewPageState extends State<PreviewPage> {
                     context.read<SwitchProvider>().setMode(false);
                     final imageFile =
                         await convertUint8ListToFile(capturedImage!);
-                    final imageUrl = await uploadImageToFirebaseStorage(
-                        imageFile, markerList);
-                    debugPrint('Image URL: $imageUrl');
+                    await uploadImageToFirebaseStorage(imageFile, markerList);
                   } else {
                     debugPrint("이미지 저장 실패");
                   }
