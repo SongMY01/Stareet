@@ -20,6 +20,7 @@ class MapProvider extends ChangeNotifier {
   final Set<NPolylineOverlay> _lineOverlays = {};
   late NaverMapController _mapController;
 
+
   List<NLatLng> get selectedMarkerCoords => _selectedMarkerCoords;
   List<NMarker> get selectedList => _selectedList;
   Set<NMarker> get markers => _markers;
