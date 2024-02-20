@@ -50,7 +50,12 @@ class _SignupPageState extends State<SignupPage> {
         'nickName': nickname,
         'user-id': userId,
         'profileImage': imageUrl,
-        'email': FirebaseAuth.instance.currentUser?.email, // 이미지 URL 저장
+        'email': FirebaseAuth.instance.currentUser?.email,
+        'mate_ing': ['초기설정'],
+        'mate_real': ['초기설정'],
+        'mate_friend': ['초기설정'],
+        'playlist_my': ['초기설정'],
+        'playlist_others': ['초기설정'],
       });
     } catch (e) {
       debugPrint(e as String?);

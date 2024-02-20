@@ -54,12 +54,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB-Ad0zeWK8jZjs5hCYxzdWfw-uUkaP1dY',
-    appId: '1:859784822505:ios:25fff8be69749920f8fa78',
+    appId: '1:859784822505:ios:01f16f4ce113196df8fa78',
     messagingSenderId: '859784822505',
     projectId: 'music-9b7aa',
     storageBucket: 'music-9b7aa.appspot.com',
     androidClientId: '859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com',
-    iosClientId: '859784822505-9m0cbvmtv5smih6od5b06snt15v4bit0.apps.googleusercontent.com',
-    iosBundleId: 'com.soda.naverMap',
+    iosClientId: '859784822505-a0r8bbkvi3oj86sulvqmj1hvr7g8tlr8.apps.googleusercontent.com',
+    iosBundleId: 'com.stareet.mapApp',
   );
 }

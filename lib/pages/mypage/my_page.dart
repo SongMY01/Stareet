@@ -8,7 +8,7 @@ import 'mypage_setting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-//------6페이지
+
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
 
@@ -130,9 +130,9 @@ class _MyPageState extends State<MyPage> {
                 mateListFriend =
                     userInfo['mate_friend'] as List<dynamic>? ?? [];
                 mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
-                playlistMy = userInfo['playlistMy'] as List<dynamic>? ?? [];
+                playlistMy = userInfo['playlist_my'] as List<dynamic>? ?? [];
                 playlistOthers =
-                    userInfo['playlistOthers'] as List<dynamic>? ?? [];
+                    userInfo['playlist_others'] as List<dynamic>? ?? [];
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +242,7 @@ class MySongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              imageUrl = playlistInfo['image_url'] ?? '없음';
               debugPrint('$imageUrl입니다!');
               return MySong(imageUrl: imageUrl);
             },
@@ -299,7 +299,7 @@ class SaveSongList extends StatelessWidget {
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
               var playlistInfo = playlistInfoList[index];
-              imageUrl = playlistInfo['imageUrl'] ?? '없음';
+              imageUrl = playlistInfo['image_url'] ?? '없음';
               debugPrint('$imageUrl입니다!');
               return MySong(imageUrl: imageUrl);
             },
