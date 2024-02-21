@@ -5,10 +5,19 @@ import 'package:music_api/utilities/info.dart';
 
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
+import '../youtube/music/video_detail_page.dart';
 
 class HomeBottomsheet extends StatefulWidget {
   final String markerId;
-  const HomeBottomsheet({super.key, required this.markerId});
+  final String ownerId;
+  final String nickName;
+  final String profileImg;
+  const HomeBottomsheet(
+      {super.key,
+      required this.markerId,
+      required this.ownerId,
+      required this.nickName,
+      required this.profileImg});
 
   @override
   State<HomeBottomsheet> createState() => _HomeBottomsheetState();
@@ -16,31 +25,22 @@ class HomeBottomsheet extends StatefulWidget {
 
 class _HomeBottomsheetState extends State<HomeBottomsheet> {
   String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
-  late String nickName;
-
-  Future<String> fetchNickname(String userId) async {
-    final user = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(loggedInUid)
-        .get();
-    return user['nickName'];
-  }
-
-  Future<void> setNickname() async {
-    nickName = await fetchNickname(loggedInUid);
-  }
 
   Future<StarInfo> fetchStarInfo(String markerId) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('user').doc(loggedInUid).collection('Star').doc(markerId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(widget.ownerId)
+        .collection('Star')
+        .doc(markerId)
+        .get();
 
     // 가져온 문서를 StarInfo 객체로 변환하여 반환함
     return StarInfo.fromMap(doc.data()!);
   }
 
+  bool heartCheck = false;
   @override
   Widget build(BuildContext context) {
-    setNickname();
     return ClipRRect(
       child: Container(
         height: 289,
@@ -58,6 +58,9 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
               return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
             } else {
               StarInfo starInfo = snapshot.data!;
+              if (starInfo.like?.contains(loggedInUid) ?? true) {
+                heartCheck = true;
+              }
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +87,8 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                        text: '$nickName님', style: semibold17),
+                                        text: '${widget.nickName}님',
+                                        style: semibold17),
                                     const TextSpan(
                                         text: '이 추천하는', style: regular16),
                                   ],
@@ -99,11 +103,63 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                           const Spacer(),
                           Column(
                             children: [
-                              const Icon(Icons.favorite, color: AppColor.error),
-                              Text('${starInfo.like?.length}',
-                                  textAlign: TextAlign.left,
-                                  style:
-                                      regular13.copyWith(color: AppColor.sub1)),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('user')
+                                    .doc(widget.ownerId)
+                                    .collection('Star')
+                                    .doc(widget.markerId)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text("Something went wrong");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  List<String> likes = List<String>.from(
+                                      (snapshot.data?.data() as Map<String,
+                                              dynamic>)?['like'] ??
+                                          []);
+
+                                  bool heartCheck = likes.contains(loggedInUid);
+
+                                  return Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (heartCheck) {
+                                            likes.remove(loggedInUid);
+                                          } else {
+                                            likes.add(loggedInUid);
+                                          }
+
+                                          await snapshot.data?.reference
+                                              .update({'like': likes});
+                                        },
+                                        child: (likes?.contains(loggedInUid) ??
+                                                false)
+                                            ? Image.asset(
+                                                "assets/images/heart_yes.png",
+                                                width: 20,
+                                                height: 18,
+                                              )
+                                            : Image.asset(
+                                                "assets/images/heart_not.png",
+                                                width: 20,
+                                                height: 18,
+                                              ),
+                                      ),
+                                      Text('${likes.length}',
+                                          textAlign: TextAlign.left,
+                                          style: regular13.copyWith(
+                                              color: AppColor.sub1)),
+                                    ],
+                                  );
+                                },
+                              ),
                             ],
                           ),
                           const SizedBox(width: 6),
@@ -171,12 +227,15 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                   const SizedBox(height: 19),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => VideoSearchPage(
-                      //               video: '_fd_hwSm9zI',
-                      //             )));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoDetailPage(
+                                  markerId: widget.markerId,
+                                  ownerId: widget.ownerId,
+                                  videoId: starInfo.videoId as String,
+                                  nickName: widget.nickName,
+                                  profileImg: widget.profileImg)));
                     },
                     child: Container(
                       width: 340,
