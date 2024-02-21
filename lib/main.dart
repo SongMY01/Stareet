@@ -13,7 +13,6 @@ import 'pages/home/home.dart';
 import 'pages/account/login.dart';
 import 'providers/map_state.dart';
 import 'providers/switch_state.dart';
-import 'providers/user_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +23,6 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => SwitchProvider()),
     ChangeNotifierProvider(create: (_) => MapProvider()),
-    ChangeNotifierProvider(create: (_) => UserProvider())
   ], child: const MyApp()));
 }
 

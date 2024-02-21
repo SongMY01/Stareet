@@ -13,7 +13,6 @@ import '../components/card_frame.dart';
 import '../components/custom_snackbar.dart';
 import '../providers/map_state.dart';
 import '../providers/switch_state.dart';
-import '../providers/user_state.dart';
 import '../utilities/color_scheme.dart';
 import '../utilities/info.dart';
 import '../utilities/text_theme.dart';
@@ -35,6 +34,7 @@ class _PreviewPageState extends State<PreviewPage> {
   String nickName = '';
   String profileLink = '';
   List<NMarker> markerList = [];
+  List<String> ownerList = [];
 // Uint8List를 File로 변환하는 함수
   Future<File> convertUint8ListToFile(Uint8List data) async {
     final tempDir = await getTemporaryDirectory();
@@ -44,7 +44,7 @@ class _PreviewPageState extends State<PreviewPage> {
   }
 
   Future<void> uploadImageToFirebaseStorage(
-      File imageFile, List<NMarker> markers) async {
+      File imageFile, List<NMarker> markers, List<String> markerOwners) async {
     //파베 구조 만들기
     final docRef = FirebaseFirestore.instance.collection("playlist").doc();
 
@@ -52,6 +52,12 @@ class _PreviewPageState extends State<PreviewPage> {
     for (final marker in markers) {
       stars.add(marker.info.id);
     }
+    final userDoc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .get();
+
+    String nickname = userDoc.data()!['nickName'];
 
     final playlistInfo = PlaylistInfo(
       uid: docRef.id,
@@ -60,7 +66,9 @@ class _PreviewPageState extends State<PreviewPage> {
       owner: FirebaseAuth.instance.currentUser?.uid,
       title: textController.text,
       stars_id: stars,
+      owners_id: markerOwners,
       subscribe: [],
+      nickname: nickname,
     );
     await docRef.set(playlistInfo.toMap());
 
@@ -89,6 +97,15 @@ class _PreviewPageState extends State<PreviewPage> {
     }
   }
 
+  Future<DocumentSnapshot> fetchUser(String userId) async {
+    final user = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .get();
+
+    return user;
+  }
+
   // 이미지 캡처
   Future<Uint8List?> captureMap() async {
     final Uint8List mapImage =
@@ -97,10 +114,10 @@ class _PreviewPageState extends State<PreviewPage> {
     return mapImage;
   }
 
-  Future<StarInfo> getMarkerData(String markerId) async {
+  Future<StarInfo> getMarkerData(String markerId, String ownerId) async {
     final doc = await FirebaseFirestore.instance
         .collection('user')
-        .doc(loggedInUid)
+        .doc(ownerId)
         .collection("Star")
         .doc(markerId)
         .get();
@@ -110,8 +127,9 @@ class _PreviewPageState extends State<PreviewPage> {
   @override
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
-    final userProvider = Provider.of<UserProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
+    ownerList = mapProvider.selectedIdList.toSet().toList();
+// markerList[0].info.id
     // 배경 그라데이션
     return Container(
       decoration: const BoxDecoration(
@@ -144,7 +162,8 @@ class _PreviewPageState extends State<PreviewPage> {
                     context.read<SwitchProvider>().setMode(false);
                     final imageFile =
                         await convertUint8ListToFile(capturedImage!);
-                    await uploadImageToFirebaseStorage(imageFile, markerList);
+                    await uploadImageToFirebaseStorage(
+                        imageFile, markerList, ownerList);
                   } else {
                     debugPrint("이미지 저장 실패");
                   }
@@ -197,17 +216,38 @@ class _PreviewPageState extends State<PreviewPage> {
                 ),
                 const SizedBox(height: 10),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: Image.network(
-                              userProvider.userData['profileLink'])),
+                    FutureBuilder(
+                      future: fetchUser(loggedInUid),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            final user = snapshot.data as DocumentSnapshot;
+                            nickName = user['nickName'];
+                            profileLink = user['profileImage'];
+                            return Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: Image.network(profileLink)),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(nickName, style: medium16)
+                              ],
+                            );
+                          }
+                        }
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Text(userProvider.getNickName(), style: medium16)
                   ],
                 ),
                 const SizedBox(height: 13),
@@ -244,7 +284,7 @@ class _PreviewPageState extends State<PreviewPage> {
                       imageOverlay.setGlobalZIndex(180000);
                       newController.addOverlay(imageOverlay);
                       setState(() {});
-                      debugPrint("${mapProvider.selectedList}");
+                      // debugPrint("${mapProvider.selectedList}");
                     },
                   ),
                 ),
@@ -255,7 +295,8 @@ class _PreviewPageState extends State<PreviewPage> {
                       itemCount: markerList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return FutureBuilder(
-                          future: getMarkerData(markerList[index].info.id),
+                          future: getMarkerData(
+                              markerList[index].info.id, ownerList[index]),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
