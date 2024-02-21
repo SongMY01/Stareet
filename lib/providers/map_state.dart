@@ -15,11 +15,15 @@ import 'switch_state.dart';
 class MapProvider extends ChangeNotifier {
   // 선 그리기 전 선택되는 마커
   final List<NLatLng> _selectedMarkerCoords = [];
+  final List<NMarker> _selectedList = [];
+  final List<String> _selectedIdList = [];
   final Set<NMarker> _markers = {};
   final Set<NPolylineOverlay> _lineOverlays = {};
   late NaverMapController _mapController;
 
   List<NLatLng> get selectedMarkerCoords => _selectedMarkerCoords;
+  List<NMarker> get selectedList => _selectedList;
+  List<String> get selectedIdList => _selectedIdList;
   Set<NMarker> get markers => _markers;
   Set<NPolylineOverlay> get lineOverlays => _lineOverlays;
   NaverMapController get mapController => _mapController;
@@ -62,21 +66,36 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  // 마커 그리기 함수
-  void drawMarker(
-      BuildContext context, String videoTitle, String comment) async {
-    final Position location = await getPosition();
+  // 마커 만들기 함수
+  Future<NMarker> createMarker(
+      BuildContext context, String ownerId, String id, NLatLng location) async {
+    String imagePath = 'assets/images/my_marker.png';
+    String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
 
-    final String currentAddress =
-        await _getAddress(location.latitude, location.longitude);
+    final userDoc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(loggedInUid)
+        .get();
 
-    final docRef = FirebaseFirestore.instance.collection("Star").doc();
+    List<String> mateFriendIds =
+        (userDoc.get('mate_friend') as List<dynamic>).cast<String>();
 
-    // 마커 생성
+    final ownerDoc =
+        await FirebaseFirestore.instance.collection('user').doc(ownerId).get();
+
+    String nickName = ownerDoc.get('nickName');
+    String profileImg = ownerDoc.get('profileImage');
+    if (loggedInUid != ownerId) {
+      if (mateFriendIds.contains(ownerId)) {
+        imagePath = 'assets/images/mate_marker.png';
+      } else {
+        imagePath = 'assets/images/other_marker.png';
+      }
+    }
     final marker = NMarker(
-      id: docRef.id,
+      id: id,
       position: NLatLng(location.latitude, location.longitude),
-      icon: const NOverlayImage.fromAssetImage('assets/images/my_marker.png'),
+      icon: NOverlayImage.fromAssetImage(imagePath),
       size: const Size(35, 35),
       anchor: const NPoint(0.5, 0.5),
     );
@@ -84,23 +103,49 @@ class MapProvider extends ChangeNotifier {
     marker.setOnTapListener((overlay) {
       if (context.read<SwitchProvider>().switchMode) {
         _selectedMarkerCoords.add(marker.position);
+        _selectedList.add(marker);
+        selectedIdList.add(ownerId);
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
-      }
-      if (!context.read<SwitchProvider>().switchMode) {
+      } else {
         // 기본 홈 화면일 때
-        _showBottomSheet(context);
+        showBottomSheet(
+            context, overlay.info.id, ownerId, nickName, profileImg);
       }
     });
     marker.setGlobalZIndex(200000);
+    return marker;
+  }
+
+  // 마커 그리기 함수
+  void drawMarker(
+      BuildContext context, String userId, String id, NLatLng location) async {
+    NMarker marker = await createMarker(context, userId, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
+    notifyListeners();
+  }
+
+  // 마커 추가 함수
+  void addMarker(BuildContext context, String videoTitle, String videoSinger,
+      String videoId, String comment) async {
+    final Position location = await getPosition();
+
+    final String currentAddress =
+        await _getAddress(location.latitude, location.longitude);
+    final docRef = FirebaseFirestore.instance
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("Star")
+        .doc();
 
     final starInfo = StarInfo(
       uid: docRef.id,
       location: [location.latitude, location.longitude],
-      song: videoTitle,
+      title: videoTitle,
+      singer: videoSinger,
+      videoId: videoId,
       comment: comment,
       owner: FirebaseAuth.instance.currentUser?.uid,
       registerTime: Timestamp.now(),
@@ -108,6 +153,11 @@ class MapProvider extends ChangeNotifier {
       like: [],
     );
     await docRef.set(starInfo.toMap());
+
+    // 마커 그리기
+    drawMarker(context, FirebaseAuth.instance.currentUser!.uid, docRef.id,
+        NLatLng(location.latitude, location.longitude));
+
     notifyListeners();
   }
 
@@ -160,13 +210,22 @@ class MapProvider extends ChangeNotifier {
 
   void addToFirebase() {}
 
-  void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
-      context: context,
-      builder: (BuildContext context) {
-        return const HomeBottomsheet();
-      },
-    );
+  void showBottomSheet(BuildContext context, String markerId, String ownerId,
+      String nickName, String profileImg) {
+    if (context.mounted) {
+      showModalBottomSheet(
+        backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
+        context: context,
+        builder: (BuildContext context) {
+          return HomeBottomsheet(
+              markerId: markerId,
+              ownerId: ownerId,
+              nickName: nickName,
+              profileImg: profileImg);
+        },
+      );
+    } else {
+      debugPrint("this widget doesn't mounted!!!");
+    }
   }
 }

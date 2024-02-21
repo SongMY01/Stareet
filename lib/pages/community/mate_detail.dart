@@ -1,17 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
 
-//------6페이지
+//tabtwo에서 유저 누르면 detail page
 class MateDetail extends StatefulWidget {
-  const MateDetail({Key? key}) : super(key: key);
+  final String nickName;
+  final String profileImage;
+
+  const MateDetail(
+      {Key? key, required this.nickName, required this.profileImage})
+      : super(key: key);
 
   @override
-  State<MateDetail> createState() => _MateDetailState();
+  _MateDetailState createState() => _MateDetailState(nickName, profileImage);
 }
 
 class _MateDetailState extends State<MateDetail> {
+  final String owner;
+  final String profileImage;
+
+  _MateDetailState(this.owner, this.profileImage);
   bool mateRequested = false;
 
   @override
@@ -58,32 +70,84 @@ class _MateDetailState extends State<MateDetail> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/fonts/images/profile.png',
-                height: 72,
-                width: 72,
+              Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Image.network(
+                    this.profileImage, //이미지 바꿀 때 network인지 asset인지 구분 잘할 것
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.fill,
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
               Row(
                 children: [
                   const SizedBox(
                     width: 20,
                   ),
-                  Text('좌좌좌좌', style: bold18.copyWith(color: AppColor.sub1)),
+                  Text('${widget.nickName}', //닉네임 바꾸는 곳
+                      style: bold18.copyWith(color: AppColor.sub1)),
                   const Spacer(),
                   SizedBox(
                     height: 28,
                     child: TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           mateRequested = !mateRequested;
                         });
+
+                        if (mateRequested) {
+                          try {
+                            // FirebaseFirestore 인스턴스를 가져옵니다.
+                            FirebaseFirestore firestore =
+                                FirebaseFirestore.instance;
+
+                            // 현재 사용자의 UID
+                            String myUid =
+                                FirebaseAuth.instance.currentUser!.uid;
+
+                            // 메이트의 정보를 조회합니다.
+                            QuerySnapshot mateQuery = await firestore
+                                .collection('user')
+                                .where('nickName', isEqualTo: widget.nickName)
+                                .get();
+
+                            // 메이트의 정보가 없거나, 둘 이상이면 예외를 발생시킵니다.
+                            if (mateQuery.docs.length != 1) {
+                              throw Exception('메이트의 정보를 찾을 수 없거나, 닉네임이 중복됩니다.');
+                            }
+
+                            // 메이트의 정보를 가져옵니다.
+                            UsersInfo mateInfo = UsersInfo.fromFirebase(
+                                mateQuery.docs.first
+                                    as DocumentSnapshot<Map<String, dynamic>>);
+
+                            // 현재 사용자의 mate_friend 필드에 메이트의 UID를 추가합니다.
+                            firestore.collection('user').doc(myUid).set({
+                              'mate_ing':
+                                  FieldValue.arrayUnion([mateInfo.uid ?? ""])
+                            }, SetOptions(merge: true));
+
+                            // 메이트의 mate_friend 필드에 현재 사용자의 UID를 추가합니다.
+                            firestore.collection('user').doc(mateInfo.uid).set({
+                              'mate_ing': FieldValue.arrayUnion([myUid])
+                            }, SetOptions(merge: true));
+                          } catch (e) {
+                            print(e);
+                            // 여기서 필요한 경우 사용자에게 오류 메시지를 표시할 수 있습니다.
+                          }
+                        }
                       },
                       style: TextButton.styleFrom(
                         foregroundColor: mateRequested
                             ? const Color.fromRGBO(19, 228, 206, 1)
                             : Colors.black,
                         backgroundColor: mateRequested
-                            ? Colors.black
+                            ? const Color.fromRGBO(19, 228, 206, 0.5)
                             : const Color.fromRGBO(19, 228, 206, 1),
                         side: const BorderSide(
                           color: Color.fromRGBO(19, 228, 206, 1),
@@ -94,7 +158,7 @@ class _MateDetailState extends State<MateDetail> {
                         ),
                       ),
                       child: Text(
-                        mateRequested ? "메이트" : "메이트 신청",
+                        mateRequested ? "메이트 신청 중" : "메이트 신청",
                         style: const TextStyle(fontSize: 10.5),
                       ),
                     ),
@@ -112,16 +176,22 @@ class _MateDetailState extends State<MateDetail> {
               ),
               const SizedBox(height: 20),
               const TabBar(
+                labelColor: AppColor.text,
+                indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
                 tabs: [
                   Tab(text: "내 플리"),
                   Tab(text: "저장한 플리"),
                 ],
               ),
-              const Expanded(
+              Expanded(
                 child: TabBarView(
                   children: [
-                    MySongList(),
-                    SaveSongList(),
+                    MySongList(
+                      nickName: owner,
+                    ),
+                    SaveSongList(
+                      nickName: owner,
+                    ),
                   ],
                 ),
               ),
@@ -136,25 +206,73 @@ class _MateDetailState extends State<MateDetail> {
   }
 }
 
+Future<String> fetchUIDFromNickname(String nickname) async {
+  QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore.instance
+      .collection('user')
+      .where('nickName', isEqualTo: nickname)
+      .get();
+
+  if (!query.docs.isEmpty) {
+    return query
+        .docs.first.id; // Return the uid of the user with the given nickname
+  } else {
+    throw Exception('User not found');
+  }
+}
+
+Future<UsersInfo> fetchUserInfo(String uid) async {
+  var docref = FirebaseFirestore.instance.collection('user').doc(uid);
+
+  DocumentSnapshot<Map<String, dynamic>> doc = await docref.get();
+
+  return UsersInfo.fromFirebase(doc);
+}
+
 class MySongList extends StatelessWidget {
-  const MySongList({Key? key}) : super(key: key);
+  final String nickName;
+
+  const MySongList({Key? key, required this.nickName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 15,
-      itemBuilder: (BuildContext context, int index) {
-        return const MySong();
+    return FutureBuilder<String>(
+      future: fetchUIDFromNickname(nickName),
+      builder: (BuildContext context, AsyncSnapshot<String> uidSnapshot) {
+        if (uidSnapshot.hasData) {
+          return FutureBuilder<UsersInfo>(
+            future: fetchUserInfo(uidSnapshot.data!),
+            builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+              if (snapshot.hasData) {
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: snapshot.data!.playlist_my!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return MySong(imageUrl: snapshot.data!.playlist_my![index]);
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          );
+        } else if (uidSnapshot.hasError) {
+          return Text('Error: ${uidSnapshot.error}');
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     );
   }
 }
 
 class MySong extends StatelessWidget {
-  const MySong({Key? key}) : super(key: key);
+  final String imageUrl;
+
+  const MySong({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -170,33 +288,58 @@ class MySong extends StatelessWidget {
         Positioned(
             left: 25,
             bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
+            child: SizedBox(height: 100, child: Image.network(imageUrl)))
       ]),
     );
   }
 }
 
 class SaveSongList extends StatelessWidget {
-  const SaveSongList({Key? key}) : super(key: key);
+  final String nickName;
+
+  const SaveSongList({Key? key, required this.nickName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return const SaveSong();
+    return FutureBuilder<String>(
+      future: fetchUIDFromNickname(nickName),
+      builder: (BuildContext context, AsyncSnapshot<String> uidSnapshot) {
+        if (uidSnapshot.hasData) {
+          return FutureBuilder<UsersInfo>(
+            future: fetchUserInfo(uidSnapshot.data!),
+            builder: (BuildContext context, AsyncSnapshot<UsersInfo> snapshot) {
+              if (snapshot.hasData) {
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: snapshot.data!.playlist_others!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return SaveSong(
+                        imageUrl: snapshot.data!.playlist_others![index]);
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          );
+        } else if (uidSnapshot.hasError) {
+          return Text('Error: ${uidSnapshot.error}');
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     );
   }
 }
 
 class SaveSong extends StatelessWidget {
-  const SaveSong({Key? key}) : super(key: key);
+  final String imageUrl;
+
+  const SaveSong({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -212,9 +355,7 @@ class SaveSong extends StatelessWidget {
         Positioned(
             left: 25,
             bottom: 8,
-            child: SizedBox(
-                height: 100,
-                child: Image.asset('assets/fonts/images/stars.png')))
+            child: SizedBox(height: 100, child: Image.network(imageUrl)))
       ]),
     );
   }

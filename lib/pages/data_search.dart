@@ -126,7 +126,9 @@ class _DataSearchPageState extends State<DataSearchPage> {
                       });
                     },
                     onSubmitted: (value) {
-                      _search(value);
+                      setState(() {
+                        _search(value);
+                      });
                     },
                   ),
                 ),
@@ -159,7 +161,6 @@ class _DataSearchPageState extends State<DataSearchPage> {
       setState(() {
         isLoading = false;
       });
-      // 에러 처리 로직을 추가하세요.
     }
   }
 
@@ -182,8 +183,14 @@ class _DataSearchPageState extends State<DataSearchPage> {
           } else {
             if (contentList![index] is Video) {
               return video(contentList![index]);
+            } else if (contentList![index] is Map<String, dynamic>) {
+              Map<String, dynamic> mapData =
+                  contentList![index] as Map<String, dynamic>;
+              String mapString = mapData.toString();
+              return Text('Data: $mapString');
             }
-            return Container();
+
+            return Text('Type: ${contentList![index].runtimeType}');
           }
         },
       ),
@@ -228,12 +235,12 @@ class _DataSearchPageState extends State<DataSearchPage> {
                           itemBuilder: (BuildContext context, int index) {
                             return GestureDetector(
                               onTap: () {
-                                //           setState(() {
-
-                                //           query = recently[index];
-                                //           _search(query);
-                                //           });
-                                // FocusScope.of(context).unfocus();
+                                setState(() {
+                                  query = recently[index];
+                                  searchController.text = recently[index];
+                                  _search(query);
+                                });
+                                FocusScope.of(context).unfocus();
                               },
                               child: Padding(
                                   padding: EdgeInsets.only(

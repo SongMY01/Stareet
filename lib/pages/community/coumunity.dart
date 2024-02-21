@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -19,7 +22,6 @@ class _CommunityPage extends State<CommunityPage> {
   List? contentList;
   bool isLoading = false;
   bool firstLoad = true;
-  String apiKeys = "";
 
   FocusNode textfieldFocusNode = FocusNode();
   @override
@@ -43,18 +45,31 @@ class _CommunityPage extends State<CommunityPage> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
+              onPressed: () async {
+                final FirebaseAuth auth = FirebaseAuth.instance;
+                final User? user = auth.currentUser;
+                final uid = user?.uid;
+
+                if (uid != null) {
+                  final docSnap = await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uid)
+                      .get();
+                  final userInfo = UsersInfo.fromFirebase(docSnap);
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MyPage(),
+                      builder: (context) => MyPage(nickName: userInfo.nickName),
                     ),
                   );
-                },
-                icon: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                ))
+                }
+              },
+              icon: const Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+            )
           ],
         ),
         body: Column(
@@ -106,33 +121,25 @@ class _CommunityPage extends State<CommunityPage> {
                         onPressed: () {
                           searchController.clear();
                           query = '';
-                          setState(() {
-                            contentList = null;
-                          });
-                          textfieldFocusNode.requestFocus(); // 이 부분을 추가하세요.
                         },
                         icon: const Icon(Icons.close, color: Colors.white)),
                   ),
                   onChanged: (value) {
                     setState(() {
-                      query = value;
+                      query = value; //textfield 입력하자마자 바뀜
                     });
                   },
-                  onTap: () {
+                  onSubmitted: (value) {
                     setState(() {
-                      // 사용자가 텍스트 필드를 탭하면 contentList를 null로 설정
-                      contentList = null;
+                      query = value; //textfield 입력 후 enter 누르면 바뀜
                     });
                   },
-                  // onSubmitted: (value) {
-                  //   _search(value);
-                  // },
                 ),
               ),
             ),
-            const SizedBox(height: 29),
+            const SizedBox(height: 10),
             query.isNotEmpty
-                ? _buildSearchedTabBar()
+                ? _buildSearchedTabBar(query)
                 : _buildCommunitySearch() //textfield에 무언가는 입력했을 때 SearchedTabBar가 나오고 아무것도 입력하지 않으면 CommunitySearch가 나옴
           ],
         ),
@@ -153,34 +160,36 @@ OutlineInputBorder myinputborder() {
       ));
 }
 
-Widget _buildSearchedTabBar() {
-  return DefaultTabController(
-    length: 2, // Number of tabs
-    initialIndex: 0, // Initial selected tab index
-    child: Column(
-      children: [
-        TabBar(
-          labelStyle: bold14.copyWith(color: AppColor.text),
-          labelColor: AppColor.text,
-          indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
-          tabs: const [
-            Tab(text: "플리"),
-            Tab(text: "스타메이트"),
-          ],
-        ),
-        const SizedBox(height: 20),
-        // The TabBarView with the associated content for each tab
-        const Expanded(
-          child: TabBarView(
-            children: [
-              // Content for Tab 1
-              TabOne(),
-              // Content for Tab 2
-              TabTwo(),
+Widget _buildSearchedTabBar(String query) {
+  return Expanded(
+    child: DefaultTabController(
+      length: 2, // Number of tabs
+      initialIndex: 0, // Initial selected tab index
+      child: Column(
+        children: [
+          TabBar(
+            labelStyle: bold14.copyWith(color: AppColor.text),
+            labelColor: AppColor.text,
+            indicatorColor: AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
+            tabs: const [
+              Tab(text: "플리"),
+              Tab(text: "스타메이트"),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          // The TabBarView with the associated content for each tab
+          Expanded(
+            child: TabBarView(
+              children: [
+                // Content for Tab 1
+                TabOne(query: query),
+                // Content for Tab 2
+                TabTwo(query: query),
+              ],
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -190,7 +199,7 @@ Widget _buildCommunitySearch() {
     child: ListView(
       children: [
         Text(
-          "지금 핫 별플리",
+          "지금 핫한 별플리",
           style: bold20.copyWith(color: AppColor.sub1),
         ),
         const SizedBox(height: 29),
@@ -218,11 +227,30 @@ class StarPictureList extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 280.803,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return const StarPicture();
+      child: FutureBuilder<QuerySnapshot>(
+        future: FirebaseFirestore.instance.collection('playlist').get(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loading");
+          } //이 부분은 별별게시판에서 지금 핫 별플리 사진 로딩 중에 오류 생기면 나옴
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (BuildContext context, int index) {
+              PlaylistInfo playlistInfo = PlaylistInfo.fromFirebase(snapshot
+                  .data!
+                  .docs[index] as QueryDocumentSnapshot<Map<String, dynamic>>);
+              return StarPicture(
+                  imgurl: playlistInfo.image_url,
+                  owner: playlistInfo.nickname,
+                  title: playlistInfo.title);
+            },
+          );
         },
       ),
     );
@@ -230,7 +258,16 @@ class StarPictureList extends StatelessWidget {
 }
 
 class StarPicture extends StatelessWidget {
-  const StarPicture({Key? key}) : super(key: key);
+  final String? imgurl;
+  final String? owner;
+  final String? title;
+
+  const StarPicture(
+      {Key? key,
+      required this.imgurl,
+      required this.owner,
+      required this.title})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -246,9 +283,13 @@ class StarPicture extends StatelessWidget {
             children: [
               Image.asset('assets/fonts/images/starback.png'),
               Positioned(
-                left: 30,
-                bottom: 20,
-                child: Image.asset('assets/fonts/images/stars.png'),
+                left: -50,
+                bottom: 0,
+                child: Image.network(
+                  imgurl!,
+                  height: 270,
+                  width: 270,
+                ),
               ),
               Positioned(
                 left: 20,
@@ -259,7 +300,7 @@ class StarPicture extends StatelessWidget {
                 left: 43,
                 bottom: 53,
                 child: Text(
-                  "좌",
+                  owner!,
                   style: medium11.copyWith(color: AppColor.sub1),
                 ),
               ),
@@ -267,7 +308,7 @@ class StarPicture extends StatelessWidget {
                 left: 20,
                 bottom: 27,
                 child: Text(
-                  "용가리자리",
+                  title!,
                   style: bold17.copyWith(color: AppColor.sub1),
                 ),
               ),
@@ -290,18 +331,80 @@ class StarPicture extends StatelessWidget {
   }
 }
 
-class SongPictureList extends StatelessWidget {
+class SongPictureList extends StatefulWidget {
   const SongPictureList({Key? key}) : super(key: key);
+
+  @override
+  _SongPictureListState createState() => _SongPictureListState();
+}
+
+class _SongPictureListState extends State<SongPictureList> {
+  late Future<QuerySnapshot> future;
+
+  @override
+  void initState() {
+    super.initState();
+    future = FirebaseFirestore.instance.collection('user').get();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 206, // Set an appropriate height,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return const SongPicture(); // Use SongPicture instead of StarPicture
+      child: FutureBuilder<QuerySnapshot>(
+        future: future,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loadingg");
+          }
+
+          // 'user' 컬렉션의 모든 문서 목록
+          final allDocs = snapshot.data!.docs;
+
+          // 랜덤하게 두 개의 문서를 선택
+          final docs = List<DocumentSnapshot>.from(allDocs)..shuffle();
+          final selectedDocs = docs.take(2).toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: selectedDocs.length,
+            itemBuilder: (BuildContext context, int index) {
+              final userDoc = selectedDocs[index];
+
+              return StreamBuilder<QuerySnapshot>(
+                stream: userDoc.reference.collection('Star').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text("Loading...");
+                  }
+
+                  final List<SongInfo> songs = snapshot.data!.docs.map((doc) {
+                    return SongInfo.fromFirebase(
+                        doc as QueryDocumentSnapshot<Map<String, dynamic>>);
+                  }).toList();
+
+                  return Column(
+                    children: songs.map((song) {
+                      return SongPicture(
+                          videoId: song.videoId,
+                          singer: song.singer,
+                          title: song.title,
+                          uid: song.uid);
+                    }).toList(),
+                  );
+                },
+              );
+            },
+          );
         },
       ),
     );
@@ -309,7 +412,18 @@ class SongPictureList extends StatelessWidget {
 }
 
 class SongPicture extends StatelessWidget {
-  const SongPicture({super.key});
+  final String? videoId;
+  final String? singer;
+  final String? title;
+  final String? uid;
+
+  const SongPicture(
+      {Key? key,
+      required this.videoId,
+      required this.singer,
+      required this.title,
+      required this.uid})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -320,19 +434,24 @@ class SongPicture extends StatelessWidget {
         ),
         Stack(
           children: [
-            Image.asset('assets/fonts/images/song.png'),
+            Image.network(
+              'https://i1.ytimg.com/vi/$videoId/maxresdefault.jpg',
+              height: 100,
+              width: 100,
+            ),
             Positioned(
               left: 20,
               bottom: 27,
               child: Text(
-                "잘 지내자, 우리",
+                title!,
                 style: medium16.copyWith(color: AppColor.text),
               ),
             ),
             Positioned(
               left: 20,
               bottom: 10,
-              child: Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
+              child:
+                  Text(singer!, style: bold12.copyWith(color: AppColor.sub1)),
             ),
           ],
         ),

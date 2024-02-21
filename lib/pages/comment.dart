@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:music_api/utilities/info.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_data_api/models/video.dart';
 import '../providers/map_state.dart';
@@ -176,29 +174,19 @@ class _CommentPageState extends State<CommentPage> {
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () async {
-                      // final docRef =
-                      //     FirebaseFirestore.instance.collection("Star").doc();
-                      // await docRef.set({
-                      //   uidFieldName: docRef.id,
-                      //   registerTimeFieldName: FieldValue.serverTimestamp(),
-                      //   locationFieldName: [
-                      //     36.084607301484596,
-                      //     129.3957316179093
-                      //   ],
-                      //   // songFieldName: widget.video,
-                      //   commentFieldName: "코멘트",
-                      //   ownerFieldName:
-                      //       'FirebaseAuth.instance.currentUser!.uid',
-                      //   addressFieldName: '포항시 북구 양덕동',
-                      //   likeFieldName: 'FirebaseAuth.instance.currentUser!.uid'
-                      // });
-                      context.read<MapProvider>().drawMarker(context, widget.video.title!, _textFieldController.text);
+                      context.read<MapProvider>().addMarker(
+                          context,
+                          widget.video.title!,
+                          widget.video.channelName!,
+                          widget.video.videoId!,
+                          _textFieldController.text);
+
                       Navigator.popUntil(context, ModalRoute.withName('/home'));
                     },
                     child: Container(
                         width: double.infinity,
                         height: 48,
-                        margin: const EdgeInsets.fromLTRB(25, 0, 25, 50),
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 50),
                         decoration: _textFieldController.text.isEmpty
                             ? BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),

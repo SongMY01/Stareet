@@ -119,7 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return null;
   }
 
-  final _authentication = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Container(

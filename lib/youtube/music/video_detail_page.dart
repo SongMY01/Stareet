@@ -1,18 +1,32 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_data_api/models/video.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../utilities/color_scheme.dart';
+import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
+import '../buttons/meta_data_section.dart';
 import '../buttons/play_pause_button_bar.dart';
 
 class VideoDetailPage extends StatefulWidget {
-  final Video video;
+  final String markerId;
+  final String ownerId;
+  final String videoId;
+  final String nickName;
+  final String profileImg;
 
-  const VideoDetailPage({super.key, required this.video});
+  VideoDetailPage(
+      {super.key,
+      required this.markerId,
+      required this.ownerId,
+      required this.videoId,
+      required this.nickName,
+      required this.profileImg});
 
   @override
   State<VideoDetailPage> createState() => _VideoDetailPageState();
@@ -20,12 +34,28 @@ class VideoDetailPage extends StatefulWidget {
 
 class _VideoDetailPageState extends State<VideoDetailPage> {
   late YoutubePlayerController _controller;
+  String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
+  late String profileImage;
+
+  Future<StarInfo> fetchStarInfo(String markerId) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(widget.ownerId)
+        .collection('Star')
+        .doc(markerId)
+        .get();
+
+    // 가져온 문서를 StarInfo 객체로 변환하여 반환함
+    return StarInfo.fromMap(doc.data()!);
+  }
 
   @override
   void initState() {
     super.initState();
+    loggedInUid = FirebaseAuth.instance.currentUser!.uid;
+
     _controller = YoutubePlayerController.fromVideoId(
-      videoId: widget.video.videoId as String,
+      videoId: widget.videoId,
       autoPlay: true,
       params: const YoutubePlayerParams(
         showControls: true,
@@ -41,165 +71,238 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
+  bool heartCheck = false;
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerScaffold(
       controller: _controller,
       builder: (context, player) {
-        return Scaffold(
-          backgroundColor: AppColor.background,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            title: const Text('포항시 북구 흥해읍 한동로 558', style: bold16),
-            actions: <Widget>[
-              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
-            ],
-          ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 25, right: 25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 13),
-                    Row(
-                      children: [
-                        Column(
+        return FutureBuilder(
+            future: fetchStarInfo(widget.markerId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const LoadingWidget(); // 로딩 중일 때 표시할 위젯
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
+              } else {
+                StarInfo starInfo = snapshot.data!;
+                if (starInfo.like?.contains(loggedInUid) ?? true) {
+                  heartCheck = true;
+                }
+                return Scaffold(
+                  backgroundColor: AppColor.background,
+                  appBar: AppBar(
+                    backgroundColor: Colors.transparent,
+                    title: Text('${starInfo.address}', style: bold16),
+                    actions: <Widget>[
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                    ],
+                  ),
+                  body: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: '나는 쿼카입니다',
-                                      style: bold22.copyWith(
-                                          color: AppColor.primary)),
-                                  const TextSpan(
-                                      text: '님이 추천하는', style: bold22),
-                                ],
-                              ),
+                            const SizedBox(height: 13),
+                            Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          TextSpan(
+                                              text: widget.nickName,
+                                              style: bold22.copyWith(
+                                                  color: AppColor.primary)),
+                                          const TextSpan(
+                                              text: '님이 추천하는', style: bold22),
+                                        ],
+                                      ),
+                                    ),
+                                    const Text(
+                                      '이곳에 어울리는 음악',
+                                      style: bold22,
+                                    )
+                                  ],
+                                ),
+                                const Spacer(),
+                                Column(
+                                  children: [
+                                    StreamBuilder<DocumentSnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('user')
+                                          .doc(widget.ownerId)
+                                          .collection('Star')
+                                          .doc(widget.markerId)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        }
+                                        List<String> likes = List<String>.from(
+                                            (snapshot.data?.data() as Map<
+                                                    String,
+                                                    dynamic>)?['like'] ??
+                                                []);
+
+                                        bool heartCheck =
+                                            likes.contains(loggedInUid);
+
+                                        return Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () async {
+                                                if (heartCheck) {
+                                                  likes.remove(loggedInUid);
+                                                } else {
+                                                  likes.add(loggedInUid);
+                                                }
+
+                                                await snapshot.data?.reference
+                                                    .update({'like': likes});
+                                              },
+                                              child: (likes?.contains(
+                                                          loggedInUid) ??
+                                                      false)
+                                                  ? Image.asset(
+                                                      "assets/images/heart_yes.png",
+                                                      width: 23,
+                                                      height: 20,
+                                                    )
+                                                  : Image.asset(
+                                                      "assets/images/heart_not.png",
+                                                      width: 23,
+                                                      height: 20,
+                                                    ),
+                                            ),
+                                            Text('${likes.length}',
+                                                textAlign: TextAlign.left,
+                                                style: regular13.copyWith(
+                                                    color: AppColor.sub1)),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 6),
+                              ],
                             ),
-                            const Text(
-                              '이곳에 어울리는 음악',
-                              style: bold22,
-                            )
-                          ],
-                        ),
-                        const Spacer(),
-                        Column(
-                          children: [
-                            const Icon(Icons.favorite, color: AppColor.error),
-                            Text('25',
-                                textAlign: TextAlign.left,
-                                style:
-                                    regular13.copyWith(color: AppColor.sub1)),
-                          ],
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                    ),
-                    const SizedBox(height: 7),
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 33,
-                          height: 33,
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://i1.ytimg.com/vi/_fd_hwSm9zI/sddefault.jpg',
+                            const SizedBox(height: 7),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 33,
+                                  height: 33,
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      widget.profileImg,
+                                    ),
+                                    radius: 29, // 원의 반지름 설정
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  widget.nickName,
+                                  style: semibold14,
+                                ),
+                                const SizedBox(width: 12),
+                                Container(
+                                  width: 65,
+                                  height: 28,
+                                  decoration: ShapeDecoration(
+                                    shape: RoundedRectangleBorder(
+                                      side: const BorderSide(
+                                          width: 1, color: AppColor.primary),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '메이트️',
+                                      style: bold13.copyWith(
+                                          color: AppColor.primary),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            radius: 29, // 원의 반지름 설정
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Text(
-                          '나는쿼카입니다',
-                          style: semibold14,
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          width: 65,
-                          height: 28,
-                          decoration: ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                  width: 1, color: AppColor.primary),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '메이트️',
-                              style: bold13.copyWith(color: AppColor.primary),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Stack(
-                      children: [
-                        SizedBox(
-                            width: 340,
-                            height: 340,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: player,
-                            )),
-                        Container(
-                          width: 340,
-                          height: 340,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        ClipRRect(
-                            child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: const SizedBox(
+                            const SizedBox(height: 15),
+                            Stack(
+                              children: [
+                                SizedBox(
+                                    width: 340,
+                                    height: 340,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: player,
+                                    )),
+                                Container(
                                   width: 340,
                                   height: 340,
-                                ))),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 23, right: 23, top: 28),
-                          child: Text(
-                            '우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 여기에는 사람이 쓴 코멘트',
-                            textAlign: TextAlign.justify,
-                            style: kimregular15,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      widget.video.title ?? '',
-                      style: bold22,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.video.channelName ?? '',
-                      style: bold18.copyWith(color: AppColor.sub1),
-                      maxLines: 1,
-                    ),
-                  ],
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 5),
-                child: Controls(),
-              ),
-            ],
-          ),
-        );
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        'https://i1.ytimg.com/vi/${widget.videoId}/maxresdefault.jpg',
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                ClipRRect(
+                                    child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 5, sigmaY: 5),
+                                        child: const SizedBox(
+                                          width: 340,
+                                          height: 340,
+                                        ))),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 23, right: 23, top: 28),
+                                  child: Text(
+                                    '우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 여기에는 사람이 쓴 코멘트',
+                                    textAlign: TextAlign.justify,
+                                    style: kimregular15,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            Text(
+                              '${starInfo.title}',
+                              style: bold22,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${starInfo.singer}',
+                              style: bold18.copyWith(color: AppColor.sub1),
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Controls(),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            });
       },
     );
   }
@@ -374,5 +477,26 @@ class CustomSliderThumbCircle extends SliderComponentShape {
         colors: [Color(0xFF64FFED), Color(0xFFF0F2BD)],
       ).createShader(Rect.fromCircle(center: center, radius: thumbRadius));
     canvas.drawCircle(center, thumbRadius, innerCirclePaint);
+  }
+}
+
+class LoadingWidget extends StatelessWidget {
+  const LoadingWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 15),
+            width: 124,
+            height: 6,
+            decoration: BoxDecoration(
+                color: AppColor.text, borderRadius: BorderRadius.circular(24)),
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -17,24 +17,15 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -52,6 +43,23 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAsciwPXoWNu5eQpQHQCGTQhhuxIVYyDNc',
+    appId: '1:859784822505:web:7ab6954a4fc95224f8fa78',
+    messagingSenderId: '859784822505',
+    projectId: 'music-9b7aa',
+    authDomain: 'music-9b7aa.firebaseapp.com',
+    storageBucket: 'music-9b7aa.appspot.com',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDLd_38Hdi4n3SDrIDQHw1zkeXEbuY4elw',
+    appId: '1:859784822505:android:fdf5b20d1b093013f8fa78',
+    messagingSenderId: '859784822505',
+    projectId: 'music-9b7aa',
+    storageBucket: 'music-9b7aa.appspot.com',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB-Ad0zeWK8jZjs5hCYxzdWfw-uUkaP1dY',
     appId: '1:859784822505:ios:01f16f4ce113196df8fa78',
@@ -61,5 +69,16 @@ class DefaultFirebaseOptions {
     androidClientId: '859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com',
     iosClientId: '859784822505-a0r8bbkvi3oj86sulvqmj1hvr7g8tlr8.apps.googleusercontent.com',
     iosBundleId: 'com.stareet.mapApp',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyB-Ad0zeWK8jZjs5hCYxzdWfw-uUkaP1dY',
+    appId: '1:859784822505:ios:c791ae8377e1f3b5f8fa78',
+    messagingSenderId: '859784822505',
+    projectId: 'music-9b7aa',
+    storageBucket: 'music-9b7aa.appspot.com',
+    androidClientId: '859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com',
+    iosClientId: '859784822505-jjljl64k8o8313g9hdtcl0dkvvi9ms59.apps.googleusercontent.com',
+    iosBundleId: 'com.example.musicApi.RunnerTests',
   );
 }

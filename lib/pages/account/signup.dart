@@ -57,7 +57,9 @@ class _SignupPageState extends State<SignupPage> {
         'playlist_my': ['초기설정'],
         'playlist_others': ['초기설정'],
       });
+      debugPrint("파베 저장 완료~");
     } catch (e) {
+      debugPrint("save에서 파베 저장 실패ㅠ");
       debugPrint(e as String?);
     }
   }
@@ -87,14 +89,19 @@ class _SignupPageState extends State<SignupPage> {
 
       try {
         final user = FirebaseAuth.instance.currentUser!;
-
+        debugPrint("User data: $user");
+        debugPrint("Nickname: $nickname");
+        debugPrint("_image: $_image");
         // 이미지 업로드
         final imageUrl = await uploadImageToFirebaseStorage(_image!, user.uid);
-        debugPrint(nickname);
+
+        debugPrint("Image: $imageUrl");
 
         // Firebase Firestore에 사용자 정보 저장
+        debugPrint("파베 저장 시도!");
         await saveUserDataToFirestore(user.uid, nickname, imageUrl);
       } catch (e) {
+        debugPrint("try에서 파베 저장 실패ㅠ");
         print(e);
         // 에러 처리
       }
@@ -116,7 +123,6 @@ class _SignupPageState extends State<SignupPage> {
     return null;
   }
 
-  final _authentication = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Container(

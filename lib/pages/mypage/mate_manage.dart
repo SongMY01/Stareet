@@ -54,6 +54,7 @@ class MateManage extends StatelessWidget {
             } else {
               var userInfo = snapshot.data!;
               mateIng = userInfo['mate_ing'] as List<dynamic>? ?? [];
+
               return const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -88,9 +89,7 @@ Stream<List<Map<String, dynamic>>> getMateListIngStream() {
       .where('user-id', whereIn: mateIng)
       .snapshots()
       .map((querySnapshot) {
-    return querySnapshot.docs
-        .map((doc) => doc.data())
-        .toList();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
   });
 }
 
@@ -155,8 +154,6 @@ class MateNameIng extends StatefulWidget {
 }
 
 class _MateNameIngState extends State<MateNameIng> {
-  final bool _isStarSelected = true;
-
   @override
   Widget build(BuildContext context) {
     return Column(

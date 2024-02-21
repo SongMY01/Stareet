@@ -10,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 
 class MyPage extends StatefulWidget {
-  const MyPage({Key? key}) : super(key: key);
+  const MyPage({Key? key, String? nickName}) : super(key: key);
 
   @override
   State<MyPage> createState() => _MyPageState();
@@ -131,7 +131,9 @@ class _MyPageState extends State<MyPage> {
                 mateListFriend =
                     userInfo['mate_friend'] as List<dynamic>? ?? [];
                 mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
+
                 mateAll=(userInfo['mate_friend'] as List<dynamic>? ?? [])+(userInfo['mate_real'] as List<dynamic>? ?? []);
+
                 playlistMy = userInfo['playlist_my'] as List<dynamic>? ?? [];
                 playlistOthers =
                     userInfo['playlist_others'] as List<dynamic>? ?? [];
@@ -195,6 +197,9 @@ class _MyPageState extends State<MyPage> {
                     ),
                     const SizedBox(height: 10),
                     const TabBar(
+                      labelColor: AppColor.text,
+                      indicatorColor:
+                          AppColor.text, //tabbar 아랫 부분에 흰색 줄 (움직이는거)
                       tabs: [
                         Tab(text: "내 플리"),
                         Tab(text: "저장한 플리"),
@@ -293,7 +298,6 @@ class SaveSongList extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           var playlistInfoList = snapshot.data!;
-         
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,

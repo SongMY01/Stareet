@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../utilities/color_scheme.dart';
@@ -5,8 +6,18 @@ import '../../utilities/text_theme.dart';
 //-----페이지 3
 
 class StarDetail extends StatelessWidget {
-  const StarDetail({super.key});
+  final String owner;
+  final String image_url;
+  final String title;
+  final String nickname;
 
+  const StarDetail(
+      {Key? key,
+      required this.owner,
+      required this.image_url,
+      required this.title,
+      required this.nickname})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,8 +46,12 @@ class StarDetail extends StatelessWidget {
                             Positioned(
                               left: 30,
                               bottom: 20,
-                              child:
-                                  Image.asset('assets/fonts/images/stars.png'),
+                              child: Image.network(
+                                image_url,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ],
                         ),
@@ -49,15 +64,24 @@ class StarDetail extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 170),
-                        const Text("용가리 자리",
-                            style: bold20),
-                        const Text("좌",
-                            style: medium16),
+                        Text(title, style: bold20),
+                        Text(nickname, style: medium16),
                         Text("음악 7개",
-                            style:
-                                regular12.copyWith(color: AppColor.sub2)),
-                        IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.share))
+                            style: regular12.copyWith(color: AppColor.sub2)),
+                        const SizedBox(height: 15),
+                        Container(
+                          width: 43.0, // 원하는 너비 설정
+                          height: 43.0, // 원하는 높이 설정
+                          decoration: const BoxDecoration(
+                            color: AppColor.text2,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.share_outlined,
+                                color: AppColor.sub1),
+                          ),
+                        )
                       ],
                     )
                   ],
@@ -131,11 +155,27 @@ class UserPlayList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return const UserPlay();
+      child: FutureBuilder<QuerySnapshot>(
+        future: FirebaseFirestore.instance.collection('playlist').get(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loading...");
+          }
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          final playlists = snapshot.data!.docs;
+
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: playlists.length,
+            itemBuilder: (BuildContext context, int index) {
+              return UserPlay(
+                playlistId: playlists[index].id,
+              );
+            },
+          );
         },
       ),
     );
@@ -143,44 +183,68 @@ class UserPlayList extends StatelessWidget {
 }
 
 class UserPlay extends StatelessWidget {
-  const UserPlay({super.key});
+  final String playlistId;
+
+  const UserPlay({required this.playlistId, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('playlist')
+          .doc(playlistId)
+          .get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text("Loading...");
+        }
+        if (snapshot.hasError) {
+          return const Text('Something went wrong');
+        }
+
+        final playlistData = snapshot.data!.data() ?? {};
+
+        // final starsId = playlistData['stars_id'];
+        // final ownersId = playlistData['owners_id'];
+
+        // `starsId`와 `ownersId`를 사용하여 위젯을 빌드하세요.
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              width: 10,
+            Row(
+              children: [
+                const SizedBox(
+                  width: 10,
+                ),
+                const Icon(
+                  Icons.location_on,
+                  color: Color.fromRGBO(19, 228, 206, 1),
+                ),
+                Text('포항시 북구 흥해읍 한동로 558',
+                    style: regular13.copyWith(color: AppColor.sub1)),
+              ],
             ),
-            const Icon(
-              Icons.location_on,
-              color: Color.fromRGBO(19, 228, 206, 1),
+            const SizedBox(height: 5),
+            ListTile(
+              leading: Image.asset('assets/fonts/images/songprofile.jpeg'),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("잘 지내자, 우리",
+                      style: bold16.copyWith(color: AppColor.sub1)),
+                  Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
+                ],
+              ),
+              trailing:
+                  Text('3:54', style: regular13.copyWith(color: AppColor.sub2)),
             ),
-            Text('포항시 북구 흥해읍 한동로 558',
-                style: regular13.copyWith(color: AppColor.sub1)),
+            const SizedBox(height: 20),
           ],
-        ),
-        const SizedBox(height: 5),
-        ListTile(
-          leading: Image.asset('assets/fonts/images/songprofile.jpeg'),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("잘 지내자, 우리",
-                  style: bold16.copyWith(color: AppColor.sub1)),
-              Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
-            ],
-          ),
-          trailing:
-              Text('3:54', style: regular13.copyWith(color: AppColor.sub2)),
-        ),
-        const SizedBox(height: 20),
-      ],
+        );
+      },
     );
   }
 }
-
 //--------여기까지가 별플리 이후부터 유저 정보 커뮤니티
