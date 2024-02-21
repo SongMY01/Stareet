@@ -10,8 +10,14 @@ import '../youtube/music/video_detail_page.dart';
 class HomeBottomsheet extends StatefulWidget {
   final String markerId;
   final String ownerId;
+  final String nickName;
+  final String profileImg;
   const HomeBottomsheet(
-      {super.key, required this.markerId, required this.ownerId});
+      {super.key,
+      required this.markerId,
+      required this.ownerId,
+      required this.nickName,
+      required this.profileImg});
 
   @override
   State<HomeBottomsheet> createState() => _HomeBottomsheetState();
@@ -19,19 +25,6 @@ class HomeBottomsheet extends StatefulWidget {
 
 class _HomeBottomsheetState extends State<HomeBottomsheet> {
   String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
-  late String nickName;
-
-  Future<String> fetchNickname(String userId) async {
-    final user = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(widget.ownerId)
-        .get();
-    return user['nickName'];
-  }
-
-  Future<void> setNickname() async {
-    nickName = await fetchNickname(widget.ownerId);
-  }
 
   Future<StarInfo> fetchStarInfo(String markerId) async {
     final doc = await FirebaseFirestore.instance
@@ -48,7 +41,6 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
   bool heartCheck = false;
   @override
   Widget build(BuildContext context) {
-    setNickname();
     return ClipRRect(
       child: Container(
         height: 289,
@@ -95,7 +87,8 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                        text: '$nickName님', style: semibold17),
+                                        text: '${widget.nickName}님',
+                                        style: semibold17),
                                     const TextSpan(
                                         text: '이 추천하는', style: regular16),
                                   ],
@@ -237,7 +230,9 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                               builder: (context) => VideoDetailPage(
                                   markerId: widget.markerId,
                                   ownerId: widget.ownerId,
-                                  videoId: starInfo.videoId as String)));
+                                  videoId: starInfo.videoId as String,
+                                  nickName: widget.nickName,
+                                  profileImg: widget.profileImg)));
                     },
                     child: Container(
                       width: 340,

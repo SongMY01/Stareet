@@ -17,12 +17,16 @@ class VideoDetailPage extends StatefulWidget {
   final String markerId;
   final String ownerId;
   final String videoId;
+  final String nickName;
+  final String profileImg;
 
   VideoDetailPage(
       {super.key,
       required this.markerId,
       required this.ownerId,
-      required this.videoId});
+      required this.videoId,
+      required this.nickName,
+      required this.profileImg});
 
   @override
   State<VideoDetailPage> createState() => _VideoDetailPageState();
@@ -31,32 +35,7 @@ class VideoDetailPage extends StatefulWidget {
 class _VideoDetailPageState extends State<VideoDetailPage> {
   late YoutubePlayerController _controller;
   String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
-  late String nickName;
   late String profileImage;
-
-  Future<String> fetchNickname(String userId) async {
-    final user = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(widget.ownerId)
-        .get();
-    return user['nickName'];
-  }
-
-  Future<String> fetchProfileimage(String userId) async {
-    final user = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(widget.ownerId)
-        .get();
-    return user['profileImage'];
-  }
-
-  Future<void> setNickname() async {
-    nickName = await fetchNickname(widget.ownerId);
-  }
-
-  Future<void> setProfileimage() async {
-    profileImage = await fetchProfileimage(widget.ownerId);
-  }
 
   Future<StarInfo> fetchStarInfo(String markerId) async {
     final doc = await FirebaseFirestore.instance
@@ -73,6 +52,8 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   @override
   void initState() {
     super.initState();
+    loggedInUid = FirebaseAuth.instance.currentUser!.uid;
+
     _controller = YoutubePlayerController.fromVideoId(
       videoId: widget.videoId,
       autoPlay: true,
@@ -92,8 +73,6 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    setNickname();
-    setProfileimage();
     return YoutubePlayerScaffold(
       controller: _controller,
       builder: (context, player) {
@@ -133,7 +112,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                       TextSpan(
                                         children: [
                                           TextSpan(
-                                              text: nickName,
+                                              text: widget.nickName,
                                               style: bold22.copyWith(
                                                   color: AppColor.primary)),
                                           const TextSpan(
@@ -169,14 +148,14 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                   height: 33,
                                   child: CircleAvatar(
                                     backgroundImage: NetworkImage(
-                                      profileImage,
+                                      widget.profileImg,
                                     ),
                                     radius: 29, // 원의 반지름 설정
                                   ),
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  nickName,
+                                  widget.nickName,
                                   style: semibold14,
                                 ),
                                 const SizedBox(width: 12),

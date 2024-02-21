@@ -80,6 +80,11 @@ class MapProvider extends ChangeNotifier {
     List<String> mateFriendIds =
         (userDoc.get('mate_friend') as List<dynamic>).cast<String>();
 
+    final ownerDoc =
+        await FirebaseFirestore.instance.collection('user').doc(ownerId).get();
+
+    String nickName = ownerDoc.get('nickName');
+    String profileImg = ownerDoc.get('profileImage');
     if (loggedInUid != ownerId) {
       if (mateFriendIds.contains(ownerId)) {
         imagePath = 'assets/images/mate_marker.png';
@@ -105,7 +110,8 @@ class MapProvider extends ChangeNotifier {
         }
       } else {
         // 기본 홈 화면일 때
-        showBottomSheet(context, overlay.info.id, ownerId);
+        showBottomSheet(
+            context, overlay.info.id, ownerId, nickName, profileImg);
       }
     });
     marker.setGlobalZIndex(200000);
@@ -204,13 +210,18 @@ class MapProvider extends ChangeNotifier {
 
   void addToFirebase() {}
 
-  void showBottomSheet(BuildContext context, String markerId, String ownerId) {
+  void showBottomSheet(BuildContext context, String markerId, String ownerId,
+      String nickName, String profileImg) {
     if (context.mounted) {
       showModalBottomSheet(
         backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
         context: context,
         builder: (BuildContext context) {
-          return HomeBottomsheet(markerId: markerId, ownerId: ownerId);
+          return HomeBottomsheet(
+              markerId: markerId,
+              ownerId: ownerId,
+              nickName: nickName,
+              profileImg: profileImg);
         },
       );
     } else {
