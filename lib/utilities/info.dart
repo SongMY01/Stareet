@@ -7,7 +7,10 @@ class UsersInfo {
   final String? userEmail;
   final String? userPassword;
   final String? profileImage;
-  final List<Map<String, dynamic>>? mate;
+  final List<String>? mate_ing;
+  final List<String>? mate_real;
+  final List<String>? mate_friend;
+
   final List<String>? playlist_my;
   final List<String>? playlist_others;
 
@@ -17,7 +20,9 @@ class UsersInfo {
     required this.userEmail,
     required this.userPassword,
     required this.profileImage,
-    required this.mate,
+    required this.mate_ing,
+    required this.mate_real,
+    required this.mate_friend,
     required this.playlist_my,
     required this.playlist_others,
   });
@@ -26,12 +31,15 @@ class UsersInfo {
       DocumentSnapshot<Map<String, dynamic>> docSnap) {
     final snapshotData = docSnap.data() ?? {};
     return UsersInfo(
-        uid: snapshotData['uid'],
+        uid: docSnap.id, // 변경된 부분
         nickName: snapshotData[userNameFieldName],
         userEmail: snapshotData[userEmailFieldName],
         userPassword: snapshotData[userPasswordFieldName],
         profileImage: snapshotData[profileImageURLFieldName],
-        mate: snapshotData[mateFieldName],
+        mate_ing: List<String>.from(snapshotData[mate_ingFieldName] ?? []),
+        mate_real: List<String>.from(snapshotData[mate_realFieldName] ?? []),
+        mate_friend:
+            List<String>.from(snapshotData[mate_friendFieldName] ?? []),
         playlist_my:
             List<String>.from(snapshotData[playlist_myFieldName] ?? []),
         playlist_others:
@@ -43,7 +51,10 @@ const String userNameFieldName = "nickName";
 const String userEmailFieldName = "userEmail";
 const String userPasswordFieldName = "userPassword";
 const String profileImageURLFieldName = "profileImage";
-const String mateFieldName = 'mate';
+const String mate_ingFieldName = "mate_ing";
+const String mate_realFieldName = "mate_real";
+const String mate_friendFieldName = "mate_friend";
+
 const String playlist_myFieldName = 'playlist_my';
 const String playlist_othersFieldName = 'playlist_others';
 

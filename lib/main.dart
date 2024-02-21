@@ -23,6 +23,7 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => SwitchProvider()),
     ChangeNotifierProvider(create: (_) => MapProvider()),
+
   ], child: const MyApp()));
 }
 

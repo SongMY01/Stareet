@@ -223,8 +223,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final switchProvider = Provider.of<SwitchProvider>(context);
     final mapProvider = Provider.of<MapProvider>(context);
-    // final userProvider = Provider.of<UserProvider>(context);
-    // addMate(userProvider.getMate());
+
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -405,6 +404,7 @@ class _HomePageState extends State<HomePage> {
                                       .clearOverlays(type: NOverlayType.marker);
                                   _updateUserMarker(
                                       await mapProvider.getPosition());
+
                                   mapProvider.mapController
                                       .addOverlay(_userLocationMarker!);
                                   if (index == 0) {
