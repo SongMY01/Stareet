@@ -118,7 +118,10 @@ class _CommentPageState extends State<CommentPage> {
                 const SizedBox(height: 31),
                 Text(
                   '코멘트를 남겨 보세요',
-                  style: regular13.copyWith(color: AppColor.sub2),
+                  style: regular13.copyWith(
+                    color: AppColor.sub2,
+                    letterSpacing: 13 * -0.02,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Center(
@@ -126,9 +129,8 @@ class _CommentPageState extends State<CommentPage> {
                     height: 190,
                     child: TextField(
                         controller: _textFieldController,
-                        maxLength: 150,
                         maxLines: 10,
-                        cursorColor: Colors.blueAccent,
+                        cursorColor: AppColor.text2,
                         style: regular15.copyWith(color: AppColor.text2),
                         decoration: InputDecoration(
                           fillColor: AppColor.text,
@@ -158,7 +160,10 @@ class _CommentPageState extends State<CommentPage> {
                               width: 1.0,
                             ),
                           ),
-                          hintStyle: regular15.copyWith(color: AppColor.sub2),
+                          hintStyle: regular15.copyWith(
+                            color: AppColor.sub2,
+                            letterSpacing: 15 * -0.02,
+                          ),
                           hintText: '노래와 관련된 추억을 남겨보세요',
                         ),
                         onSubmitted: (text) {
@@ -168,6 +173,17 @@ class _CommentPageState extends State<CommentPage> {
                           setState(() {});
                         }),
                   ),
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Spacer(),
+                    Text(
+                      '${_textFieldController.text.length}/150 자',
+                      style: regular12,
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
                 ),
                 const Spacer(),
                 Align(
