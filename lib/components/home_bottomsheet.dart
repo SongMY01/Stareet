@@ -141,8 +141,11 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                                         },
                                         child: (likes?.contains(loggedInUid) ??
                                                 false)
-                                            ? const Icon(Icons.favorite,
-                                                color: AppColor.error)
+                                            ? Image.asset(
+                                                "assets/images/heart_yes.png",
+                                                width: 20,
+                                                height: 18,
+                                              )
                                             : Image.asset(
                                                 "assets/images/heart_not.png",
                                                 width: 20,

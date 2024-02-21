@@ -71,6 +71,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     );
   }
 
+  bool heartCheck = false;
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerScaffold(
@@ -85,6 +86,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                 return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
               } else {
                 StarInfo starInfo = snapshot.data!;
+                if (starInfo.like?.contains(loggedInUid) ?? true) {
+                  heartCheck = true;
+                }
                 return Scaffold(
                   backgroundColor: AppColor.background,
                   appBar: AppBar(
@@ -129,12 +133,66 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                 const Spacer(),
                                 Column(
                                   children: [
-                                    const Icon(Icons.favorite,
-                                        color: AppColor.error),
-                                    Text('25',
-                                        textAlign: TextAlign.left,
-                                        style: regular13.copyWith(
-                                            color: AppColor.sub1)),
+                                    StreamBuilder<DocumentSnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('user')
+                                          .doc(widget.ownerId)
+                                          .collection('Star')
+                                          .doc(widget.markerId)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        }
+                                        List<String> likes = List<String>.from(
+                                            (snapshot.data?.data() as Map<
+                                                    String,
+                                                    dynamic>)?['like'] ??
+                                                []);
+
+                                        bool heartCheck =
+                                            likes.contains(loggedInUid);
+
+                                        return Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () async {
+                                                if (heartCheck) {
+                                                  likes.remove(loggedInUid);
+                                                } else {
+                                                  likes.add(loggedInUid);
+                                                }
+
+                                                await snapshot.data?.reference
+                                                    .update({'like': likes});
+                                              },
+                                              child: (likes?.contains(
+                                                          loggedInUid) ??
+                                                      false)
+                                                  ? Image.asset(
+                                                      "assets/images/heart_yes.png",
+                                                      width: 23,
+                                                      height: 20,
+                                                    )
+                                                  : Image.asset(
+                                                      "assets/images/heart_not.png",
+                                                      width: 23,
+                                                      height: 20,
+                                                    ),
+                                            ),
+                                            Text('${likes.length}',
+                                                textAlign: TextAlign.left,
+                                                style: regular13.copyWith(
+                                                    color: AppColor.sub1)),
+                                          ],
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(width: 6),
