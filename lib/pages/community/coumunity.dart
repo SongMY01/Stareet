@@ -1,7 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:music_api/components/card_frame.dart';
+import 'package:music_api/components/custom_drawer.dart';
+import 'package:music_api/pages/community/star_detail.dart';
 import 'package:music_api/utilities/info.dart';
+import 'package:music_api/youtube/music/video_detail_page.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
@@ -60,7 +65,7 @@ class _CommunityPage extends State<CommunityPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MyPage(nickName: userInfo.nickName),
+                      builder: (context) => CustomDrawer(),
                     ),
                   );
                 }
@@ -198,18 +203,28 @@ Widget _buildCommunitySearch() {
   return Expanded(
     child: ListView(
       children: [
-        Text(
-          "지금 핫한 별플리",
-          style: bold20.copyWith(color: AppColor.sub1),
+        Row(
+          children: [
+            SizedBox(width: 12),
+            Text(
+              "지금 핫한 별플리",
+              style: bold20.copyWith(color: AppColor.sub1),
+            ),
+          ],
         ),
-        const SizedBox(height: 29),
+        const SizedBox(height: 25),
         const StarPictureList(),
-        const SizedBox(height: 29),
-        Text(
-          "주변 지역에서 추천하는 음악",
-          style: bold20.copyWith(color: AppColor.sub1),
+        const SizedBox(height: 25),
+        Row(
+          children: [
+            SizedBox(width: 12),
+            Text(
+              "주변 지역에서 추천하는 음악",
+              style: bold20.copyWith(color: AppColor.sub1),
+            ),
+          ],
         ),
-        const SizedBox(height: 29),
+        const SizedBox(height: 25),
         const SongPictureList(),
         const SizedBox(
           height: 29,
@@ -248,7 +263,9 @@ class StarPictureList extends StatelessWidget {
               return StarPicture(
                   imgurl: playlistInfo.image_url,
                   owner: playlistInfo.nickname,
-                  title: playlistInfo.title);
+                  title: playlistInfo.title,
+                  uid: playlistInfo.owner,
+                  song: playlistInfo.stars_id);
             },
           );
         },
@@ -261,12 +278,16 @@ class StarPicture extends StatelessWidget {
   final String? imgurl;
   final String? owner;
   final String? title;
+  final String? uid;
+  final List<dynamic>? song;
 
   const StarPicture(
       {Key? key,
       required this.imgurl,
       required this.owner,
-      required this.title})
+      required this.title,
+      required this.uid,
+      required this.song})
       : super(key: key);
 
   @override
@@ -279,48 +300,102 @@ class StarPicture extends StatelessWidget {
         SizedBox(
           height: 280.803,
           width: 191,
-          child: Stack(
-            children: [
-              Image.asset('assets/fonts/images/starback.png'),
-              Positioned(
-                left: -50,
-                bottom: 0,
-                child: Image.network(
-                  imgurl!,
-                  height: 270,
-                  width: 270,
+          child: StarCard(
+            child: Stack(
+              children: [
+                Positioned(
+                  // right: 5,
+                  bottom: 77,
+                  // top: 5,
+                  left: -4,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StarDetail(
+                            owner: owner ?? 'default_owner',
+                            image_url: imgurl ?? 'default_image_url',
+                            title: title ?? 'default_title',
+                            nickname: owner ?? 'default_nickname',
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 275,
+                      width: 186,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(72),
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                        image: DecorationImage(
+                          image: NetworkImage(imgurl!),
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 20,
-                bottom: 55,
-                child: Image.asset('assets/fonts/images/profile.png'),
-              ),
-              Positioned(
-                left: 43,
-                bottom: 53,
-                child: Text(
-                  owner!,
-                  style: medium11.copyWith(color: AppColor.sub1),
+                Positioned(
+                  left: 7,
+                  bottom: 130,
+                  child: FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('user')
+                        .doc(uid)
+                        .get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // 로딩 인디케이터를 보여줍니다.
+                      } else if (snapshot.hasError) {
+                        return Text(
+                            "Error: ${snapshot.error}"); // 에러가 발생하면 에러 메시지를 보여줍니다.
+                      } else {
+                        Map<String, dynamic> data = snapshot.data!.data()
+                            as Map<String, dynamic>; // 문서의 데이터를 가져옵니다.
+                        return ClipOval(
+                          child: Image.network(
+                            data['profileImage'],
+                            height: 20,
+                            width: 20,
+                            fit: BoxFit.cover,
+                          ),
+                        ); // 'profileImage' 필드의 값을 사용하여 이미지를 로드하고, ClipOval 위젯으로 원형으로 만듭니다.
+                      }
+                    },
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 20,
-                bottom: 27,
-                child: Text(
-                  title!,
-                  style: bold17.copyWith(color: AppColor.sub1),
+                Positioned(
+                  left: 33,
+                  bottom: 132,
+                  child: Text(
+                    owner!,
+                    style: medium12.copyWith(color: Colors.white),
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 20,
-                bottom: 10,
-                child: Text(
-                  "8개의 곡",
-                  style: medium11.copyWith(color: AppColor.sub1),
+                Positioned(
+                  left: 10,
+                  bottom: 105,
+                  child: Text(
+                    title!,
+                    style: bold17.copyWith(color: AppColor.sub1),
+                  ),
                 ),
-              ),
-            ],
+                Positioned(
+                  left: 50,
+                  bottom: 88,
+                  child: Text(
+                    "${song?.length ?? 0}개의 곡",
+                    style: medium11.copyWith(color: AppColor.sub1),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(
@@ -367,7 +442,7 @@ class _SongPictureListState extends State<SongPictureList> {
 
           // 랜덤하게 두 개의 문서를 선택
           final docs = List<DocumentSnapshot>.from(allDocs)..shuffle();
-          final selectedDocs = docs.take(2).toList();
+          final selectedDocs = docs.take(3).toList();
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -392,13 +467,14 @@ class _SongPictureListState extends State<SongPictureList> {
                         doc as QueryDocumentSnapshot<Map<String, dynamic>>);
                   }).toList();
 
-                  return Column(
+                  return Row(
                     children: songs.map((song) {
                       return SongPicture(
-                          videoId: song.videoId,
-                          singer: song.singer,
-                          title: song.title,
-                          uid: song.uid);
+                        videoId: song.videoId,
+                        singer: song.singer,
+                        title: song.title,
+                        uid: song.uid,
+                      );
                     }).toList(),
                   );
                 },
@@ -417,47 +493,81 @@ class SongPicture extends StatelessWidget {
   final String? title;
   final String? uid;
 
-  const SongPicture(
-      {Key? key,
-      required this.videoId,
-      required this.singer,
-      required this.title,
-      required this.uid})
-      : super(key: key);
+  const SongPicture({
+    Key? key,
+    required this.videoId,
+    required this.singer,
+    required this.title,
+    required this.uid,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         const SizedBox(
-          width: 12,
+          width: 15,
         ),
-        Stack(
-          children: [
-            Image.network(
-              'https://i1.ytimg.com/vi/$videoId/maxresdefault.jpg',
-              height: 100,
-              width: 100,
+        SizedBox(
+          height: 206,
+          width: 144,
+          child: StarCard(
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 150, // bottom 값을 조절해 위치를 원하는 대로 조정하세요.
+                  left: -6,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => VideoDetailPage(
+                      //         markerId: StarInfo.,
+                      //         ownerId: uid ?? 'uid error',
+                      //         videoId: videoId as String,
+                      //         nickName: sin,
+                      //         profileImg: profileImg),
+                      //   ),
+                      // );
+                    },
+                    child: Container(
+                      height: 202,
+                      width: 140,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(72),
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                              'https://i1.ytimg.com/vi/$videoId/maxresdefault.jpg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 5,
+                  bottom: 170,
+                  child: Text(
+                    title!,
+                    style: medium12.copyWith(color: AppColor.text),
+                  ),
+                ),
+                Positioned(
+                  left: 5,
+                  bottom: 153,
+                  child: Text(singer!,
+                      style: bold10.copyWith(color: AppColor.text)),
+                ),
+              ],
             ),
-            Positioned(
-              left: 20,
-              bottom: 27,
-              child: Text(
-                title!,
-                style: medium16.copyWith(color: AppColor.text),
-              ),
-            ),
-            Positioned(
-              left: 20,
-              bottom: 10,
-              child:
-                  Text(singer!, style: bold12.copyWith(color: AppColor.sub1)),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(
-          width: 12,
-        )
       ],
     );
   }

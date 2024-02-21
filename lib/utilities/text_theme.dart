@@ -100,6 +100,12 @@ const TextStyle medium18 = TextStyle(
 //————Medium 끝
 //————Bold 시작
 
+const TextStyle bold10 = TextStyle(
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+    color: AppColor.text);
+
 const TextStyle bold12 = TextStyle(
     fontFamily: 'Pretendard-Bold',
     fontSize: 12,

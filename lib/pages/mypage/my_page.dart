@@ -8,7 +8,6 @@ import 'mypage_setting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class MyPage extends StatefulWidget {
   const MyPage({Key? key, String? nickName}) : super(key: key);
 
@@ -44,7 +43,6 @@ Future<List<Map<String, dynamic>>> getPlaylistOthersInfo() async {
 
 var mateListReal = [];
 var mateListFriend = [];
-var mateListAll=[];
 var playlistMy = [];
 var playlistOthers = [];
 
@@ -131,9 +129,6 @@ class _MyPageState extends State<MyPage> {
                 mateListFriend =
                     userInfo['mate_friend'] as List<dynamic>? ?? [];
                 mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
-
-                mateAll=(userInfo['mate_friend'] as List<dynamic>? ?? [])+(userInfo['mate_real'] as List<dynamic>? ?? []);
-
                 playlistMy = userInfo['playlist_my'] as List<dynamic>? ?? [];
                 playlistOthers =
                     userInfo['playlist_others'] as List<dynamic>? ?? [];
@@ -169,12 +164,12 @@ class _MyPageState extends State<MyPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>  MyStarMate(),
+                                    builder: (context) => const MyStarMate(),
                                   ),
                                 );
                               },
                               child: Text(
-                                '${mateListFriend.length + mateListReal.length - 2}  스타 메이트',
+                                '${mateListFriend.length + mateListReal.length - 1}  스타 메이트',
                                 style: medium13.copyWith(color: AppColor.text),
                               ),
                             ),
@@ -245,6 +240,7 @@ class MySongList extends StatelessWidget {
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
+              childAspectRatio: 1 / 1.5,
             ),
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
@@ -298,9 +294,11 @@ class SaveSongList extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           var playlistInfoList = snapshot.data!;
+          //  debugPrint(playlistInfoList[1]['imageUrl']);
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
+              childAspectRatio: 1 / 1.5,
             ),
             itemCount: playlistInfoList.length,
             itemBuilder: (BuildContext context, int index) {
