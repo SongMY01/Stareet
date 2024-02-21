@@ -53,9 +53,7 @@ class MateManage extends StatelessWidget {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-            
               mateIng = userInfo['mate_ing'] as List<dynamic>? ?? [];
-              print(mateIng);
               return const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -82,14 +80,7 @@ Stream<Map<String, dynamic>> getUserInfoStream() {
       .map((docSnapshot) => docSnapshot.data() as Map<String, dynamic>);
 }
 
-OutlineInputBorder myinputborder() {
-  return const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(5)),
-      borderSide: BorderSide(
-        color: Color.fromRGBO(254, 254, 254, 1),
-        width: 1,
-      ));
-}
+
 
 Stream<List<Map<String, dynamic>>> getMateListIngStream() {
   return FirebaseFirestore.instance
@@ -185,18 +176,88 @@ class _MateNameIngState extends State<MateNameIng> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'data,',
-                    style: semibold14,
-                  )),
-              TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'data,',
-                    style: semibold14,
-                  ))
+             GestureDetector(
+  onTap: () {
+    String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+     FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(currentUserId)
+                          .update({
+                        'mate_ing': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(currentUserId)
+                            .update({
+                          'mate_friend': FieldValue.arrayUnion([widget.uid])
+                        });
+                      });
+                        FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(widget.uid)
+                          .update({
+                        'mate_ing': FieldValue.arrayRemove([currentUserId])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(widget.uid)
+                            .update({
+                          'mate_friend': FieldValue.arrayUnion([currentUserId])
+                        });
+                      });
+  },
+  child: Container(
+    width: 52,
+    height: 33,
+    decoration: BoxDecoration(
+      color: AppColor.primary, // background color
+      borderRadius: BorderRadius.circular(16.0), // border radius
+    ),
+    child: Center(
+      child: Text(
+        '수락',
+        style: semibold14,
+      ),
+    ),
+  ),
+),
+SizedBox(
+  width: 10,
+),
+              GestureDetector(
+  onTap: () {
+    String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+     FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(currentUserId)
+                          .update({
+                        'mate_ing': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(widget.uid)
+                            .update({
+                          'mate_ing': FieldValue.arrayUnion([currentUserId])
+                        });
+                      });
+  },
+  child: Container(
+    width: 52,
+    height: 33,
+    decoration: BoxDecoration(
+      color: AppColor.text2, // background color
+      borderRadius: BorderRadius.circular(16.0), // border radius
+    ),
+    child: Center(
+      child: Text(
+        '거절',
+        style: semibold14,
+      ),
+    ),
+  ),
+),
             ],
           ),
         ),

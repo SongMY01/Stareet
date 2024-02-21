@@ -180,6 +180,17 @@ Widget _buildEveryList() {
   );
 }
 
+
+Stream<List<Map<String, dynamic>>> getMateListRealStream() {
+  return FirebaseFirestore.instance
+      .collection('user')
+      .where('user-id', whereIn: mateReal)
+      .snapshots()
+      .map((querySnapshot) {
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  });
+}
+
 String uid = FirebaseAuth.instance.currentUser!.uid;
 
 class MateNameListReal extends StatefulWidget {
@@ -192,18 +203,15 @@ class MateNameListReal extends StatefulWidget {
 class _MateNameListRealState extends State<MateNameListReal> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('user')
-            .where('user-id', whereIn: mateReal)
-            .get(),
+    return StreamBuilder<List<Map<String, dynamic>>>(
+        stream: getMateListRealStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            var mateRealInfoList = snapshot.data!.docs;
+            var mateRealInfoList = snapshot.data!;
 
             return SizedBox(
               height: 60.0 * (mateRealInfoList.length),
@@ -468,18 +476,15 @@ class _MateNameListFriendState extends State<MateNameListFriend> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 60.0 * (mateFriend.length),
-      child: FutureBuilder<QuerySnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('user')
-              .where('user-id', whereIn: mateFriend)
-              .get(),
+      child: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: getMateListFriendStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              var mateRealInfoList = snapshot.data!.docs;
+              var mateRealInfoList = snapshot.data!;
 
               return ListView.builder(
                 scrollDirection: Axis.vertical,

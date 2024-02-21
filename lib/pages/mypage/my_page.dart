@@ -293,7 +293,7 @@ class SaveSongList extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           var playlistInfoList = snapshot.data!;
-          debugPrint(playlistInfoList[1]['imageUrl']);
+         
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
