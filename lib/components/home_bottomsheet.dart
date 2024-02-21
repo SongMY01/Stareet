@@ -45,6 +45,7 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
     return StarInfo.fromMap(doc.data()!);
   }
 
+  bool heartCheck = false;
   @override
   Widget build(BuildContext context) {
     setNickname();
@@ -65,6 +66,9 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
               return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
             } else {
               StarInfo starInfo = snapshot.data!;
+              if (starInfo.like?.contains(loggedInUid) ?? true) {
+                heartCheck = true;
+              }
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,11 +110,60 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                           const Spacer(),
                           Column(
                             children: [
-                              const Icon(Icons.favorite, color: AppColor.error),
-                              Text('${starInfo.like?.length}',
-                                  textAlign: TextAlign.left,
-                                  style:
-                                      regular13.copyWith(color: AppColor.sub1)),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('user')
+                                    .doc(widget.ownerId)
+                                    .collection('Star')
+                                    .doc(widget.markerId)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text("Something went wrong");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  List<String> likes = List<String>.from(
+                                      (snapshot.data?.data() as Map<String,
+                                              dynamic>)?['like'] ??
+                                          []);
+
+                                  bool heartCheck = likes.contains(loggedInUid);
+
+                                  return Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (heartCheck) {
+                                            likes.remove(loggedInUid);
+                                          } else {
+                                            likes.add(loggedInUid);
+                                          }
+
+                                          await snapshot.data?.reference
+                                              .update({'like': likes});
+                                        },
+                                        child: (likes?.contains(loggedInUid) ??
+                                                false)
+                                            ? const Icon(Icons.favorite,
+                                                color: AppColor.error)
+                                            : Image.asset(
+                                                "assets/images/heart_not.png",
+                                                width: 20,
+                                                height: 18,
+                                              ),
+                                      ),
+                                      Text('${likes.length}',
+                                          textAlign: TextAlign.left,
+                                          style: regular13.copyWith(
+                                              color: AppColor.sub1)),
+                                    ],
+                                  );
+                                },
+                              ),
                             ],
                           ),
                           const SizedBox(width: 6),
@@ -182,9 +235,9 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => VideoDetailPage(
-                                  videoId: starInfo.videoId as String,
-                                  musicTitle: starInfo.title as String,
-                                  musicChannel: starInfo.singer as String)));
+                                  markerId: widget.markerId,
+                                  ownerId: widget.ownerId,
+                                  videoId: starInfo.videoId as String)));
                     },
                     child: Container(
                       width: 340,
