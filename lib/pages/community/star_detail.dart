@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../utilities/color_scheme.dart';
+import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
 //-----페이지 3
 
@@ -10,13 +11,15 @@ class StarDetail extends StatelessWidget {
   final String image_url;
   final String title;
   final String nickname;
+  final String uid;
 
   const StarDetail(
       {Key? key,
       required this.owner,
       required this.image_url,
       required this.title,
-      required this.nickname})
+      required this.nickname,
+      required this.uid})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -136,28 +139,38 @@ class StarDetail extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.play_arrow),
-                              Text('모두 대생'),
+                              Text('모두 재생'),
                             ],
                           )),
                     ),
                   ],
                 ),
                 const SizedBox(height: 28),
-                const UserPlayList(),
+                UserPlayList(uid: uid),
               ],
             )));
   }
 }
 
 class UserPlayList extends StatelessWidget {
-  const UserPlayList({Key? key}) : super(key: key);
-
+  final String uid;
+  const UserPlayList({required this.uid, Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Future<PlaylistInfo> fetchPlaylistInfo(String playlistId) async {
+      final doc = await FirebaseFirestore.instance
+          .collection('playlist')
+          .doc(playlistId)
+          .get();
+
+      // 가져온 문서를 StarInfo 객체로 변환하여 반환함
+      return PlaylistInfo.fromMap(doc.data()!);
+    }
+
     return Expanded(
-      child: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance.collection('playlist').get(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      child: FutureBuilder(
+        future: fetchPlaylistInfo(uid),
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Text("Loading...");
           }
@@ -165,14 +178,15 @@ class UserPlayList extends StatelessWidget {
             return const Text('Something went wrong');
           }
 
-          final playlists = snapshot.data!.docs;
+          PlaylistInfo playlistInfo = snapshot.data!;
 
           return ListView.builder(
             scrollDirection: Axis.vertical,
-            itemCount: playlists.length,
+            itemCount: playlistInfo.stars_id!.length,
             itemBuilder: (BuildContext context, int index) {
               return UserPlay(
-                playlistId: playlists[index].id,
+                ownersId: playlistInfo.owners_id![index],
+                starsId: playlistInfo.stars_id![index],
               );
             },
           );
@@ -183,19 +197,28 @@ class UserPlayList extends StatelessWidget {
 }
 
 class UserPlay extends StatelessWidget {
-  final String playlistId;
+  final String ownersId;
+  final String starsId;
 
-  const UserPlay({required this.playlistId, Key? key}) : super(key: key);
+  const UserPlay({required this.ownersId, required this.starsId, Key? key})
+      : super(key: key);
+  Future<StarInfo> fetchStarInfo() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(ownersId)
+        .collection('Star')
+        .doc(starsId)
+        .get();
+
+    // 가져온 문서를 StarInfo 객체로 변환하여 반환함
+    return StarInfo.fromMap(doc.data()!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('playlist')
-          .doc(playlistId)
-          .get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+    return FutureBuilder(
+      future: fetchStarInfo(),
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text("Loading...");
         }
@@ -203,12 +226,7 @@ class UserPlay extends StatelessWidget {
           return const Text('Something went wrong');
         }
 
-        final playlistData = snapshot.data!.data() ?? {};
-
-        // final starsId = playlistData['stars_id'];
-        // final ownersId = playlistData['owners_id'];
-
-        // `starsId`와 `ownersId`를 사용하여 위젯을 빌드하세요.
+        StarInfo starInfo = snapshot.data!;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,19 +240,40 @@ class UserPlay extends StatelessWidget {
                   Icons.location_on,
                   color: Color.fromRGBO(19, 228, 206, 1),
                 ),
-                Text('포항시 북구 흥해읍 한동로 558',
+                Text(starInfo.address as String,
                     style: regular13.copyWith(color: AppColor.sub1)),
               ],
             ),
             const SizedBox(height: 5),
             ListTile(
-              leading: Image.asset('assets/fonts/images/songprofile.jpeg'),
+              leading: SizedBox(
+                height: 60,
+                width: 60,
+                child: Image.network(
+                  'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
+                  fit: BoxFit.fitHeight,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    return Image.network(
+                      'https://i1.ytimg.com/vi/${starInfo.videoId}/sddefault.jpg',
+                      fit: BoxFit.fitHeight,
+                      errorBuilder: (BuildContext context, Object exception,
+                          StackTrace? stackTrace) {
+                        return Container(
+                          color: Colors.yellow,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("잘 지내자, 우리",
+                  Text(starInfo.title as String,
                       style: bold16.copyWith(color: AppColor.sub1)),
-                  Text('최유리', style: regular12.copyWith(color: AppColor.sub2))
+                  Text(starInfo.singer as String,
+                      style: regular12.copyWith(color: AppColor.sub2))
                 ],
               ),
               trailing:

@@ -223,6 +223,19 @@ class PlaylistInfo {
       owners_id: snapshotData[owners_idFieldName],
     );
   }
+  static PlaylistInfo fromMap(Map<String, dynamic> map) {
+    return PlaylistInfo(
+      uid: map['uid'],
+      registerTime: map['registerTime'],
+      image_url: map['image_url'],
+      owner: map['owner'],
+      nickname: map['nickname'],
+      title: map['title'],
+      subscribe: List<String>.from(map['subscribe']),
+      stars_id: List<String>.from(map['stars_id']),
+      owners_id: List<String>.from(map['owners_id']),
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
