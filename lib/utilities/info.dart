@@ -141,6 +141,7 @@ const String musciTitleFieldName = "title";
 const String singerFieldName = "singer";
 const String videoIdFieldName = "videoId";
 const String commentFieldName = "comment";
+const String nicknameFieldName = "nickname";
 const String ownerFieldName = "owner";
 const String addressFieldName = "address";
 const String likeFieldName = "like";
@@ -150,8 +151,10 @@ class PlaylistInfo {
   final Timestamp? registerTime;
   final String? image_url;
   final String? owner;
+  final String? nickname;
   final String? title;
   final List? stars_id;
+  final List? owners_id;
   final List? subscribe;
 
   PlaylistInfo(
@@ -160,7 +163,9 @@ class PlaylistInfo {
       required this.image_url,
       required this.owner,
       required this.title,
+      required this.nickname,
       required this.stars_id,
+      required this.owners_id,
       required this.subscribe});
 
   factory PlaylistInfo.fromFirebase(
@@ -171,9 +176,11 @@ class PlaylistInfo {
       registerTime: snapshotData[registerTimeFieldName],
       image_url: snapshotData[image_URLFieldName],
       owner: snapshotData[ownerFieldName],
+      nickname: snapshotData[nicknameFieldName],
       title: snapshotData[titleFieldName],
       subscribe: snapshotData[subscribeFieldName],
       stars_id: snapshotData[stars_idFieldName],
+      owners_id: snapshotData[owners_idFieldName],
     );
   }
 
@@ -183,9 +190,11 @@ class PlaylistInfo {
       registerTimeFieldName: registerTime,
       image_URLFieldName: image_url,
       ownerFieldName: owner,
+      nicknameFieldName: nickname,
       titleFieldName: title,
       subscribeFieldName: subscribe,
       stars_idFieldName: stars_id,
+      owners_idFieldName: owners_id
     };
   }
 }
@@ -194,3 +203,4 @@ const image_URLFieldName = 'image_url';
 const titleFieldName = 'title';
 const subscribeFieldName = 'subscribe';
 const stars_idFieldName = 'stars_id';
+const owners_idFieldName = 'owners_id';
