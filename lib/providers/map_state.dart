@@ -16,13 +16,14 @@ class MapProvider extends ChangeNotifier {
   // 선 그리기 전 선택되는 마커
   final List<NLatLng> _selectedMarkerCoords = [];
   final List<NMarker> _selectedList = [];
+  final List<String> _selectedIdList = [];
   final Set<NMarker> _markers = {};
   final Set<NPolylineOverlay> _lineOverlays = {};
   late NaverMapController _mapController;
 
-
   List<NLatLng> get selectedMarkerCoords => _selectedMarkerCoords;
   List<NMarker> get selectedList => _selectedList;
+  List<String> get selectedIdList => _selectedIdList;
   Set<NMarker> get markers => _markers;
   Set<NPolylineOverlay> get lineOverlays => _lineOverlays;
   NaverMapController get mapController => _mapController;
@@ -67,18 +68,24 @@ class MapProvider extends ChangeNotifier {
 
   // 마커 만들기 함수
   Future<NMarker> createMarker(
-      BuildContext context, String id, NLatLng location) async {
+      BuildContext context, String ownerId, String id, NLatLng location) async {
     String imagePath = 'assets/images/my_marker.png';
     String loggedInUid = FirebaseAuth.instance.currentUser!.uid;
-    final docs = await FirebaseFirestore.instance
+
+    final userDoc = await FirebaseFirestore.instance
         .collection('user')
         .doc(loggedInUid)
-        .collection('Star')
-        .doc(id)
         .get();
-    final String owner = docs['owner'];
-    if (loggedInUid != owner) {
-      imagePath = 'assets/images/other_marker.png';
+
+    List<String> mateFriendIds =
+        (userDoc.get('mate_friend') as List<dynamic>).cast<String>();
+
+    if (loggedInUid != ownerId) {
+      if (mateFriendIds.contains(ownerId)) {
+        imagePath = 'assets/images/mate_marker.png';
+      } else {
+        imagePath = 'assets/images/other_marker.png';
+      }
     }
     final marker = NMarker(
       id: id,
@@ -92,6 +99,7 @@ class MapProvider extends ChangeNotifier {
       if (context.read<SwitchProvider>().switchMode) {
         _selectedMarkerCoords.add(marker.position);
         _selectedList.add(marker);
+        selectedIdList.add(ownerId);
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
@@ -105,8 +113,9 @@ class MapProvider extends ChangeNotifier {
   }
 
   // 마커 그리기 함수
-  void drawMarker(BuildContext context, String id, NLatLng location) async {
-    NMarker marker = await createMarker(context, id, location);
+  void drawMarker(
+      BuildContext context, String userId, String id, NLatLng location) async {
+    NMarker marker = await createMarker(context, userId, id, location);
     _mapController.addOverlay(marker);
     _markers.add(marker);
     notifyListeners();
@@ -140,8 +149,8 @@ class MapProvider extends ChangeNotifier {
     await docRef.set(starInfo.toMap());
 
     // 마커 그리기
-    drawMarker(
-        context, docRef.id, NLatLng(location.latitude, location.longitude));
+    drawMarker(context, FirebaseAuth.instance.currentUser!.uid, docRef.id,
+        NLatLng(location.latitude, location.longitude));
 
     notifyListeners();
   }

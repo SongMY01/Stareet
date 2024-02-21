@@ -17,7 +17,6 @@ import '../../components/custom_switch.dart';
 import '../../components/home_components.dart';
 import '../../providers/map_state.dart';
 import '../../providers/switch_state.dart';
-import '../../providers/user_state.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
@@ -75,8 +74,31 @@ class _HomePageState extends State<HomePage> {
     return doc['mate_friend'];
   }
 
-  // firebase에서 Star 정보 가져오기
   Future<List<StarInfo>> fetchAllStars() async {
+    List<StarInfo> allStarInfos = [];
+
+    // 모든 사용자의 문서 ID를 가져옵니다.
+    final userSnapshot =
+        await FirebaseFirestore.instance.collection('user').get();
+    List<String> userIds = userSnapshot.docs.map((doc) => doc.id).toList();
+
+    // 각 사용자의 Star 정보를 가져옵니다.
+    for (String userId in userIds) {
+      final starSnapshot = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(userId)
+          .collection('Star')
+          .get();
+      allStarInfos.addAll(starSnapshot.docs
+          .map((doc) => StarInfo.fromMap(doc.data()))
+          .toList());
+    }
+
+    return allStarInfos; // 모든 사용자의 Star 정보를 담은 리스트를 반환합니다.
+  }
+
+  // firebase에서 나의 Star 정보 가져오기
+  Future<List<StarInfo>> fetchMyStars() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -86,11 +108,37 @@ class _HomePageState extends State<HomePage> {
     return snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
   }
 
+  // firebase에서 Mate Star 정보 가져오기
+  Future<List<StarInfo>> fetchMateStars() async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    List<String> mateFriendIds = (userDoc.get('mate_friend') as List<dynamic>)
+        .cast<String>(); // 'mate_friend' 필드에서 데이터를 가져옵니다.
+
+    List<StarInfo> mateStarInfos = [];
+
+    for (String friendId in mateFriendIds) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(friendId)
+          .collection('Star')
+          .get();
+
+      List<StarInfo> friendStarInfos =
+          snapshot.docs.map((doc) => StarInfo.fromMap(doc.data())).toList();
+      mateStarInfos.addAll(friendStarInfos); // 각 친구의 Star 정보를 리스트에 추가합니다.
+    }
+
+    return mateStarInfos; // 모든 친구의 Star 정보를 담은 리스트를 반환합니다.
+  }
+
   // 지도에 Star 그리기
   void pickMarker(BuildContext context, List<StarInfo> stars) {
     for (StarInfo star in stars) {
-      context.read<MapProvider>().drawMarker(
-          context, star.uid!, NLatLng(star.location![0], star.location![1]));
+      context.read<MapProvider>().drawMarker(context, star.owner!, star.uid!,
+          NLatLng(star.location![0], star.location![1]));
     }
   }
 
@@ -175,8 +223,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final switchProvider = Provider.of<SwitchProvider>(context);
     final mapProvider = Provider.of<MapProvider>(context);
-    // final userProvider = Provider.of<UserProvider>(context); 광진
-    // addMate(userProvider.getMate()); 광진
+
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -357,7 +404,21 @@ class _HomePageState extends State<HomePage> {
                                       .clearOverlays(type: NOverlayType.marker);
                                   _updateUserMarker(
                                       await mapProvider.getPosition());
-                                  if (index == 0) {}
+
+                                  mapProvider.mapController
+                                      .addOverlay(_userLocationMarker!);
+                                  if (index == 0) {
+                                    List<StarInfo> stars =
+                                        await fetchAllStars();
+                                    pickMarker(context, stars);
+                                  } else if (index == 1) {
+                                    List<StarInfo> stars = await fetchMyStars();
+                                    pickMarker(context, stars);
+                                  } else if (index == 2) {
+                                    List<StarInfo> stars =
+                                        await fetchMateStars();
+                                    pickMarker(context, stars);
+                                  }
                                 }),
                             const SizedBox(width: 7.2)
                           ]);
