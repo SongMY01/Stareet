@@ -39,7 +39,14 @@ class _HomePageState extends State<HomePage> {
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
-  List<String> chipList = ['전체', '나', '메이트 전체']; // 칩 항목들 리스트
+  List<String> chipList = [
+    '전체',
+    '나',
+    '메이트 전체',
+    '메이트1',
+    '메이트2',
+    '메이트3'
+  ]; // 칩 항목들 리스트
 
   late NCameraPosition initPosition = const NCameraPosition(
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
@@ -384,45 +391,54 @@ class _HomePageState extends State<HomePage> {
                   Visibility(
                     visible: !switchProvider.switchMode,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 25),
+                      padding: const EdgeInsets.only(left: 30),
                       child: SingleChildScrollView(
                         controller: _scrollController,
                         // physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
-                        child: Row(
-                            children:
-                                List.generate(chipList.length, (int index) {
-                          return Row(children: [
-                            CustomChip(
-                                name: chipList[index],
-                                isSelected: index == selectedIndex,
-                                function: () async {
-                                  setState(() {
-                                    selectedIndex = index;
-                                  });
-                                  mapProvider.mapController
-                                      .clearOverlays(type: NOverlayType.marker);
-                                  _updateUserMarker(
-                                      await mapProvider.getPosition());
+                        child: SizedBox(
+                          width: 570,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children:
+                                  List.generate(chipList.length, (int index) {
+                                return Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CustomChip(
+                                          name: chipList[index],
+                                          isSelected: index == selectedIndex,
+                                          function: () async {
+                                            setState(() {
+                                              selectedIndex = index;
+                                            });
+                                            mapProvider.mapController
+                                                .clearOverlays(
+                                                    type: NOverlayType.marker);
+                                            _updateUserMarker(await mapProvider
+                                                .getPosition());
 
-                                  mapProvider.mapController
-                                      .addOverlay(_userLocationMarker!);
-                                  if (index == 0) {
-                                    List<StarInfo> stars =
-                                        await fetchAllStars();
-                                    pickMarker(context, stars);
-                                  } else if (index == 1) {
-                                    List<StarInfo> stars = await fetchMyStars();
-                                    pickMarker(context, stars);
-                                  } else if (index == 2) {
-                                    List<StarInfo> stars =
-                                        await fetchMateStars();
-                                    pickMarker(context, stars);
-                                  }
-                                }),
-                            const SizedBox(width: 7.2)
-                          ]);
-                        }).toList()),
+                                            mapProvider.mapController
+                                                .addOverlay(
+                                                    _userLocationMarker!);
+                                            if (index == 0) {
+                                              List<StarInfo> stars =
+                                                  await fetchAllStars();
+                                              pickMarker(context, stars);
+                                            } else if (index == 1) {
+                                              List<StarInfo> stars =
+                                                  await fetchMyStars();
+                                              pickMarker(context, stars);
+                                            } else if (index == 2) {
+                                              List<StarInfo> stars =
+                                                  await fetchMateStars();
+                                              pickMarker(context, stars);
+                                            }
+                                          }),
+                                      const SizedBox(width: 7.2)
+                                    ]);
+                              }).toList()),
+                        ),
                       ),
                     ),
                   ),
@@ -434,8 +450,8 @@ class _HomePageState extends State<HomePage> {
         Visibility(
           visible: !switchProvider.switchMode,
           child: Positioned(
-            bottom: 60,
-            right: 40,
+            top: 182,
+            right: 25,
             child: LocationButton(goToLocation: _updatePosition),
           ),
         ),
