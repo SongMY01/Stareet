@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../components/card_frame.dart';
 import '../../utilities/color_scheme.dart';
 import '../../utilities/info.dart';
 import '../../utilities/text_theme.dart';
@@ -66,21 +67,32 @@ class StarDetail extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 30, top: 20),
                             child: SizedBox(
                               height: 264,
-                              child: Stack(
-                                children: [
-                                  Image.asset(
-                                      'assets/fonts/images/starback.png'),
-                                  Positioned(
-                                    left: 30,
-                                    bottom: 20,
-                                    child: Image.network(
-                                      playlistInfo.image_url as String,
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.fill,
+                              child: StarCard(
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: -1,
+                                      left: -1,
+                                      child: Container(
+                                        height: 258,
+                                        width: 173,
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(72),
+                                            bottomLeft: Radius.circular(16),
+                                            bottomRight: Radius.circular(16),
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                                image_url), // image_url을 사용하도록 수정했습니다.
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),

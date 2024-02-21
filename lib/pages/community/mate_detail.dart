@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:music_api/utilities/info.dart';
 
 import '../../utilities/color_scheme.dart';
@@ -246,6 +247,7 @@ class MySongList extends StatelessWidget {
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
+                    childAspectRatio: 1 / 1.5,
                   ),
                   itemCount: snapshot.data!.playlist_my!.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -278,18 +280,11 @@ class MySong extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: const DecorationImage(
-          image: AssetImage('assets/fonts/images/starback.jpeg'),
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: Stack(children: [
-        Positioned(
-            left: 25,
-            bottom: 8,
-            child: SizedBox(height: 100, child: Image.network(imageUrl)))
-      ]),
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl), // 수정된 부분
+            fit: BoxFit.fill,
+          )),
     );
   }
 }
@@ -312,6 +307,7 @@ class SaveSongList extends StatelessWidget {
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
+                    childAspectRatio: 1 / 1.5,
                   ),
                   itemCount: snapshot.data!.playlist_others!.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -345,18 +341,11 @@ class SaveSong extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 0.3),
-        image: const DecorationImage(
-          image: AssetImage('assets/fonts/images/starback.jpeg'),
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: Stack(children: [
-        Positioned(
-            left: 25,
-            bottom: 8,
-            child: SizedBox(height: 100, child: Image.network(imageUrl)))
-      ]),
+          border: Border.all(color: Colors.white, width: 0.3),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl), // 수정된 부분
+            fit: BoxFit.fill,
+          )),
     );
   }
 }

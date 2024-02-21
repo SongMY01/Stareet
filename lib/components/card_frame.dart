@@ -35,7 +35,7 @@ class StarCard extends StatelessWidget {
               topRight: Radius.circular(72),
               bottomLeft: Radius.circular(16),
               bottomRight: Radius.circular(16)),
-          child: SizedBox(width: width - 10, height: height - 10, child: child),
+          child: SizedBox(width: width - 1, height: height - 1, child: child),
         ),
       ),
     ]);
