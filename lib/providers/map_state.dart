@@ -105,7 +105,7 @@ class MapProvider extends ChangeNotifier {
         }
       } else {
         // 기본 홈 화면일 때
-        showBottomSheet(context, overlay.info.id);
+        showBottomSheet(context, overlay.info.id, ownerId);
       }
     });
     marker.setGlobalZIndex(200000);
@@ -204,13 +204,13 @@ class MapProvider extends ChangeNotifier {
 
   void addToFirebase() {}
 
-  void showBottomSheet(BuildContext context, String markerId) {
+  void showBottomSheet(BuildContext context, String markerId, String ownerId) {
     if (context.mounted) {
       showModalBottomSheet(
         backgroundColor: const Color.fromRGBO(45, 45, 45, 1),
         context: context,
         builder: (BuildContext context) {
-          return HomeBottomsheet(markerId: markerId);
+          return HomeBottomsheet(markerId: markerId, ownerId: ownerId);
         },
       );
     } else {

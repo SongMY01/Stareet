@@ -5,10 +5,13 @@ import 'package:music_api/utilities/info.dart';
 
 import '../utilities/color_scheme.dart';
 import '../utilities/text_theme.dart';
+import '../youtube/music/video_detail_page.dart';
 
 class HomeBottomsheet extends StatefulWidget {
   final String markerId;
-  const HomeBottomsheet({super.key, required this.markerId});
+  final String ownerId;
+  const HomeBottomsheet(
+      {super.key, required this.markerId, required this.ownerId});
 
   @override
   State<HomeBottomsheet> createState() => _HomeBottomsheetState();
@@ -21,18 +24,22 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
   Future<String> fetchNickname(String userId) async {
     final user = await FirebaseFirestore.instance
         .collection('user')
-        .doc(loggedInUid)
+        .doc(widget.ownerId)
         .get();
     return user['nickName'];
   }
 
   Future<void> setNickname() async {
-    nickName = await fetchNickname(loggedInUid);
+    nickName = await fetchNickname(widget.ownerId);
   }
 
   Future<StarInfo> fetchStarInfo(String markerId) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('user').doc(loggedInUid).collection('Star').doc(markerId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(widget.ownerId)
+        .collection('Star')
+        .doc(markerId)
+        .get();
 
     // 가져온 문서를 StarInfo 객체로 변환하여 반환함
     return StarInfo.fromMap(doc.data()!);
@@ -171,12 +178,13 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                   const SizedBox(height: 19),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => VideoSearchPage(
-                      //               video: '_fd_hwSm9zI',
-                      //             )));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoDetailPage(
+                                  videoId: starInfo.videoId as String,
+                                  musicTitle: starInfo.title as String,
+                                  musicChannel: starInfo.singer as String)));
                     },
                     child: Container(
                       width: 340,
