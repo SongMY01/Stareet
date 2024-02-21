@@ -92,11 +92,29 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                 return Scaffold(
                   backgroundColor: AppColor.background,
                   appBar: AppBar(
+                    automaticallyImplyLeading: false, // 추가
                     backgroundColor: Colors.transparent,
-                    title: Text('${starInfo.address}', style: bold16),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        BackButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        const SizedBox(width: 80),
+                        Text('${starInfo.address}', style: bold16),
+                      ],
+                    ),
                     actions: <Widget>[
-                      IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.more_vert)),
+                          const SizedBox(width: 7)
+                        ],
+                      ),
                     ],
                   ),
                   body: Column(
@@ -142,12 +160,13 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                           .snapshots(),
                                       builder: (context, snapshot) {
                                         if (snapshot.hasError) {
-                                          return Text("Something went wrong");
+                                          return const Text(
+                                              "Something went wrong");
                                         }
 
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
-                                          return CircularProgressIndicator();
+                                          return const CircularProgressIndicator();
                                         }
                                         List<String> likes = List<String>.from(
                                             (snapshot.data?.data() as Map<
@@ -185,6 +204,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                                       height: 20,
                                                     ),
                                             ),
+                                            const SizedBox(height: 4),
                                             Text('${likes.length}',
                                                 textAlign: TextAlign.left,
                                                 style: regular13.copyWith(
@@ -268,11 +288,18 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                           width: 340,
                                           height: 340,
                                         ))),
-                                const Padding(
+                                Container(
+                                  width: 340,
+                                  height: 340,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0x66000000),
+                                  ),
+                                ),
+                                Padding(
                                   padding: EdgeInsets.only(
                                       left: 23, right: 23, top: 28),
                                   child: Text(
-                                    '우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 우끼끼,,,여기는 이 음악을 올린 사람이 쓴 코멘트가 있어요 여기에는 사람이 쓴 코멘트',
+                                    '${starInfo.comment}',
                                     textAlign: TextAlign.justify,
                                     style: kimregular15,
                                   ),

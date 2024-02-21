@@ -128,7 +128,12 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
     markerList = mapProvider.selectedList.toSet().toList();
-    ownerList = mapProvider.selectedIdList.toSet().toList();
+    ownerList = mapProvider.selectedIdList.toList();
+
+    print(markerList.length);
+    print(ownerList);
+    // print(markerList);
+    // print(ownerList);
 // markerList[0].info.id
     // 배경 그라데이션
     return Container(
@@ -141,11 +146,22 @@ class _PreviewPageState extends State<PreviewPage> {
           backgroundColor: Colors.transparent,
           foregroundColor: AppColor.text,
           elevation: 0,
+          leading: BackButton(
+            onPressed: () {
+              mapProvider.selectedList.clear();
+              mapProvider.selectedIdList.clear();
+              context.read<MapProvider>().clearLines();
+              context.read<SwitchProvider>().setMode(false);
+              Navigator.pop(context);
+            },
+          ),
           title: const Text("별플리 미리보기", style: bold16),
           centerTitle: true,
           actions: [
             TextButton(
                 onPressed: () async {
+                  mapProvider.selectedList.clear();
+                  mapProvider.selectedIdList.clear();
                   capturedImage = await captureMap();
                   if (capturedImage != null) {
                     newController.clearOverlays();
@@ -178,7 +194,7 @@ class _PreviewPageState extends State<PreviewPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 10),
+                const SizedBox(height: 7),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -195,7 +211,7 @@ class _PreviewPageState extends State<PreviewPage> {
                               counterText: "",
                               isDense: true,
                               contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 2),
+                                  const EdgeInsets.symmetric(vertical: 3),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                     width: 2,
@@ -306,6 +322,7 @@ class _PreviewPageState extends State<PreviewPage> {
                                 return Text('Error: ${snapshot.error}');
                               } else {
                                 final starInfo = snapshot.data!;
+
                                 return MusicBar(
                                   starInfo: starInfo,
                                 );

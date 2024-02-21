@@ -49,18 +49,19 @@ class TabOne extends StatelessWidget {
               PlaylistInfo playlistInfo = PlaylistInfo.fromFirebase(snapshot
                   .data!
                   .docs[index] as QueryDocumentSnapshot<Map<String, dynamic>>);
+
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => StarDetail(
-                        owner: playlistInfo.owner ?? 'default_owner',
-                        image_url:
-                            playlistInfo.image_url ?? 'default_image_url',
-                        title: playlistInfo.title ?? 'default_title',
-                        nickname: playlistInfo.nickname ?? 'default_nickname',
-                      ),
+                          owner: playlistInfo.owner ?? 'default_owner',
+                          image_url:
+                              playlistInfo.image_url ?? 'default_image_url',
+                          title: playlistInfo.title ?? 'default_title',
+                          nickname: playlistInfo.nickname ?? 'default_nickname',
+                          uid: playlistInfo.uid as String),
                     ),
                   );
                 },
@@ -91,7 +92,7 @@ class TabOne extends StatelessWidget {
                       left: 35,
                       bottom: 44,
                       child: Text(
-                        playlistInfo.owner ?? 'default_owner',
+                        playlistInfo.nickname ?? 'default_owner',
                         style: medium11.copyWith(color: AppColor.sub1),
                       ),
                     ),

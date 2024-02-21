@@ -44,7 +44,7 @@ class _CommentPageState extends State<CommentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 38),
+                const SizedBox(height: 18),
                 Text.rich(
                   TextSpan(
                     children: [
@@ -64,26 +64,29 @@ class _CommentPageState extends State<CommentPage> {
                     Stack(
                       children: [
                         SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: Image.network(
-                            'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                            fit: BoxFit.fitHeight,
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              return Image.network(
-                                'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                            height: 70,
+                            width: 70,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Image.network(
+                                'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
                                 fit: BoxFit.fitHeight,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
-                                  return Container(
-                                    color: Colors.yellow,
+                                  return Image.network(
+                                    'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                                    fit: BoxFit.fitHeight,
+                                    errorBuilder: (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      return Container(
+                                        color: Colors.yellow,
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          ),
-                        ),
+                              ),
+                            )),
                       ],
                     ),
                     Expanded(
@@ -118,7 +121,10 @@ class _CommentPageState extends State<CommentPage> {
                 const SizedBox(height: 31),
                 Text(
                   '코멘트를 남겨 보세요',
-                  style: regular13.copyWith(color: AppColor.sub2),
+                  style: regular13.copyWith(
+                    color: AppColor.sub2,
+                    letterSpacing: 13 * -0.02,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Center(
@@ -126,9 +132,8 @@ class _CommentPageState extends State<CommentPage> {
                     height: 190,
                     child: TextField(
                         controller: _textFieldController,
-                        maxLength: 150,
                         maxLines: 10,
-                        cursorColor: Colors.blueAccent,
+                        cursorColor: AppColor.text2,
                         style: regular15.copyWith(color: AppColor.text2),
                         decoration: InputDecoration(
                           fillColor: AppColor.text,
@@ -158,7 +163,10 @@ class _CommentPageState extends State<CommentPage> {
                               width: 1.0,
                             ),
                           ),
-                          hintStyle: regular15.copyWith(color: AppColor.sub2),
+                          hintStyle: regular15.copyWith(
+                            color: AppColor.sub2,
+                            letterSpacing: 15 * -0.02,
+                          ),
                           hintText: '노래와 관련된 추억을 남겨보세요',
                         ),
                         onSubmitted: (text) {
@@ -168,6 +176,17 @@ class _CommentPageState extends State<CommentPage> {
                           setState(() {});
                         }),
                   ),
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Spacer(),
+                    Text(
+                      '${_textFieldController.text.length}/150 자',
+                      style: regular12,
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
                 ),
                 const Spacer(),
                 Align(
@@ -179,6 +198,7 @@ class _CommentPageState extends State<CommentPage> {
                           widget.video.title!,
                           widget.video.channelName!,
                           widget.video.videoId!,
+                          widget.video.duration!,
                           _textFieldController.text);
 
                       Navigator.popUntil(context, ModalRoute.withName('/home'));

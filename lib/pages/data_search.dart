@@ -42,18 +42,31 @@ class _DataSearchPageState extends State<DataSearchPage> {
           key: _searchKey,
           backgroundColor: Colors.transparent,
           appBar: AppBar(
+            automaticallyImplyLeading: false, // 추가
             backgroundColor: Colors.transparent,
-            title: const Text(
-              '음악 검색',
-              style: bold16,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BackButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 100),
+                const Text(
+                  '음악 검색',
+                  style: bold16,
+                ),
+              ],
             ),
+            centerTitle: true,
             actions: [
               GestureDetector(
                 onTap: () => _searchKey.currentState?.openEndDrawer(),
                 child: Image.asset("assets/images/menu.png",
                     width: 24, height: 18),
               ),
-              const SizedBox(width: 20)
+              const SizedBox(width: 26)
             ],
           ),
           endDrawer: const SizedBox(
@@ -61,20 +74,21 @@ class _DataSearchPageState extends State<DataSearchPage> {
             child: CustomDrawer(),
           ),
           body: Padding(
-            padding: const EdgeInsets.only(left: 25, top: 22, right: 25),
+            padding: const EdgeInsets.only(left: 25, top: 10, right: 25),
             child: Column(
               children: [
                 SizedBox(
                   height: 36,
                   child: TextField(
+                    cursorColor: AppColor.text,
                     focusNode: textfieldFocusNode,
                     controller: searchController,
                     style: medium16,
                     decoration: InputDecoration(
                       fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
                       filled: true,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 10.0),
+                      isDense: true, // 추가
+                      contentPadding: EdgeInsets.symmetric(vertical: 13), // 수정
                       border: OutlineInputBorder(
                         // 테두리 스타일 정의
                         borderRadius:
@@ -103,7 +117,15 @@ class _DataSearchPageState extends State<DataSearchPage> {
                       ),
                       hintStyle: medium14.copyWith(color: AppColor.sub2),
                       hintText: '곡의 제목, 가수를 검색해주세요',
-                      prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(8.0), // 원하는 패딩 값을 설정하세요.
+                        child: Image.asset(
+                          'assets/images/search.png',
+                          width: 18.0, // 원하는 너비 값을 설정하세요.
+                          height: 18.0, // 원하는 높이 값을 설정하세요.
+                          color: Colors.white,
+                        ),
+                      ),
                       suffixIcon: IconButton(
                           onPressed: () {
                             searchController.clear();
@@ -212,7 +234,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 22),
+              const SizedBox(height: 5),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -225,7 +247,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                 child: const Text("최근 검색한 음악",
                     textAlign: TextAlign.left, style: bold15),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 2),
               SizedBox(
                   height: 50,
                   child: recently.isNotEmpty

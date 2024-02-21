@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'color_scheme.dart';
 
+//————ExtraLight 시작
+
+const TextStyle extraLight16 = TextStyle(
+    fontFamily: 'Pretendard-ExtraLight',
+    fontSize: 16,
+    fontWeight: FontWeight.w200,
+    color: AppColor.text);
+
 //————SemiBold 시작
 
 const TextStyle semibold11 = TextStyle(

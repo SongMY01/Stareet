@@ -103,8 +103,9 @@ class MapProvider extends ChangeNotifier {
     marker.setOnTapListener((overlay) {
       if (context.read<SwitchProvider>().switchMode) {
         _selectedMarkerCoords.add(marker.position);
+        _selectedIdList.add(ownerId);
         _selectedList.add(marker);
-        selectedIdList.add(ownerId);
+
         if (_selectedMarkerCoords.length == 2) {
           drawPolyline(context);
         }
@@ -129,7 +130,7 @@ class MapProvider extends ChangeNotifier {
 
   // 마커 추가 함수
   void addMarker(BuildContext context, String videoTitle, String videoSinger,
-      String videoId, String comment) async {
+      String videoId, String duration, String comment) async {
     final Position location = await getPosition();
 
     final String currentAddress =
@@ -147,6 +148,7 @@ class MapProvider extends ChangeNotifier {
       singer: videoSinger,
       videoId: videoId,
       comment: comment,
+      duration: duration,
       owner: FirebaseAuth.instance.currentUser?.uid,
       registerTime: Timestamp.now(),
       address: currentAddress,
