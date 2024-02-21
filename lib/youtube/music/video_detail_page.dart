@@ -185,6 +185,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                                                       height: 20,
                                                     ),
                                             ),
+                                            SizedBox(height: 4),
                                             Text('${likes.length}',
                                                 textAlign: TextAlign.left,
                                                 style: regular13.copyWith(

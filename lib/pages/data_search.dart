@@ -61,7 +61,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
             child: CustomDrawer(),
           ),
           body: Padding(
-            padding: const EdgeInsets.only(left: 25, top: 22, right: 25),
+            padding: const EdgeInsets.only(left: 25, top: 10, right: 25),
             child: Column(
               children: [
                 SizedBox(
@@ -212,7 +212,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 22),
+              const SizedBox(height: 5),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -225,7 +225,7 @@ class _DataSearchPageState extends State<DataSearchPage> {
                 child: const Text("최근 검색한 음악",
                     textAlign: TextAlign.left, style: bold15),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 2),
               SizedBox(
                   height: 50,
                   child: recently.isNotEmpty

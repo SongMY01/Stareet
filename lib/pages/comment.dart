@@ -44,7 +44,7 @@ class _CommentPageState extends State<CommentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 38),
+                const SizedBox(height: 18),
                 Text.rich(
                   TextSpan(
                     children: [
@@ -179,6 +179,7 @@ class _CommentPageState extends State<CommentPage> {
                           widget.video.title!,
                           widget.video.channelName!,
                           widget.video.videoId!,
+                          widget.video.duration!,
                           _textFieldController.text);
 
                       Navigator.popUntil(context, ModalRoute.withName('/home'));

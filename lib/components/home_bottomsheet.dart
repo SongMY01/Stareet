@@ -152,6 +152,7 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                                                 height: 18,
                                               ),
                                       ),
+                                      SizedBox(height: 4),
                                       Text('${likes.length}',
                                           textAlign: TextAlign.left,
                                           style: regular13.copyWith(
@@ -247,11 +248,17 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
                             Border.all(color: Colors.white), // 테두리 색상을 흰색으로 설정
                         color: Colors.transparent, // 배경색을 투명하게 설정
                       ),
-                      child: Center(
-                        child: Text(
-                          '${starInfo.comment}',
-                          style: semibold12.copyWith(color: AppColor.sub1),
-                        ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 20),
+                          Text(
+                            '${starInfo.comment}',
+                            textAlign: TextAlign.left,
+                            style: semibold12.copyWith(color: AppColor.sub1),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -112,6 +112,7 @@ class StarInfo {
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
+  final String? duration;
   late final List<String>? like;
 
   StarInfo(
@@ -124,6 +125,7 @@ class StarInfo {
       required this.owner,
       required this.registerTime,
       required this.address,
+      required this.duration,
       required this.like});
 
   factory StarInfo.fromFirebase(
@@ -139,6 +141,7 @@ class StarInfo {
       comment: snapshotData[commentFieldName],
       owner: snapshotData[ownerFieldName],
       address: snapshotData[addressFieldName],
+      duration: snapshotData[durationFieldName],
       like: snapshotData[likeFieldName],
     );
   }
@@ -155,6 +158,7 @@ class StarInfo {
         owner: map['owner'],
         registerTime: map['registerTime'],
         address: map['address'],
+        duration: map['duration'],
         like: List<String>.from(map['like']));
   }
 
@@ -169,6 +173,7 @@ class StarInfo {
       commentFieldName: comment,
       ownerFieldName: owner,
       addressFieldName: address,
+      durationFieldName: duration,
       likeFieldName: like,
     };
   }
@@ -184,6 +189,7 @@ const String commentFieldName = "comment";
 const String nicknameFieldName = "nickname";
 const String ownerFieldName = "owner";
 const String addressFieldName = "address";
+const String durationFieldName = "duration";
 const String likeFieldName = "like";
 
 class PlaylistInfo {

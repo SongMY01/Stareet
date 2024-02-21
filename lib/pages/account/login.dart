@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:music_api/utilities/color_scheme.dart';
 import 'dart:ui';
+
+import 'package:music_api/utilities/text_theme.dart';
 
 Future<UserCredential> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -31,7 +34,7 @@ class _LoginPageScreenState extends State<LoginPage> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/backgroundImage.png"),
+          image: AssetImage("assets/fonts/images/background.gif"),
           fit: BoxFit.cover,
         ),
       ),
@@ -51,10 +54,7 @@ class _LoginPageScreenState extends State<LoginPage> {
                 const SizedBox(
                   height: 24,
                 ),
-                const Text(
-                  '너와 나, 음악과 별을 잇다. 별이닷',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                const Text('너와 나, 음악과 별을 잇다. 별이닷', style: extraLight16),
                 const SizedBox(
                   height: 45,
                 ),
@@ -63,15 +63,13 @@ class _LoginPageScreenState extends State<LoginPage> {
                   width: 202,
                   height: 226,
                 ),
-                const SizedBox(
-                  height:152
-                ),
-
+                const SizedBox(height: 152),
                 InkWell(
                   onTap: () {
                     // _googleSignIn();
                   },
                   child: Container(
+                    height: 45,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -79,7 +77,7 @@ class _LoginPageScreenState extends State<LoginPage> {
                     padding: const EdgeInsets.all(12),
                     child: Container(
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
@@ -89,12 +87,13 @@ class _LoginPageScreenState extends State<LoginPage> {
                             height: 20,
                           ),
                           const Spacer(),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 'Apple로 계속하기',
-                                style: TextStyle(color: Colors.black),
+                                style:
+                                    semibold14.copyWith(color: AppColor.text2),
                               ),
                             ],
                           ),
@@ -128,6 +127,7 @@ class _LoginPageScreenState extends State<LoginPage> {
                     }
                   },
                   child: Container(
+                    height: 45,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -135,7 +135,7 @@ class _LoginPageScreenState extends State<LoginPage> {
                     padding: const EdgeInsets.all(12),
                     child: Container(
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
@@ -145,13 +145,13 @@ class _LoginPageScreenState extends State<LoginPage> {
                             height: 20,
                           ),
                           const Spacer(),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '구글 로그인으로 계속하기',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14),
+                                '구글계정으로 계속하기',
+                                style:
+                                    semibold14.copyWith(color: AppColor.text2),
                               ),
                             ],
                           ),
