@@ -247,7 +247,7 @@ class StarPictureList extends StatelessWidget {
                   .docs[index] as QueryDocumentSnapshot<Map<String, dynamic>>);
               return StarPicture(
                   imgurl: playlistInfo.image_url,
-                  owner: playlistInfo.owner,
+                  owner: playlistInfo.nickname,
                   title: playlistInfo.title);
             },
           );
@@ -283,12 +283,12 @@ class StarPicture extends StatelessWidget {
             children: [
               Image.asset('assets/fonts/images/starback.png'),
               Positioned(
-                left: 30,
-                bottom: 20,
+                left: -50,
+                bottom: 0,
                 child: Image.network(
                   imgurl!,
-                  height: 50,
-                  width: 50,
+                  height: 270,
+                  width: 270,
                 ),
               ),
               Positioned(
@@ -331,18 +331,80 @@ class StarPicture extends StatelessWidget {
   }
 }
 
-class SongPictureList extends StatelessWidget {
+class SongPictureList extends StatefulWidget {
   const SongPictureList({Key? key}) : super(key: key);
+
+  @override
+  _SongPictureListState createState() => _SongPictureListState();
+}
+
+class _SongPictureListState extends State<SongPictureList> {
+  late Future<QuerySnapshot> future;
+
+  @override
+  void initState() {
+    super.initState();
+    future = FirebaseFirestore.instance.collection('user').get();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 206, // Set an appropriate height,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return const SongPicture(); // Use SongPicture instead of StarPicture
+      child: FutureBuilder<QuerySnapshot>(
+        future: future,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loadingg");
+          }
+
+          // 'user' 컬렉션의 모든 문서 목록
+          final allDocs = snapshot.data!.docs;
+
+          // 랜덤하게 두 개의 문서를 선택
+          final docs = List<DocumentSnapshot>.from(allDocs)..shuffle();
+          final selectedDocs = docs.take(2).toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: selectedDocs.length,
+            itemBuilder: (BuildContext context, int index) {
+              final userDoc = selectedDocs[index];
+
+              return StreamBuilder<QuerySnapshot>(
+                stream: userDoc.reference.collection('Star').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text("Loading...");
+                  }
+
+                  final List<SongInfo> songs = snapshot.data!.docs.map((doc) {
+                    return SongInfo.fromFirebase(
+                        doc as QueryDocumentSnapshot<Map<String, dynamic>>);
+                  }).toList();
+
+                  return Column(
+                    children: songs.map((song) {
+                      return SongPicture(
+                          videoId: song.videoId,
+                          singer: song.singer,
+                          title: song.title,
+                          uid: song.uid);
+                    }).toList(),
+                  );
+                },
+              );
+            },
+          );
         },
       ),
     );
@@ -350,7 +412,18 @@ class SongPictureList extends StatelessWidget {
 }
 
 class SongPicture extends StatelessWidget {
-  const SongPicture({super.key});
+  final String? videoId;
+  final String? singer;
+  final String? title;
+  final String? uid;
+
+  const SongPicture(
+      {Key? key,
+      required this.videoId,
+      required this.singer,
+      required this.title,
+      required this.uid})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -361,19 +434,24 @@ class SongPicture extends StatelessWidget {
         ),
         Stack(
           children: [
-            Image.asset('assets/fonts/images/song.png'),
+            Image.network(
+              'https://i1.ytimg.com/vi/$videoId/maxresdefault.jpg',
+              height: 100,
+              width: 100,
+            ),
             Positioned(
               left: 20,
               bottom: 27,
               child: Text(
-                "잘 지내자, 우리",
+                title!,
                 style: medium16.copyWith(color: AppColor.text),
               ),
             ),
             Positioned(
               left: 20,
               bottom: 10,
-              child: Text("최유리", style: bold12.copyWith(color: AppColor.sub1)),
+              child:
+                  Text(singer!, style: bold12.copyWith(color: AppColor.sub1)),
             ),
           ],
         ),

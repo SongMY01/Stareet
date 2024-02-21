@@ -128,13 +128,13 @@ class _MateDetailState extends State<MateDetail> {
 
                             // 현재 사용자의 mate_friend 필드에 메이트의 UID를 추가합니다.
                             firestore.collection('user').doc(myUid).set({
-                              'mate_friend':
+                              'mate_ing':
                                   FieldValue.arrayUnion([mateInfo.uid ?? ""])
                             }, SetOptions(merge: true));
 
                             // 메이트의 mate_friend 필드에 현재 사용자의 UID를 추가합니다.
                             firestore.collection('user').doc(mateInfo.uid).set({
-                              'mate_friend': FieldValue.arrayUnion([myUid])
+                              'mate_ing': FieldValue.arrayUnion([myUid])
                             }, SetOptions(merge: true));
                           } catch (e) {
                             print(e);
@@ -147,7 +147,7 @@ class _MateDetailState extends State<MateDetail> {
                             ? const Color.fromRGBO(19, 228, 206, 1)
                             : Colors.black,
                         backgroundColor: mateRequested
-                            ? Colors.black
+                            ? const Color.fromRGBO(19, 228, 206, 0.5)
                             : const Color.fromRGBO(19, 228, 206, 1),
                         side: const BorderSide(
                           color: Color.fromRGBO(19, 228, 206, 1),
@@ -158,7 +158,7 @@ class _MateDetailState extends State<MateDetail> {
                         ),
                       ),
                       child: Text(
-                        mateRequested ? "메이트" : "메이트 신청",
+                        mateRequested ? "메이트 신청 중" : "메이트 신청",
                         style: const TextStyle(fontSize: 10.5),
                       ),
                     ),

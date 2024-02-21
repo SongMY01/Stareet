@@ -53,10 +53,10 @@ class MateManage extends StatelessWidget {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-              debugPrint(userInfo as String?);
+              // debugPrint(userInfo as String?);
               mateIng = userInfo['mate_ing'] as List<dynamic>? ?? [];
 
-              debugPrint(mateIng as String?);
+              // debugPrint(mateIng as String?);
               return const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

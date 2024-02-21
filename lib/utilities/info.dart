@@ -54,9 +54,38 @@ const String profileImageURLFieldName = "profileImage";
 const String mate_ingFieldName = "mate_ing";
 const String mate_realFieldName = "mate_real";
 const String mate_friendFieldName = "mate_friend";
-
 const String playlist_myFieldName = 'playlist_my';
 const String playlist_othersFieldName = 'playlist_others';
+
+class SongInfo {
+  final String uid;
+  final String singer;
+  final String videoId;
+  final String title;
+
+  SongInfo({
+    required this.uid,
+    required this.singer,
+    required this.videoId,
+    required this.title,
+  });
+
+  factory SongInfo.fromFirebase(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    Map<String, dynamic> data = doc.data();
+    return SongInfo(
+      uid: data['uid'],
+      singer: data['singer'],
+      videoId: data['videoId'],
+      title: data['title'],
+    );
+  }
+}
+
+const String uid = "uid";
+const String singer = "singer";
+const String videoId = 'videoId';
+const String title = 'title';
 
 Future<void> fetchAuthInfo() async {
   Map data = {};

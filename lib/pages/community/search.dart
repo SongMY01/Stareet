@@ -58,7 +58,8 @@ class TabOne extends StatelessWidget {
                         owner: playlistInfo.owner ?? 'default_owner',
                         image_url:
                             playlistInfo.image_url ?? 'default_image_url',
-                        title: playlistInfo.title ?? 'default_image_url',
+                        title: playlistInfo.title ?? 'default_title',
+                        nickname: playlistInfo.nickname ?? 'default_nickname',
                       ),
                     ),
                   );
