@@ -53,10 +53,9 @@ class MateManage extends StatelessWidget {
               return Text('Error: ${snapshot.error}');
             } else {
               var userInfo = snapshot.data!;
-              debugPrint(userInfo as String?);
+            
               mateIng = userInfo['mate_ing'] as List<dynamic>? ?? [];
-
-              debugPrint(mateIng as String?);
+              print(mateIng);
               return const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -92,7 +91,7 @@ OutlineInputBorder myinputborder() {
       ));
 }
 
-Stream<List<Map<String, dynamic>>> getMateListRealStream() {
+Stream<List<Map<String, dynamic>>> getMateListIngStream() {
   return FirebaseFirestore.instance
       .collection('user')
       .where('user-id', whereIn: mateIng)
@@ -115,26 +114,26 @@ class _MateNameListIngState extends State<MateNameListIng> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Map<String, dynamic>>>(
-        stream: getMateListRealStream(),
+        stream: getMateListIngStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            var mateRealInfoList = snapshot.data!;
+            var mateIngInfoList = snapshot.data!;
 
             return SizedBox(
-              height: 60.0 * (mateRealInfoList.length),
+              height: 60.0 * (mateIngInfoList.length),
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: mateRealInfoList.length,
+                itemCount: mateIngInfoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var mateRealInfo = mateRealInfoList[index];
+                  var mateRealInfo = mateIngInfoList[index];
                   var uid = mateRealInfo['user-id'] ?? '없음';
                   var nickName = mateRealInfo['nickName'] ?? '없음';
                   var imageUrl = mateRealInfo['profileImage'] ?? '없음';
-                  debugPrint('$imageUrl 입니다요');
+                 
                   return MateNameIng(
                     uid: uid,
                     nickName: nickName,

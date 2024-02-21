@@ -44,6 +44,7 @@ Future<List<Map<String, dynamic>>> getPlaylistOthersInfo() async {
 
 var mateListReal = [];
 var mateListFriend = [];
+var mateListAll=[];
 var playlistMy = [];
 var playlistOthers = [];
 
@@ -130,6 +131,7 @@ class _MyPageState extends State<MyPage> {
                 mateListFriend =
                     userInfo['mate_friend'] as List<dynamic>? ?? [];
                 mateListReal = userInfo['mate_real'] as List<dynamic>? ?? [];
+                mateAll=(userInfo['mate_friend'] as List<dynamic>? ?? [])+(userInfo['mate_real'] as List<dynamic>? ?? []);
                 playlistMy = userInfo['playlist_my'] as List<dynamic>? ?? [];
                 playlistOthers =
                     userInfo['playlist_others'] as List<dynamic>? ?? [];
@@ -165,7 +167,7 @@ class _MyPageState extends State<MyPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const MyStarMate(),
+                                    builder: (context) =>  MyStarMate(),
                                   ),
                                 );
                               },
