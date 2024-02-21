@@ -112,7 +112,7 @@ class StarInfo {
   final String? owner;
   final Timestamp? registerTime;
   final String? address;
-  final List<String>? like;
+  late final List<String>? like;
 
   StarInfo(
       {required this.uid,

@@ -12,6 +12,8 @@ dependencies:
   youtube_data_api: ^1.0.4
   shared_preferences: ^2.2.2
   youtube_player_iframe: ^4.0.4
+  # flutter_svg: ^2.0.9
+  # firebase_core: ^2.24.2
   cloud_firestore: ^4.14.0
   firebase_auth: ^4.16.0
   google_sign_in: ^6.2.1
