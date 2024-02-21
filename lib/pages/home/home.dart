@@ -146,8 +146,9 @@ class _HomePageState extends State<HomePage> {
 
   // mate 닉네임 리스트로 변경
   void addMate(List<String> mateList) async {
-    for(String mate in mateList) {
-      final user = await FirebaseFirestore.instance.collection('user').doc(mate).get();
+    for (String mate in mateList) {
+      final user =
+          await FirebaseFirestore.instance.collection('user').doc(mate).get();
       String nickName = user['nickName'];
       chipList.add(nickName);
     }
@@ -174,8 +175,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final switchProvider = Provider.of<SwitchProvider>(context);
     final mapProvider = Provider.of<MapProvider>(context);
-    final userProvider = Provider.of<UserProvider>(context);
-    addMate(userProvider.getMate());
+    // final userProvider = Provider.of<UserProvider>(context); 광진
+    // addMate(userProvider.getMate()); 광진
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: const SizedBox(
@@ -342,7 +343,8 @@ class _HomePageState extends State<HomePage> {
                         // physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                            children: List.generate(chipList.length, (int index) {
+                            children:
+                                List.generate(chipList.length, (int index) {
                           return Row(children: [
                             CustomChip(
                                 name: chipList[index],
@@ -351,11 +353,11 @@ class _HomePageState extends State<HomePage> {
                                   setState(() {
                                     selectedIndex = index;
                                   });
-                                  mapProvider.mapController.clearOverlays(type: NOverlayType.marker);
-                                  _updateUserMarker(await mapProvider.getPosition());
-                                  if(index == 0) {
-                                    
-                                  }
+                                  mapProvider.mapController
+                                      .clearOverlays(type: NOverlayType.marker);
+                                  _updateUserMarker(
+                                      await mapProvider.getPosition());
+                                  if (index == 0) {}
                                 }),
                             const SizedBox(width: 7.2)
                           ]);

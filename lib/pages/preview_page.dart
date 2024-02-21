@@ -110,7 +110,7 @@ class _PreviewPageState extends State<PreviewPage> {
   @override
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<MapProvider>(context);
-    final userProvider = Provider.of<UserProvider>(context);
+    // final userProvider = Provider.of<UserProvider>(context); 광진
     markerList = mapProvider.selectedList.toSet().toList();
     // 배경 그라데이션
     return Container(
@@ -201,13 +201,14 @@ class _PreviewPageState extends State<PreviewPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: Image.network(
-                              userProvider.userData['profileLink'])),
+                        width: 24,
+                        height: 24,
+                        // child: Image.network(
+                        //     userProvider.userData['profileLink']) 광진
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    Text(userProvider.getNickName(), style: medium16)
+                    //  Text(userProvider.getNickName(), style: medium16) 광진
                   ],
                 ),
                 const SizedBox(height: 13),

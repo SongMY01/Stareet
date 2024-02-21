@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>859784822505-jjljl64k8o8313g9hdtcl0dkvvi9ms59.apps.googleusercontent.com</string>
+	<string>859784822505-a0r8bbkvi3oj86sulvqmj1hvr7g8tlr8.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.859784822505-jjljl64k8o8313g9hdtcl0dkvvi9ms59</string>
+	<string>com.googleusercontent.apps.859784822505-a0r8bbkvi3oj86sulvqmj1hvr7g8tlr8</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>859784822505-6onf4rq7o0m699bq2gc4nonf2t0271iv.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.musicApi.RunnerTests</string>
+	<string>com.stareet.mapApp</string>
 	<key>PROJECT_ID</key>
 	<string>music-9b7aa</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:859784822505:ios:c791ae8377e1f3b5f8fa78</string>
+	<string>1:859784822505:ios:01f16f4ce113196df8fa78</string>
 </dict>
 </plist>

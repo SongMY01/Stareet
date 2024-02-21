@@ -24,7 +24,7 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => SwitchProvider()),
     ChangeNotifierProvider(create: (_) => MapProvider()),
-    ChangeNotifierProvider(create: (_) => UserProvider())
+    //  ChangeNotifierProvider(create: (_) => UserProvider()) 광진
   ], child: const MyApp()));
 }
 

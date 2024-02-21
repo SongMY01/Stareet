@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_api/utilities/info.dart';
 
@@ -94,10 +95,52 @@ class _MateDetailState extends State<MateDetail> {
                   SizedBox(
                     height: 28,
                     child: TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           mateRequested = !mateRequested;
                         });
+
+                        if (mateRequested) {
+                          try {
+                            // FirebaseFirestore 인스턴스를 가져옵니다.
+                            FirebaseFirestore firestore =
+                                FirebaseFirestore.instance;
+
+                            // 현재 사용자의 UID
+                            String myUid =
+                                FirebaseAuth.instance.currentUser!.uid;
+
+                            // 메이트의 정보를 조회합니다.
+                            QuerySnapshot mateQuery = await firestore
+                                .collection('user')
+                                .where('nickName', isEqualTo: widget.nickName)
+                                .get();
+
+                            // 메이트의 정보가 없거나, 둘 이상이면 예외를 발생시킵니다.
+                            if (mateQuery.docs.length != 1) {
+                              throw Exception('메이트의 정보를 찾을 수 없거나, 닉네임이 중복됩니다.');
+                            }
+
+                            // 메이트의 정보를 가져옵니다.
+                            UsersInfo mateInfo = UsersInfo.fromFirebase(
+                                mateQuery.docs.first
+                                    as DocumentSnapshot<Map<String, dynamic>>);
+
+                            // 현재 사용자의 mate_friend 필드에 메이트의 UID를 추가합니다.
+                            firestore.collection('user').doc(myUid).set({
+                              'mate_friend':
+                                  FieldValue.arrayUnion([mateInfo.uid ?? ""])
+                            }, SetOptions(merge: true));
+
+                            // 메이트의 mate_friend 필드에 현재 사용자의 UID를 추가합니다.
+                            firestore.collection('user').doc(mateInfo.uid).set({
+                              'mate_friend': FieldValue.arrayUnion([myUid])
+                            }, SetOptions(merge: true));
+                          } catch (e) {
+                            print(e);
+                            // 여기서 필요한 경우 사용자에게 오류 메시지를 표시할 수 있습니다.
+                          }
+                        }
                       },
                       style: TextButton.styleFrom(
                         foregroundColor: mateRequested

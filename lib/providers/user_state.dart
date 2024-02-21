@@ -1,35 +1,38 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
 
-class UserProvider extends ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  User? _user;
-  late String _userUid;
-  DocumentSnapshot? _userData;
+// class UserProvider extends ChangeNotifier {
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
+//   User? _user;
+//   late String _userUid;
+//   DocumentSnapshot? _userData;
 
-  UserProvider() {
-    _user = _auth.currentUser;
-    _loadUserData();
-  }
+//   UserProvider() {
+//     _user = _auth.currentUser;
+//     _loadUserData();
+//   }
 
-  User get user => _user!;
-  DocumentSnapshot get userData => _userData!;
-  String get userUid => _userUid;
-  
-  Future<void> _loadUserData() async {
-    if (_user != null) {
-      _userUid = _user!.uid;
-      _userData = await FirebaseFirestore.instance.collection('users').doc(_userUid).get();
-    }
-    notifyListeners();
-  }
+//   User get user => _user!;
+//   DocumentSnapshot get userData => _userData!;
+//   String get userUid => _userUid;
 
-  String getNickName() {
-    return _userData!['nickName'];
-  }
+//   Future<void> _loadUserData() async {
+//     if (_user != null) {
+//       _userUid = _user!.uid;
+//       _userData = await FirebaseFirestore.instance
+//           .collection('user')
+//           .doc(_userUid)
+//           .get();
+//     }
+//     notifyListeners();
+//   }
 
-  List<String> getMate() {
-    return _userData!['mate_friend'];
-  }
-}
+//   String getNickName() {
+//     return _userData!['nickName'];
+//   }
+
+//   List<String> getMate() {
+//     return _userData!['mate_friend'];
+//   }
+// }
