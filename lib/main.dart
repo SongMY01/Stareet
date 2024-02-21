@@ -4,6 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:music_api/firebase_options.dart';
 
 import 'package:music_api/pages/mypage/my_page.dart';
+import 'package:music_api/pages/mypage/my_starmate.dart';
 
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => const HomePage(),
         '/search': (BuildContext context) => const DataSearchPage(),
         '/mypage': (BuildContext context) => const MyPage(),
+        '/my_starmate': (BuildContext context) => const MyStarMate(),
       },
     );
   }

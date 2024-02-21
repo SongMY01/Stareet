@@ -63,7 +63,10 @@ class _LoginPageScreenState extends State<LoginPage> {
                   width: 202,
                   height: 226,
                 ),
-                const SizedBox(height: 152),
+                const SizedBox(
+                  height:152
+                ),
+
                 InkWell(
                   onTap: () {
                     // _googleSignIn();

@@ -3,17 +3,50 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:music_api/pages/mypage/mateSearch.dart';
 import 'package:music_api/pages/mypage/mate_manage.dart';
+import 'package:music_api/pages/mypage/my_page.dart';
 
 import '../../utilities/color_scheme.dart';
 import '../../utilities/text_theme.dart';
+import '../community/search.dart';
 
 var mateReal = [];
 var mateFriend = [];
+var mateAll = [];
 
-class MyStarMate extends StatelessWidget {
-  const MyStarMate({super.key});
+class MyStarMate extends StatefulWidget {
+  const MyStarMate({
+    Key? key,
+  }) : super(key: key);
 
+  @override
+  State<MyStarMate> createState() => _MyStarMateState();
+}
+
+class _MyStarMateState extends State<MyStarMate> {
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  void getUserData() async {
+    var snapshot =
+        await FirebaseFirestore.instance.collection('user').doc(uid).get();
+    var userInfo = snapshot.data();
+
+    setState(() {
+      mateReal = userInfo!['mate_real'] as List<dynamic>? ?? [];
+      mateFriend = userInfo['mate_friend'] as List<dynamic>? ?? [];
+      mateAll = mateReal + mateFriend;
+    });
+    print('${mateAll}every all!!!');
+  }
+
+  final searchController = TextEditingController();
+  String query = '';
+  FocusNode textfieldFocusNode = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,112 +57,129 @@ class MyStarMate extends StatelessWidget {
         ),
       ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: Text('스타메이트', style: bold16.copyWith(color: AppColor.text)),
           backgroundColor: Colors.transparent,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 25, 0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MateManage(),
-                    ),
-                  );
-                },
-                child: Image.asset(
-                  'assets/images/starmate.png',
-                  width: 26,
-                  height: 26,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            title: Text('스타메이트', style: bold16.copyWith(color: AppColor.text)),
+            backgroundColor: Colors.transparent,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 5, 25, 0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MateManage(),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    'assets/images/starmate.png',
+                    width: 26,
+                    height: 26,
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
-        body: StreamBuilder<Map<String, dynamic>>(
-          stream: getUserInfoStream(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              var userInfo = snapshot.data!;
-              mateReal = userInfo['mate_real'] as List<dynamic>? ?? [];
-              mateFriend = userInfo['mate_friend'] as List<dynamic>? ?? [];
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Divider(),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: 340,
-                    height: 36,
-                    child: TextField(
-                      onSubmitted: (String searchText) {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => const TabOne(),
-                        //   ),
-                        // );
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
-                        labelText: "메이트 이름을 검색해요",
-                        labelStyle: medium14.copyWith(color: AppColor.sub1),
-                        border: myinputborder(),
-                        enabledBorder: myinputborder(),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: Colors.white,
+              )
+            ],
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Divider(),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 340,
+                height: 36,
+                child: Form(
+                  key: _formKey,
+                  child: TextField(
+                    focusNode: textfieldFocusNode,
+                    controller: searchController,
+                    key: UniqueKey(),
+                    style: medium16,
+                    decoration: InputDecoration(
+                      fillColor: const Color.fromRGBO(255, 255, 255, 0.1),
+                      filled: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 10.0),
+                      border: OutlineInputBorder(
+                        // 테두리 스타일 정의
+                        borderRadius:
+                            BorderRadius.circular(5.0), // border-radius: 5px
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(
+                              255, 255, 255, 0.3), // border 색상과 투명도
+                          width: 1.0, // border: 1px
                         ),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        // 기본 테두리 스타일
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.3),
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        // 포커스 시 테두리 스타일
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.3),
+                          width: 1.0,
+                        ),
+                      ),
+                      hintStyle: medium14.copyWith(color: AppColor.sub2),
+                      hintText: '별자리 이름이나, 메이트 이름을 검색하세요',
+                      prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            searchController.clear();
+                            query = '';
+                          },
+                          icon: const Icon(Icons.close, color: Colors.white)),
                     ),
+                    // onChanged: (value) {
+                    //   setState(() {
+                    //     query = value;
+                    //   });
+                    // },
+                    onSubmitted: (value) {
+                      setState(() {
+                        query = value;
+                      });
+                    },
                   ),
-                  const SizedBox(height: 10),
-                  const MateNameListReal(),
-                  const SizedBox(height: 10),
-                  const MateNameListFriend(),
-                ],
-              );
-            }
-          },
-        ),
-      ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (mateReal.isNotEmpty && mateFriend.isNotEmpty)
+                if (query.isNotEmpty)
+                  _buildSearchedTabBar(query)
+                else
+                  _buildEveryList()
+            ],
+          )),
     );
   }
 }
 
-String uid = FirebaseAuth.instance.currentUser!.uid;
-
-Stream<Map<String, dynamic>> getUserInfoStream() {
-  return FirebaseFirestore.instance
-      .collection('user')
-      .doc(uid)
-      .snapshots()
-      .map((docSnapshot) => docSnapshot.data() as Map<String, dynamic>);
+Widget _buildEveryList() {
+  return const Column(
+    children: [
+      MateNameListReal(),
+      SizedBox(height: 10),
+      MateNameListFriend(),
+    ],
+  );
 }
 
-OutlineInputBorder myinputborder() {
-  return const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(5)),
-      borderSide: BorderSide(
-        color: Color.fromRGBO(254, 254, 254, 1),
-        width: 1,
-      ));
-}
 
 Stream<List<Map<String, dynamic>>> getMateListRealStream() {
   return FirebaseFirestore.instance
@@ -140,6 +190,8 @@ Stream<List<Map<String, dynamic>>> getMateListRealStream() {
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   });
 }
+
+String uid = FirebaseAuth.instance.currentUser!.uid;
 
 class MateNameListReal extends StatefulWidget {
   const MateNameListReal({Key? key}) : super(key: key);
@@ -171,7 +223,7 @@ class _MateNameListRealState extends State<MateNameListReal> {
                   var uid = mateRealInfo['user-id'] ?? '없음';
                   var nickName = mateRealInfo['nickName'] ?? '없음';
                   var imageUrl = mateRealInfo['profileImage'] ?? '없음';
-                  debugPrint('$imageUrl 입니다요');
+
                   return MateNameReal(
                     uid: uid,
                     nickName: nickName,
@@ -228,24 +280,46 @@ class _MateNameRealState extends State<MateNameReal> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _isStarSelected = !_isStarSelected;
-                    String currentUserId =
-                        FirebaseAuth.instance.currentUser!.uid;
-                    debugPrint('$currentUserId입니다!');
-                    debugPrint('${widget.uid}입니다');
-                    FirebaseFirestore.instance
-                        .collection('user')
-                        .doc(currentUserId)
-                        .update({
-                      'mate_real': FieldValue.arrayRemove([widget.uid])
-                    }).then((_) {
+                    if (_isStarSelected) {
+                      _isStarSelected = !_isStarSelected;
+                      String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+                      // debugPrint('$currentUserId입니다!');
+                      // debugPrint('${widget.uid}입니다');
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mate_friend': FieldValue.arrayUnion([widget.uid])
+                        'mate_real': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(currentUserId)
+                            .update({
+                          'mate_friend': FieldValue.arrayUnion([widget.uid])
+                        });
                       });
-                    });
+                    } else {
+                      _isStarSelected = !_isStarSelected;
+                      String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+                      // debugPrint('$currentUserId입니다!');
+                      // debugPrint('${widget.uid}입니다');
+
+                      FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(currentUserId)
+                          .update({
+                        'mate_friend': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(currentUserId)
+                            .update({
+                          'mate_real': FieldValue.arrayUnion([widget.uid])
+                        });
+                      });
+                    }
                   });
                 },
               ),
@@ -310,8 +384,8 @@ class _MateNameRealState extends State<MateNameReal> {
                                   onPressed: () {
                                     String currentUserId =
                                         FirebaseAuth.instance.currentUser!.uid;
-                                    debugPrint('$currentUserId입니다!');
-                                    debugPrint('${widget.uid}입니다');
+                                    // debugPrint('$currentUserId입니다!');
+                                    // debugPrint('${widget.uid}입니다');
 
                                     FirebaseFirestore.instance
                                         .collection('user')
@@ -320,7 +394,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                       'mate_friend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
-                                      debugPrint('${widget.uid}입니다.');
+                                      // debugPrint('${widget.uid}입니다.');
                                       FirebaseFirestore.instance
                                           .collection('user')
                                           .doc(currentUserId)
@@ -349,7 +423,7 @@ class _MateNameRealState extends State<MateNameReal> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const MyStarMate(),
+                                                    MyStarMate(),
                                               ),
                                             );
                                           });
@@ -420,7 +494,7 @@ class _MateNameListFriendState extends State<MateNameListFriend> {
                   var uid = mateFriendInfo['user-id'] ?? '없음';
                   var nickName = mateFriendInfo['nickName'] ?? '없음';
                   var imageUrl = mateFriendInfo['profileImage'] ?? '없음';
-                  debugPrint('$imageUrl 입니다요');
+                  // debugPrint('$imageUrl 입니다요');
                   return MateNameFriend(
                     uid: uid,
                     nickName: nickName,
@@ -477,24 +551,47 @@ class _MateNameFriendState extends State<MateNameFriend> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _isStarSelected = !_isStarSelected;
-                    String currentUserId =
-                        FirebaseAuth.instance.currentUser!.uid;
-                    debugPrint('$currentUserId입니다!');
-                    debugPrint('${widget.uid}입니다');
-                    FirebaseFirestore.instance
-                        .collection('user')
-                        .doc(currentUserId)
-                        .update({
-                      'mate_friend': FieldValue.arrayRemove([widget.uid])
-                    }).then((_) {
+                    print(_isStarSelected);
+                    if (_isStarSelected) {
+                      _isStarSelected = !_isStarSelected;
+                      String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+                      debugPrint('$currentUserId입니다!');
+                      debugPrint('${widget.uid}입니다');
                       FirebaseFirestore.instance
                           .collection('user')
                           .doc(currentUserId)
                           .update({
-                        'mate_real': FieldValue.arrayUnion([widget.uid])
+                        'mate_real': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(currentUserId)
+                            .update({
+                          'mate_friend': FieldValue.arrayUnion([widget.uid])
+                        });
                       });
-                    });
+                    } else {
+                      _isStarSelected = !_isStarSelected;
+                      String currentUserId =
+                          FirebaseAuth.instance.currentUser!.uid;
+                      // debugPrint('$currentUserId입니다!');
+                      // debugPrint('${widget.uid}입니다');
+
+                      FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(currentUserId)
+                          .update({
+                        'mate_friend': FieldValue.arrayRemove([widget.uid])
+                      }).then((_) {
+                        FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(currentUserId)
+                            .update({
+                          'mate_real': FieldValue.arrayUnion([widget.uid])
+                        });
+                      });
+                    }
                   });
                 },
               ),
@@ -559,8 +656,8 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                   onPressed: () {
                                     String currentUserId =
                                         FirebaseAuth.instance.currentUser!.uid;
-                                    debugPrint('$currentUserId입니다!');
-                                    debugPrint('${widget.uid}입니다');
+                                    // debugPrint('$currentUserId입니다!');
+                                    // debugPrint('${widget.uid}입니다');
 
                                     FirebaseFirestore.instance
                                         .collection('user')
@@ -569,7 +666,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                       'mate_friend':
                                           FieldValue.arrayRemove([widget.uid])
                                     }).then((_) {
-                                      debugPrint('${widget.uid}입니다.');
+                                      // debugPrint('${widget.uid}입니다.');
                                       FirebaseFirestore.instance
                                           .collection('user')
                                           .doc(currentUserId)
@@ -598,7 +695,7 @@ class _MateNameFriendState extends State<MateNameFriend> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const MyStarMate(),
+                                                    MyStarMate(),
                                               ),
                                             );
                                           });
@@ -627,4 +724,13 @@ class _MateNameFriendState extends State<MateNameFriend> {
       ],
     );
   }
+}
+
+
+
+Widget _buildSearchedTabBar(String query) {
+  return Expanded(
+    child:
+        Column(children: [MateNameListSearch(query: query, mateAll: mateAll)]),
+  );
 }
