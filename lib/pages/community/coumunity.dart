@@ -310,17 +310,17 @@ class StarPicture extends StatelessWidget {
                   left: -4,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StarDetail(
-                            owner: owner ?? 'default_owner',
-                            image_url: imgurl ?? 'default_image_url',
-                            title: title ?? 'default_title',
-                            nickname: owner ?? 'default_nickname',
-                          ),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => StarDetail(
+                      //       owner: owner ?? 'default_owner',
+                      //       image_url: imgurl ?? 'default_image_url',
+                      //       title: title ?? 'default_title',
+                      //       nickname: owner ?? 'default_nickname',
+                      //     ),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       height: 275,
