@@ -43,11 +43,11 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
   Widget build(BuildContext context) {
     return ClipRRect(
       child: Container(
+        width: MediaQuery.of(context).size.width,
         height: 289,
-        margin: const EdgeInsets.only(left: 25, right: 25),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(23),
-          color: const Color.fromRGBO(45, 45, 45, 0),
+          color: AppColor.text2,
         ),
         child: FutureBuilder(
           future: fetchStarInfo(widget.markerId),
@@ -61,208 +61,217 @@ class _HomeBottomsheetState extends State<HomeBottomsheet> {
               if (starInfo.like?.contains(loggedInUid) ?? true) {
                 heartCheck = true;
               }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 15),
-                      width: 124,
-                      height: 6,
-                      decoration: BoxDecoration(
-                          color: AppColor.text,
-                          borderRadius: BorderRadius.circular(24)),
-                    ),
-                  ),
-                  const SizedBox(height: 34),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                        text: '${widget.nickName}님',
-                                        style: semibold17),
-                                    const TextSpan(
-                                        text: '이 추천하는', style: regular16),
-                                  ],
-                                ),
-                              ),
-                              const Text(
-                                '이곳에 어울리는 음악',
-                                style: semibold17,
-                              )
-                            ],
-                          ),
-                          const Spacer(),
-                          Column(
-                            children: [
-                              StreamBuilder<DocumentSnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('user')
-                                    .doc(widget.ownerId)
-                                    .collection('Star')
-                                    .doc(widget.markerId)
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text("Something went wrong");
-                                  }
-
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
-                                  }
-                                  List<String> likes = List<String>.from(
-                                      (snapshot.data?.data() as Map<String,
-                                              dynamic>)?['like'] ??
-                                          []);
-
-                                  bool heartCheck = likes.contains(loggedInUid);
-
-                                  return Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () async {
-                                          if (heartCheck) {
-                                            likes.remove(loggedInUid);
-                                          } else {
-                                            likes.add(loggedInUid);
-                                          }
-
-                                          await snapshot.data?.reference
-                                              .update({'like': likes});
-                                        },
-                                        child: (likes?.contains(loggedInUid) ??
-                                                false)
-                                            ? Image.asset(
-                                                "assets/images/heart_yes.png",
-                                                width: 20,
-                                                height: 18,
-                                              )
-                                            : Image.asset(
-                                                "assets/images/heart_not.png",
-                                                width: 20,
-                                                height: 18,
-                                              ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text('${likes.length}',
-                                          textAlign: TextAlign.left,
-                                          style: regular13.copyWith(
-                                              color: AppColor.sub1)),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 6),
-                        ],
+              return Container(
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 15),
+                        width: 124,
+                        height: 6,
+                        decoration: BoxDecoration(
+                            color: AppColor.text,
+                            borderRadius: BorderRadius.circular(24)),
                       ),
-                      const SizedBox(height: 19),
-                      Row(
-                        children: <Widget>[
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: 70,
-                                width: 70,
-                                child: Image.network(
-                                  'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
-                                  fit: BoxFit.fitHeight,
-                                  errorBuilder: (BuildContext context,
-                                      Object exception,
-                                      StackTrace? stackTrace) {
-                                    return Image.network(
-                                      'https://i1.ytimg.com/vi/${starInfo.videoId}/sddefault.jpg',
+                    ),
+                    const SizedBox(height: 34),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                          text: '${widget.nickName}님',
+                                          style: semibold17),
+                                      const TextSpan(
+                                          text: '이 추천하는', style: regular16),
+                                    ],
+                                  ),
+                                ),
+                                const Text(
+                                  '이곳에 어울리는 음악',
+                                  style: semibold17,
+                                )
+                              ],
+                            ),
+                            const Spacer(),
+                            Column(
+                              children: [
+                                StreamBuilder<DocumentSnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('user')
+                                      .doc(widget.ownerId)
+                                      .collection('Star')
+                                      .doc(widget.markerId)
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Text("Something went wrong");
+                                    }
+
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    }
+                                    List<String> likes = List<String>.from(
+                                        (snapshot.data?.data() as Map<String,
+                                                dynamic>)?['like'] ??
+                                            []);
+
+                                    bool heartCheck =
+                                        likes.contains(loggedInUid);
+
+                                    return Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if (heartCheck) {
+                                              likes.remove(loggedInUid);
+                                            } else {
+                                              likes.add(loggedInUid);
+                                            }
+
+                                            await snapshot.data?.reference
+                                                .update({'like': likes});
+                                          },
+                                          child:
+                                              (likes?.contains(loggedInUid) ??
+                                                      false)
+                                                  ? Image.asset(
+                                                      "assets/images/heart_yes.png",
+                                                      width: 20,
+                                                      height: 18,
+                                                    )
+                                                  : Image.asset(
+                                                      "assets/images/heart_not.png",
+                                                      width: 20,
+                                                      height: 18,
+                                                    ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text('${likes.length}',
+                                            textAlign: TextAlign.left,
+                                            style: regular13.copyWith(
+                                                color: AppColor.sub1)),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                        ),
+                        const SizedBox(height: 19),
+                        Row(
+                          children: <Widget>[
+                            Stack(
+                              children: [
+                                SizedBox(
+                                  height: 70,
+                                  width: 70,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: Image.network(
+                                      'https://i1.ytimg.com/vi/${starInfo.videoId}/maxresdefault.jpg',
                                       fit: BoxFit.fitHeight,
                                       errorBuilder: (BuildContext context,
                                           Object exception,
                                           StackTrace? stackTrace) {
-                                        return Container(
-                                          color: Colors.yellow,
+                                        return Image.network(
+                                          'https://i1.ytimg.com/vi/${starInfo.videoId}/sddefault.jpg',
+                                          fit: BoxFit.fitHeight,
+                                          errorBuilder: (BuildContext context,
+                                              Object exception,
+                                              StackTrace? stackTrace) {
+                                            return Container(
+                                              color: Colors.yellow,
+                                            );
+                                          },
                                         );
                                       },
-                                    );
-                                  },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, left: 15),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${starInfo.title}',
+                                      textAlign: TextAlign.left,
+                                      style: bold17,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text('${starInfo.singer}',
+                                        textAlign: TextAlign.left,
+                                        style: regular13.copyWith(
+                                            color: AppColor.sub1)),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 20, left: 15),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${starInfo.title}',
-                                    textAlign: TextAlign.left,
-                                    style: bold17,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text('${starInfo.singer}',
-                                      textAlign: TextAlign.left,
-                                      style: regular13.copyWith(
-                                          color: AppColor.sub1)),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                ],
-                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 19),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VideoDetailPage(
+                                    markerId: widget.markerId,
+                                    ownerId: widget.ownerId,
+                                    videoId: starInfo.videoId as String,
+                                    nickName: widget.nickName,
+                                    profileImg: widget.profileImg)));
+                      },
+                      child: Container(
+                        width: 340,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(12), // 테두리 반경 값을 12로 설정
+                          border: Border.all(
+                              color: Colors.white), // 테두리 색상을 흰색으로 설정
+                          color: Colors.transparent, // 배경색을 투명하게 설정
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 20),
+                            Text(
+                              '${starInfo.comment}',
+                              textAlign: TextAlign.left,
+                              maxLines: 1,
+                              style: semibold12.copyWith(color: AppColor.sub1),
                             ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 19),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VideoDetailPage(
-                                  markerId: widget.markerId,
-                                  ownerId: widget.ownerId,
-                                  videoId: starInfo.videoId as String,
-                                  nickName: widget.nickName,
-                                  profileImg: widget.profileImg)));
-                    },
-                    child: Container(
-                      width: 340,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(12), // 테두리 반경 값을 12로 설정
-                        border:
-                            Border.all(color: Colors.white), // 테두리 색상을 흰색으로 설정
-                        color: Colors.transparent, // 배경색을 투명하게 설정
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 20),
-                          Text(
-                            '${starInfo.comment}',
-                            textAlign: TextAlign.left,
-                            style: semibold12.copyWith(color: AppColor.sub1),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
           },

@@ -39,7 +39,14 @@ class _HomePageState extends State<HomePage> {
   bool editMode = false;
   late NCameraPosition camera;
   int selectedIndex = 0;
-  List<String> chipList = ['전체', '나', '메이트 전체']; // 칩 항목들 리스트
+  List<String> chipList = [
+    '전체',
+    '나',
+    '메이트 전체',
+    '메이트1',
+    '메이트2',
+    '메이트3'
+  ]; // 칩 항목들 리스트
 
   late NCameraPosition initPosition = const NCameraPosition(
       target: NLatLng(36.10174928712425, 129.39070716683418), zoom: 15);
@@ -390,7 +397,7 @@ class _HomePageState extends State<HomePage> {
                         // physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
+                          width: 570,
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children:
@@ -443,8 +450,8 @@ class _HomePageState extends State<HomePage> {
         Visibility(
           visible: !switchProvider.switchMode,
           child: Positioned(
-            bottom: 60,
-            right: 40,
+            top: 182,
+            right: 25,
             child: LocationButton(goToLocation: _updatePosition),
           ),
         ),

@@ -64,26 +64,29 @@ class _CommentPageState extends State<CommentPage> {
                     Stack(
                       children: [
                         SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: Image.network(
-                            'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
-                            fit: BoxFit.fitHeight,
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              return Image.network(
-                                'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                            height: 70,
+                            width: 70,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Image.network(
+                                'https://i1.ytimg.com/vi/${widget.video.videoId}/maxresdefault.jpg',
                                 fit: BoxFit.fitHeight,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
-                                  return Container(
-                                    color: Colors.yellow,
+                                  return Image.network(
+                                    'https://i1.ytimg.com/vi/${widget.video.videoId}/sddefault.jpg',
+                                    fit: BoxFit.fitHeight,
+                                    errorBuilder: (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      return Container(
+                                        color: Colors.yellow,
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          ),
-                        ),
+                              ),
+                            )),
                       ],
                     ),
                     Expanded(

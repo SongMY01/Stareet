@@ -58,6 +58,8 @@ class _CustomDialogState extends State<CustomDialog> {
                 child: Container(
                   width: 317, // width: 317px;
                   height: 333, // height: 333px;
+                  padding: const EdgeInsets.only(
+                      left: 5, right: 5, top: 5, bottom: 5),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(23, 23, 23, 0.85),
                     borderRadius: BorderRadius.circular(21),
@@ -88,21 +90,13 @@ class _CustomDialogState extends State<CustomDialog> {
                                     ),
                                   ),
                                 );
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => VideoDetailPage(
-                                //       video: widget.video,
-                                //     ),
-                                //   ),
-                                // );
                               },
                               child: Text(
                                 '선택',
                                 style:
                                     semibold16.copyWith(color: AppColor.text),
                               ),
-                            )
+                            ),
                           ]),
                       Stack(
                         children: [
@@ -132,16 +126,22 @@ class _CustomDialogState extends State<CustomDialog> {
                       Text(
                         widget.video.title ?? '',
                         style: bold18,
+                        textAlign: TextAlign.center,
                         maxLines: 1,
                       ),
+                      const SizedBox(height: 5.4),
                       Text(
                         widget.video.channelName ?? '',
                         style: regular15,
+                        textAlign: TextAlign.center,
                         maxLines: 1,
                       ),
                       // const VideoPositionIndicator(),
-                      const SizedBox(height: 29.9),
-                      const Controls(),
+                      const SizedBox(height: 18),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Controls(), PlayPauseButton()],
+                      ),
                     ],
                   ),
                 ),
@@ -168,83 +168,52 @@ class Controls extends StatelessWidget {
   }
 }
 
-class VideoPositionIndicator extends StatelessWidget {
-  const VideoPositionIndicator({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = context.ytController;
-
-    return StreamBuilder<YoutubeVideoState>(
-      stream: controller.videoStateStream,
-      initialData: const YoutubeVideoState(),
-      builder: (context, snapshot) {
-        final position = snapshot.data?.position.inMilliseconds ?? 0;
-        final duration = controller.metadata.duration.inMilliseconds;
-
-        return LinearProgressIndicator(
-          value: duration == 0 ? 0 : position / duration,
-          minHeight: 1,
-        );
-      },
-    );
-  }
-}
-
-///
 class VideoPositionSeeker extends StatelessWidget {
-  ///
   const VideoPositionSeeker({super.key});
 
   @override
   Widget build(BuildContext context) {
     var value = 0.0;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 280,
-          child: StreamBuilder<YoutubeVideoState>(
-            stream: context.ytController.videoStateStream,
-            initialData: const YoutubeVideoState(),
-            builder: (context, snapshot) {
-              final position = snapshot.data?.position.inSeconds ?? 0;
-              final duration = context.ytController.metadata.duration.inSeconds;
+    return SizedBox(
+      width: 219,
+      child: StreamBuilder<YoutubeVideoState>(
+        stream: context.ytController.videoStateStream,
+        initialData: const YoutubeVideoState(),
+        builder: (context, snapshot) {
+          final position = snapshot.data?.position.inSeconds ?? 0;
+          final duration = context.ytController.metadata.duration.inSeconds;
 
-              value = position == 0 || duration == 0 ? 0 : position / duration;
+          value = position == 0 || duration == 0 ? 0 : position / duration;
 
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      thumbShape: CustomSliderThumbCircle(
-                          thumbRadius: 14.62 / 2, padding: (18 - 14.62) / 2),
-                      trackHeight: 4.0,
-                    ),
-                    child: Slider(
-                      activeColor: const Color(0xFF64FFED),
-                      value: value,
-                      onChanged: (positionFraction) {
-                        value = positionFraction;
-                        setState(() {});
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  thumbShape: CustomSliderThumbCircle(
+                      thumbRadius: 14.62 / 2, padding: (18 - 14.62) / 2),
+                  trackHeight: 2.0,
+                ),
+                child: Slider(
+                  activeColor: const Color(0xFF64FFED),
+                  value: value,
+                  onChanged: (positionFraction) {
+                    value = positionFraction;
+                    setState(() {});
 
-                        context.ytController.seekTo(
-                          seconds: (value * duration).toDouble(),
-                          allowSeekAhead: true,
-                        );
-                      },
-                      min: 0,
-                      max: 1,
-                    ),
-                  );
-                },
+                    context.ytController.seekTo(
+                      seconds: (value * duration).toDouble(),
+                      allowSeekAhead: true,
+                    );
+                  },
+                  min: 0,
+                  max: 1,
+                ),
               );
             },
-          ),
-        ),
-        const PlayPauseButton(),
-      ],
+          );
+        },
+      ),
     );
   }
 }
