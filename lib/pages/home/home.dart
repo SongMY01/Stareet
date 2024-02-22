@@ -45,7 +45,9 @@ class _HomePageState extends State<HomePage> {
     '메이트 전체',
     '메이트1',
     '메이트2',
-    '메이트3'
+    '메이트3',
+    '메이트4',
+    '메이트5'
   ]; // 칩 항목들 리스트
 
   late NCameraPosition initPosition = const NCameraPosition(
@@ -397,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                         // physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: 570,
+                          width: 580,
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children:
