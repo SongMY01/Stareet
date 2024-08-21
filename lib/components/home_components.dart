@@ -97,7 +97,7 @@ class CustomTooltip extends StatelessWidget {
         arrowTipDistance: 20.0,
         arrowBaseWidth: 17.0,
         arrowLength: 16.0,
-        showCloseButton: ShowCloseButton.none,
+        showCloseButton: false,
         touchThroughAreaShape: ClipAreaShape.rectangle,
         touchThroughAreaCornerRadius: 5,
         content: Text(
